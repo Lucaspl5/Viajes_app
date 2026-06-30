@@ -2621,19 +2621,27 @@ export default function App() {
       const params = new URLSearchParams(window.location.search);
       const urlCode = params.get("code");
       const urlData = params.get("d");
+      let inviteTripObj: Trip | null = null;
       if (urlCode && urlData) {
         try {
-          const tripObj = JSON.parse(decodeURIComponent(atob(urlData))) as Trip;
-          // Seed the trip into local storage and KV so the join flow works
-          await saveShared(`trip:${urlCode}`, tripObj);
+          inviteTripObj = JSON.parse(decodeURIComponent(atob(urlData))) as Trip;
+          await saveShared(`trip:${urlCode}`, inviteTripObj);
           setInviteCode(urlCode);
         } catch { /* malformed invite link */ }
-        // Clean up URL without reload
         window.history.replaceState({}, "", window.location.pathname);
       }
 
       const last = await loadPersonal<Session | null>("lastSession", null);
       if (last?.code && last?.name) {
+        // If the invite link is for the same trip we're already in, use the fresher data
+        if (inviteTripObj && urlCode === last.code) {
+          // Make sure we're still in the members list
+          if (!inviteTripObj.members.some(m => m.toLowerCase() === last.name.toLowerCase())) {
+            inviteTripObj.members = [...inviteTripObj.members, last.name];
+            await saveShared(`trip:${last.code}`, inviteTripObj);
+          }
+          setSession(last); setTrip(inviteTripObj); setLoading(false); return;
+        }
         const t = await loadShared<Trip | null>(`trip:${last.code}`, null);
         if (t) { setSession(last); setTrip(t); }
       }
@@ -2707,9 +2715,12 @@ export default function App() {
             <button onClick={leave} className="flex items-center gap-1" style={{ color: "#7C8AA3", fontSize: 11, fontFamily: F.mono }}>
               <ArrowLeft size={12} /> CAMBIAR DE VIAJE
             </button>
-            <button onClick={toggleDark} style={{ color: "#7C8AA3", padding: "4px 8px", borderRadius: 6, border: "1px solid #2D3E5A", display: "flex", alignItems: "center", gap: 4, fontFamily: F.mono, fontSize: 10 }}>
-              {darkMode ? <Sun size={12} /> : <Moon size={12} />} {darkMode ? "CLARO" : "OSCURO"}
-            </button>
+            <div className="flex items-center gap-2">
+              <SyncButton code={session.code} onSync={t => setTrip(t)} />
+              <button onClick={toggleDark} style={{ color: "#7C8AA3", padding: "4px 8px", borderRadius: 6, border: "1px solid #2D3E5A", display: "flex", alignItems: "center", gap: 4, fontFamily: F.mono, fontSize: 10 }}>
+                {darkMode ? <Sun size={12} /> : <Moon size={12} />} {darkMode ? "CLARO" : "OSCURO"}
+              </button>
+            </div>
           </div>
 
           <div className="flex items-start justify-between flex-wrap gap-3 pb-4">
@@ -2888,6 +2899,36 @@ function Resumen({ trip, session, days, darkMode }: { trip: Trip; session: Sessi
       {/* Invite + Print */}
       <InvitePanel code={session.code} trip={trip} darkMode={darkMode} />
     </div>
+  );
+}
+
+function SyncButton({ code, onSync }: { code: string; onSync: (t: Trip) => void }) {
+  const [syncing, setSyncing] = useState(false);
+  const [done, setDone] = useState(false);
+
+  async function sync() {
+    setSyncing(true);
+    // Force a fresh fetch by bypassing localStorage cache
+    try {
+      const res = await fetch(`/api/store?key=${encodeURIComponent(`trip:${code}`)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data) { onSync(data as Trip); setDone(true); setTimeout(() => setDone(false), 2000); setSyncing(false); return; }
+      }
+    } catch { /* fall through */ }
+    // Fallback: just re-read localStorage
+    try {
+      const r = localStorage.getItem(`trip:${code}`);
+      if (r) { onSync(JSON.parse(r) as Trip); }
+    } catch { /* ignore */ }
+    setSyncing(false);
+  }
+
+  return (
+    <button onClick={sync} disabled={syncing} style={{ color: done ? "#4AC99B" : "#7C8AA3", padding: "4px 8px", borderRadius: 6, border: "1px solid #2D3E5A", display: "flex", alignItems: "center", gap: 4, fontFamily: "var(--font-mono)", fontSize: 10 }}>
+      {done ? <Check size={11} /> : <RefreshCw size={11} className={syncing ? "animate-spin" : ""} />}
+      {done ? "OK" : "SYNC"}
+    </button>
   );
 }
 
