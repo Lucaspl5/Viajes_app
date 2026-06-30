@@ -7,6 +7,8 @@ import {
   Euro, AlertCircle, ChevronDown, ThumbsUp, ThumbsDown,
   Luggage, Lightbulb, Wallet, Sunrise, ExternalLink,
   CheckCircle2, Circle, PiggyBank, Target, Edit2, Globe,
+  Heart, BookOpen, CreditCard, Moon, Sun, Printer,
+  Filter, BookMarked, Ticket, StickyNote, RefreshCw,
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -40,6 +42,20 @@ interface SavingsPhase {
 interface SavingsConfig {
   targetBudget: number; phases: SavingsPhase[]; numPersonas?: number;
 }
+interface Booking {
+  id: string;
+  type: "vuelo" | "hotel" | "actividad" | "traslado" | "otro";
+  title: string;
+  confirmationCode: string;
+  startDate: string; startTime: string;
+  endDate: string; endTime: string;
+  location: string; bookingUrl: string; notes: string;
+  amount: number;
+}
+interface DiaryEntry {
+  id: string; date: string; text: string;
+  author: string; mood: string; addedAt: number;
+}
 interface DestinationTemplate {
   id: string; name: string; country: string; flag: string;
   costPerPerson: number; durationDays: number;
@@ -68,6 +84,125 @@ const F = {
 } as const;
 
 const EXPENSE_CATEGORIES = ["✈️ Transporte", "🏨 Alojamiento", "🍽️ Comida", "🎭 Actividades", "🛍️ Compras", "💊 Salud", "📦 Otros"];
+const BOOKING_TYPES: { value: Booking["type"]; label: string; emoji: string }[] = [
+  { value: "vuelo",     label: "Vuelo",     emoji: "✈️" },
+  { value: "hotel",     label: "Hotel",     emoji: "🏨" },
+  { value: "actividad", label: "Actividad", emoji: "🎭" },
+  { value: "traslado",  label: "Traslado",  emoji: "🚗" },
+  { value: "otro",      label: "Otro",      emoji: "📋" },
+];
+const DIARY_MOODS = ["😊", "😍", "😎", "🥱", "😮", "🥵", "🌧️", "🎉"];
+const CURRENCIES: { code: string; name: string; rate: number; symbol: string; destIds: string[] }[] = [
+  { code: "JPY", name: "Yen japonés",      rate: 162,  symbol: "¥",  destIds: ["japon","japon-tokio","tokyo","osaka"] },
+  { code: "THB", name: "Baht tailandés",   rate: 38,   symbol: "฿",  destIds: ["tailandia","tailandia-islas","bangkok"] },
+  { code: "USD", name: "Dólar americano",  rate: 1.08, symbol: "$",  destIds: ["nueva-york","hawaii","alaska","cancun"] },
+  { code: "GBP", name: "Libra esterlina",  rate: 0.86, symbol: "£",  destIds: ["londres","escocia-highlands"] },
+  { code: "AUD", name: "Dólar australiano",rate: 1.65, symbol: "A$", destIds: ["australia","sydney"] },
+  { code: "NZD", name: "Dólar neozelandés",rate: 1.78, symbol: "NZ$",destIds: ["nueva-zelanda"] },
+  { code: "MXN", name: "Peso mexicano",    rate: 18.5, symbol: "$",  destIds: ["mexico-df","cancun"] },
+  { code: "INR", name: "Rupia india",      rate: 89,   symbol: "₹",  destIds: ["india"] },
+  { code: "BRL", name: "Real brasileño",   rate: 5.4,  symbol: "R$", destIds: ["brasil","rio"] },
+  { code: "ARS", name: "Peso argentino",   rate: 980,  symbol: "$",  destIds: ["argentina","buenos-aires"] },
+  { code: "MAD", name: "Dírham marroquí",  rate: 10.7, symbol: "د.م",destIds: ["marruecos","marruecos-norte"] },
+  { code: "ZAR", name: "Rand sudafricano", rate: 20.2, symbol: "R",  destIds: ["sudafrica","kenya","tanzania"] },
+  { code: "IDR", name: "Rupia indonesia",  rate: 16800,symbol: "Rp", destIds: ["indonesia-bali","borneo"] },
+  { code: "VND", name: "Dong vietnamita",  rate: 26500,symbol: "₫",  destIds: ["vietnam"] },
+  { code: "KRW", name: "Won surcoreano",   rate: 1430, symbol: "₩",  destIds: ["seul","corea-sur"] },
+  { code: "CNY", name: "Yuan chino",       rate: 7.8,  symbol: "¥",  destIds: ["china"] },
+  { code: "CHF", name: "Franco suizo",     rate: 0.96, symbol: "Fr", destIds: ["suiza-alpes"] },
+  { code: "NOK", name: "Corona noruega",   rate: 11.5, symbol: "kr", destIds: ["noruega-fjords","svalbard"] },
+  { code: "SEK", name: "Corona sueca",     rate: 11.2, symbol: "kr", destIds: ["estocolmo"] },
+  { code: "DKK", name: "Corona danesa",    rate: 7.45, symbol: "kr", destIds: ["copenhague","islas-feroe"] },
+  { code: "ISK", name: "Corona islandesa", rate: 145,  symbol: "kr", destIds: ["islandia","islandia-express","groenlandia"] },
+  { code: "ILS", name: "Séquel israelí",   rate: 4.0,  symbol: "₪",  destIds: ["israel"] },
+  { code: "TRY", name: "Lira turca",       rate: 35,   symbol: "₺",  destIds: ["turquia","estambul","capadocia"] },
+  { code: "EGP", name: "Libra egipcia",    rate: 51,   symbol: "£",  destIds: ["egipto"] },
+  { code: "MUR", name: "Rupia mauriciana", rate: 48,   symbol: "₨",  destIds: ["mauricio"] },
+  { code: "XOF", name: "Franco CFA",       rate: 655,  symbol: "Fr", destIds: ["cabo-verde","senegal"] },
+  { code: "PEN", name: "Sol peruano",      rate: 4.0,  symbol: "S/", destIds: ["peru","peru-trek","machu-picchu"] },
+  { code: "CLP", name: "Peso chileno",     rate: 950,  symbol: "$",  destIds: ["chile","atacama"] },
+  { code: "COP", name: "Peso colombiano",  rate: 4200, symbol: "$",  destIds: ["colombia","cartagena"] },
+  { code: "PHP", name: "Peso filipino",    rate: 61,   symbol: "₱",  destIds: ["filipinas"] },
+  { code: "KZT", name: "Tenge kazajo",     rate: 490,  symbol: "₸",  destIds: ["kazajistan"] },
+  { code: "KES", name: "Chelín keniata",   rate: 138,  symbol: "KSh",destIds: ["kenya","nairobi"] },
+  { code: "RWF", name: "Franco ruandés",   rate: 1380, symbol: "Fr", destIds: ["rwanda"] },
+  { code: "LKR", name: "Rupia ceilanesa",  rate: 330,  symbol: "₨",  destIds: ["sri-lanka"] },
+  { code: "KHR", name: "Riel camboyano",   rate: 4200, symbol: "៛",  destIds: ["cambodia","angkor"] },
+];
+const DEST_TIPS: Record<string, { visa: string; currency: string; plug: string; tip: string; emergency: string }> = {
+  "japon":          { visa:"Sin visado hasta 90d",   currency:"Yen (¥) · solo efectivo en muchos sitios", plug:"Tipo A (igual que España)", tip:"No se propina, es casi ofensivo", emergency:"110 policía · 119 ambulancia" },
+  "japon-tokio":    { visa:"Sin visado hasta 90d",   currency:"Yen (¥) · lleva efectivo", plug:"Tipo A",   tip:"No se propina", emergency:"110 policía · 119 ambulancia" },
+  "tailandia":      { visa:"Sin visado hasta 30d",   currency:"Baht (฿) · ATMs abundantes", plug:"Tipo A/B/C", tip:"10% habitual en restaurantes", emergency:"191 policía · 1669 ambulancia" },
+  "tailandia-islas":{ visa:"Sin visado hasta 30d",   currency:"Baht (฿)", plug:"Tipo A/B/C", tip:"10% habitual", emergency:"191 policía · 1669 ambulancia" },
+  "bangkok":        { visa:"Sin visado hasta 30d",   currency:"Baht (฿)", plug:"Tipo A/B/C", tip:"10% habitual", emergency:"191 policía" },
+  "indonesia-bali": { visa:"Sin visado hasta 30d",   currency:"Rupia indonesia (Rp) · negocia siempre", plug:"Tipo C/F", tip:"No obligatoria", emergency:"110 policía · 118 ambulancia" },
+  "india":          { visa:"e-Visa obligatoria ~50€", currency:"Rupia (₹) · acepta tarjeta en ciudades", plug:"Tipo C/D", tip:"10-15% en restaurantes", emergency:"100 policía · 102 ambulancia" },
+  "nueva-york":     { visa:"ESTA obligatorio (~21$)",  currency:"Dólar ($) · tarjeta aceptada en casi todo", plug:"Tipo A/B (adaptador)",  tip:"Propina 18-20% obligatoria en restaurantes", emergency:"911" },
+  "hawaii":         { visa:"ESTA obligatorio",          currency:"Dólar ($)", plug:"Tipo A/B",   tip:"18-20% en restaurantes", emergency:"911" },
+  "alaska":         { visa:"ESTA obligatorio",          currency:"Dólar ($)", plug:"Tipo A/B",   tip:"15-20% en restaurantes", emergency:"911" },
+  "islandia":       { visa:"Sin visado (Schengen)",    currency:"Corona islandesa (kr)", plug:"Tipo C/F",  tip:"No tradicional, incluida en precio", emergency:"112" },
+  "islandia-express":{ visa:"Sin visado (Schengen)", currency:"Corona islandesa (kr)", plug:"Tipo C/F", tip:"Incluida en precio", emergency:"112" },
+  "noruega-fjords": { visa:"Sin visado (Schengen)",    currency:"Corona noruega (kr)", plug:"Tipo C/F",   tip:"No habitual", emergency:"112" },
+  "marruecos":      { visa:"Sin visado hasta 90d",     currency:"Dírham (MAD) · solo para locales", plug:"Tipo C", tip:"Regateo habitual en zocos", emergency:"19 policía · 15 ambulancia" },
+  "marruecos-norte":{ visa:"Sin visado hasta 90d",     currency:"Dírham (MAD) · negocia los precios", plug:"Tipo C", tip:"Regateo habitual", emergency:"19 policía" },
+  "vietnam":        { visa:"Sin visado 45d · e-Visa disponible", currency:"Dong (₫) · solo efectivo en rural", plug:"Tipo A/C", tip:"No obligatoria", emergency:"113 policía · 115 ambulancia" },
+  "colombia":       { visa:"Sin visado hasta 90d",     currency:"Peso colombiano ($)", plug:"Tipo A/B", tip:"Propina 10% en restaurantes", emergency:"123" },
+  "peru":           { visa:"Sin visado hasta 90d",     currency:"Sol (S/) · tarjeta en ciudades", plug:"Tipo A/C", tip:"10% habitual", emergency:"105 policía · 117 ambulancia" },
+  "peru-trek":      { visa:"Sin visado hasta 90d",     currency:"Sol (S/) · efectivo en ruta", plug:"Tipo A/C", tip:"Propina al guía", emergency:"105 policía" },
+  "kenya":          { visa:"e-Visa obligatoria ~50$",   currency:"Chelín keniata (KSh)", plug:"Tipo G (británico)", tip:"10-15% en safari lodges", emergency:"999 policía · 999 ambulancia" },
+  "tanzania":       { visa:"e-Visa obligatoria ~50$",   currency:"Chelín tanzano (TSh)", plug:"Tipo G",  tip:"Propina al guía de safari ~20$/día", emergency:"999 policía" },
+  "sudafrica":      { visa:"Sin visado hasta 90d",     currency:"Rand (R) · tarjeta aceptada", plug:"Tipo M/N", tip:"10-15% en restaurantes", emergency:"10111 policía · 10177 ambulancia" },
+  "seychelles":     { visa:"Sin visado",               currency:"Rupia seychellense (SCR) · USD ampliamente aceptado", plug:"Tipo G", tip:"10% habitual", emergency:"999" },
+  "maldivas":       { visa:"Sin visado a la llegada",  currency:"Rufiyaa (MVR) · USD aceptado en resorts", plug:"Tipo G", tip:"No obligatoria en resorts", emergency:"119" },
+  "mauricio":       { visa:"Sin visado hasta 60d",     currency:"Rupia mauriciana (₨)", plug:"Tipo G", tip:"10% en restaurantes", emergency:"999" },
+  "sri-lanka":      { visa:"e-Visa obligatoria ~35$",   currency:"Rupia ceilanesa (₨)", plug:"Tipo D/G", tip:"10% en restaurantes", emergency:"119 policía" },
+  "filipinas":      { visa:"Sin visado hasta 30d",     currency:"Peso (₱) · ATMs disponibles", plug:"Tipo A/B/C", tip:"10% habitual", emergency:"117 policía" },
+  "borneo":         { visa:"Sin visado (parte malaya)", currency:"Ringgit (RM)", plug:"Tipo G", tip:"No habitual", emergency:"999 policía" },
+  "cambodia":       { visa:"e-Visa disponible ~30$",    currency:"Dólar USD · riel como cambio", plug:"Tipo A/C/G", tip:"1-2$ por servicio", emergency:"117 policía" },
+  "china":          { visa:"Visado obligatorio ~80€",   currency:"Yuan (¥) · WeChat/AliPay o efectivo", plug:"Tipo A/I", tip:"No habitual", emergency:"110 policía · 120 ambulancia" },
+  "corea-sur":      { visa:"Sin visado hasta 90d",     currency:"Won (₩) · tarjeta aceptada", plug:"Tipo C/F", tip:"No habitual", emergency:"112 policía · 119 ambulancia" },
+  "seul":           { visa:"Sin visado hasta 90d",     currency:"Won (₩)", plug:"Tipo C/F", tip:"No habitual", emergency:"112 policía" },
+  "hong-kong":      { visa:"Sin visado hasta 90d",     currency:"Dólar HK (HK$)", plug:"Tipo G (británico)", tip:"10% en restaurantes", emergency:"999" },
+  "turquia":        { visa:"Sin visado hasta 90d",     currency:"Lira (₺) · negocia precios", plug:"Tipo C/F", tip:"10-15% en restaurantes", emergency:"155 policía · 112 ambulancia" },
+  "estambul":       { visa:"Sin visado hasta 90d",     currency:"Lira turca (₺)", plug:"Tipo C/F", tip:"10-15% habitual", emergency:"155 policía" },
+  "capadocia":      { visa:"Sin visado hasta 90d",     currency:"Lira turca (₺)", plug:"Tipo C/F", tip:"10-15%", emergency:"112" },
+  "egipto":         { visa:"Visado a la llegada 25$",  currency:"Libra egipcia (£) · USD también aceptado", plug:"Tipo C", tip:"Baksheesh (propina) muy habitual", emergency:"122 policía" },
+  "israel":         { visa:"Sin visado hasta 90d",     currency:"Séquel (₪)", plug:"Tipo H", tip:"10% en restaurantes", emergency:"100 policía · 101 ambulancia" },
+  "kazajistan":     { visa:"Sin visado hasta 30d",     currency:"Tenge (₸) · efectivo preferido", plug:"Tipo C/F", tip:"No habitual", emergency:"102 policía" },
+  "argentina":      { visa:"Sin visado hasta 90d",     currency:"Peso (ARS) · usa casas de cambio oficiales", plug:"Tipo I/C", tip:"10% habitual", emergency:"101 policía · 107 ambulancia" },
+  "chile":          { visa:"Sin visado hasta 90d",     currency:"Peso chileno ($)", plug:"Tipo C/L", tip:"10% propina voluntaria", emergency:"133 policía · 131 ambulancia" },
+  "brasil":         { visa:"Sin visado hasta 90d",     currency:"Real (R$) · tarjeta ampliamente aceptada", plug:"Tipo N", tip:"10% habitual", emergency:"190 policía · 192 ambulancia" },
+  "mexico-df":      { visa:"Sin visado hasta 180d",    currency:"Peso mexicano (MX$)", plug:"Tipo A/B", tip:"10-15% en restaurantes", emergency:"911" },
+  "nueva-zelanda":  { visa:"NZeTA obligatorio (~17€)",  currency:"Dólar NZ (NZ$)", plug:"Tipo I", tip:"No habitual (incluida en precio)", emergency:"111" },
+  "australia":      { visa:"ETA obligatorio (~20A$)",  currency:"Dólar australiano (A$)", plug:"Tipo I", tip:"No habitual", emergency:"000" },
+  "sydney":         { visa:"ETA obligatorio",          currency:"Dólar australiano (A$)", plug:"Tipo I", tip:"No habitual", emergency:"000" },
+  "canada-rockies": { visa:"AVE requerido (~7€)",      currency:"Dólar canadiense (CA$)", plug:"Tipo A/B", tip:"15-20% en restaurantes", emergency:"911" },
+  "dolomitas":      { visa:"Sin visado (Schengen)",    currency:"Euro (€) · aceptan tarjeta", plug:"Tipo C/F", tip:"5-10% en restaurantes", emergency:"118 ambulancia" },
+  "escocia-highlands":{ visa:"Sin visado hasta 6 meses", currency:"Libra (£)", plug:"Tipo G", tip:"10% en restaurantes", emergency:"999" },
+  "suiza-alpes":    { visa:"Sin visado (Schengen)",    currency:"Franco suizo (Fr) · caro pero seguro", plug:"Tipo C/J", tip:"Incluida en precio", emergency:"112" },
+  "azores":         { visa:"Sin visado (Portugal/UE)", currency:"Euro (€)", plug:"Tipo F", tip:"5-10% voluntaria", emergency:"112" },
+  "madeira":        { visa:"Sin visado (Portugal/UE)", currency:"Euro (€)", plug:"Tipo F", tip:"5-10% voluntaria", emergency:"112" },
+  "cabo-verde":     { visa:"Visado a la llegada ~25€", currency:"Escudo caboverdiano (CVE) · EUR ampliamente aceptado", plug:"Tipo C/F", tip:"10% habitual", emergency:"132 policía" },
+  "islas-feroe":    { visa:"Sin visado (Área Schengen)", currency:"Corona feroesa (DKK)", plug:"Tipo C/K", tip:"No habitual", emergency:"112" },
+  "svalbard":       { visa:"Sin visado (ninguna restricción)", currency:"Corona noruega (NOK)", plug:"Tipo C/F", tip:"No habitual", emergency:"02800 policía local" },
+  "groenlandia":    { visa:"Sin visado para UE",       currency:"Corona danesa (DKK)", plug:"Tipo C/E/K", tip:"No habitual", emergency:"112" },
+  "copenhague":     { visa:"Sin visado (Schengen)",    currency:"Corona danesa (kr)", plug:"Tipo C/E/K", tip:"Incluida en precio", emergency:"112" },
+  "estocolmo":      { visa:"Sin visado (Schengen)",    currency:"Corona sueca (kr)", plug:"Tipo C/F", tip:"Incluida en precio", emergency:"112" },
+  "creta":          { visa:"Sin visado (Schengen/UE)", currency:"Euro (€)", plug:"Tipo C/F", tip:"5-10% habitual", emergency:"112" },
+  "corfu":          { visa:"Sin visado (UE)",          currency:"Euro (€)", plug:"Tipo C/F", tip:"5-10% habitual", emergency:"112" },
+  "mykonos":        { visa:"Sin visado (UE)",          currency:"Euro (€)", plug:"Tipo C/F", tip:"10% en restaurantes", emergency:"112" },
+  "cerdena":        { visa:"Sin visado (UE)",          currency:"Euro (€)", plug:"Tipo C/F", tip:"5-10% voluntaria", emergency:"118 ambulancia" },
+  "milan":          { visa:"Sin visado (UE)",          currency:"Euro (€)", plug:"Tipo C/F/L", tip:"10% en restaurantes", emergency:"118 ambulancia" },
+  "bora-bora":      { visa:"Sin visado hasta 90d",     currency:"Franco CFP (XPF) · tarjeta en hoteles", plug:"Tipo A", tip:"No habitual", emergency:"17 policía" },
+  "republica-dominicana":{ visa:"Sin visado · paga tarjeta turista al llegar 10$", currency:"Peso dominicano · USD aceptado", plug:"Tipo A/B", tip:"10-15% en restaurantes", emergency:"911" },
+  "londre":         { visa:"Sin visado hasta 6 meses", currency:"Libra esterlina (£)", plug:"Tipo G", tip:"10% en restaurantes", emergency:"999" },
+  "barcelona":      { visa:"Sin visado (UE)",          currency:"Euro (€)", plug:"Tipo C/F", tip:"5-10% voluntaria", emergency:"112" },
+  "paris":          { visa:"Sin visado (Schengen)",    currency:"Euro (€)", plug:"Tipo E", tip:"10% voluntaria", emergency:"15 SAMU · 112" },
+  "amsterdam":      { visa:"Sin visado (Schengen)",    currency:"Euro (€)", plug:"Tipo C/F", tip:"10% voluntaria", emergency:"112" },
+  "roma":           { visa:"Sin visado (UE)",          currency:"Euro (€)", plug:"Tipo C/F/L", tip:"10% en restaurantes", emergency:"118 ambulancia" },
+  "portugal":       { visa:"Sin visado (UE)",          currency:"Euro (€)", plug:"Tipo C/F", tip:"5-10% voluntaria", emergency:"112" },
+  "oporto":         { visa:"Sin visado (UE)",          currency:"Euro (€)", plug:"Tipo C/F", tip:"5-10% voluntaria", emergency:"112" },
+};
 const PACKING_CATEGORIES = ["📄 Documentos", "👕 Ropa", "🔌 Electrónica", "🧴 Higiene", "💊 Medicamentos", "🎒 Otros"];
 
 const DEST_TYPE_FILTERS = [
@@ -2437,7 +2572,7 @@ function EntryScreen({ onEnter, externalError }: { onEnter: (code: string, name:
 
 // ─── Main App ─────────────────────────────────────────────────────────────────
 
-type TabId = "resumen" | "itinerario" | "mapa" | "fotos" | "checklist" | "gastos" | "equipaje" | "ideas" | "ahorro" | "destinos";
+type TabId = "resumen" | "itinerario" | "mapa" | "fotos" | "checklist" | "gastos" | "equipaje" | "ideas" | "ahorro" | "destinos" | "reservas" | "diario";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -2446,6 +2581,10 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
   const [entryError, setEntryError] = useState("");
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("darkMode") === "1";
+  });
 
   useEffect(() => {
     (async () => {
@@ -2472,6 +2611,14 @@ export default function App() {
 
   function leave() { setSession(null); setTrip(null); setTab("resumen"); }
 
+  function toggleDark() {
+    setDarkMode(d => {
+      const next = !d;
+      localStorage.setItem("darkMode", next ? "1" : "0");
+      return next;
+    });
+  }
+
   const days = useCountdown(trip?.startDate ?? null);
 
   if (loading) {
@@ -2489,9 +2636,11 @@ export default function App() {
 
   const tabs: { id: TabId; label: string; Icon: React.ElementType }[] = [
     { id: "resumen",    label: "Inicio",     Icon: Sunrise },
+    { id: "reservas",   label: "Reservas",   Icon: Ticket },
     { id: "itinerario", label: "Plan",        Icon: Plane },
     { id: "mapa",       label: "Mapa",        Icon: MapPin },
     { id: "fotos",      label: "Fotos",       Icon: Camera },
+    { id: "diario",     label: "Diario",      Icon: BookOpen },
     { id: "gastos",     label: "Gastos",      Icon: Wallet },
     { id: "equipaje",   label: "Equipaje",    Icon: Luggage },
     { id: "checklist",  label: "Checklist",   Icon: ListChecks },
@@ -2500,14 +2649,24 @@ export default function App() {
     { id: "destinos",   label: "Destinos",    Icon: Globe },
   ];
 
+  const dk = darkMode ? {
+    bg: "#0D1117", bgCard: "#161B22", bgHeader: "linear-gradient(135deg,#0D1117 0%,#161B22 100%)",
+    text: "#E6EDF3", textSoft: "#8B949E", border: "#30363D", paper: "#0D1117",
+  } : null;
+
   return (
-    <div style={{ background: C.paper, fontFamily: F.body, color: C.ink, minHeight: "100dvh" }}>
+    <div style={{ background: dk ? dk.bg : C.paper, fontFamily: F.body, color: dk ? dk.text : C.ink, minHeight: "100dvh", transition: "background 0.3s" }}>
       {/* Header */}
-      <header style={{ background: `linear-gradient(135deg, ${C.navy} 0%, ${C.navyMid} 100%)`, color: C.paper }} className="dot-grid">
+      <header style={{ background: dk ? dk.bgHeader : `linear-gradient(135deg, ${C.navy} 0%, ${C.navyMid} 100%)`, color: C.paper }} className="dot-grid">
         <div className="max-w-4xl mx-auto px-4 pt-4 pb-0">
-          <button onClick={leave} className="flex items-center gap-1 mb-3" style={{ color: "#7C8AA3", fontSize: 11, fontFamily: F.mono }}>
-            <ArrowLeft size={12} /> CAMBIAR DE VIAJE
-          </button>
+          <div className="flex items-center justify-between mb-3">
+            <button onClick={leave} className="flex items-center gap-1" style={{ color: "#7C8AA3", fontSize: 11, fontFamily: F.mono }}>
+              <ArrowLeft size={12} /> CAMBIAR DE VIAJE
+            </button>
+            <button onClick={toggleDark} style={{ color: "#7C8AA3", padding: "4px 8px", borderRadius: 6, border: "1px solid #2D3E5A", display: "flex", alignItems: "center", gap: 4, fontFamily: F.mono, fontSize: 10 }}>
+              {darkMode ? <Sun size={12} /> : <Moon size={12} />} {darkMode ? "CLARO" : "OSCURO"}
+            </button>
+          </div>
 
           <div className="flex items-start justify-between flex-wrap gap-3 pb-4">
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -2568,12 +2727,14 @@ export default function App() {
 
       {/* Content */}
       <main className="max-w-4xl mx-auto px-4 py-6 fade-in" key={tab}>
-        {tab === "resumen"    && <Resumen trip={trip} session={session} days={days} />}
+        {tab === "resumen"    && <Resumen trip={trip} session={session} days={days} darkMode={darkMode} />}
+        {tab === "reservas"   && <Reservas code={session.code} session={session} darkMode={darkMode} />}
         {tab === "itinerario" && <Itinerario code={session.code} />}
         {tab === "mapa"       && <Mapa code={session.code} />}
         {tab === "fotos"      && <Fotos code={session.code} session={session} />}
+        {tab === "diario"     && <Diario code={session.code} session={session} darkMode={darkMode} />}
         {tab === "checklist"  && <Checklist code={session.code} session={session} />}
-        {tab === "gastos"     && <Gastos code={session.code} session={session} members={trip.members} />}
+        {tab === "gastos"     && <Gastos code={session.code} session={session} members={trip.members} darkMode={darkMode} />}
         {tab === "equipaje"   && <Equipaje code={session.code} session={session} />}
         {tab === "ideas"      && <Ideas code={session.code} session={session} />}
         {tab === "ahorro"     && <Ahorro code={session.code} members={trip.members} />}
@@ -2585,11 +2746,60 @@ export default function App() {
 
 // ─── Resumen ──────────────────────────────────────────────────────────────────
 
-function Resumen({ trip, session, days }: { trip: Trip; session: Session; days: number | null }) {
+function Resumen({ trip, session, days, darkMode }: { trip: Trip; session: Session; days: number | null; darkMode: boolean }) {
   const dur = tripDuration(trip.startDate, trip.endDate);
+  const [coverUrl, setCoverUrl] = useState("");
+  const [coverInput, setCoverInput] = useState("");
+  const [showCoverEdit, setShowCoverEdit] = useState(false);
+  const coverKey = `cover:${session.code}`;
+
+  useEffect(() => {
+    loadShared<string>(coverKey, "").then(u => { setCoverUrl(u); setCoverInput(u); });
+  }, [coverKey]);
+
+  async function saveCover() {
+    await saveShared(coverKey, coverInput.trim());
+    setCoverUrl(coverInput.trim());
+    setShowCoverEdit(false);
+  }
+
+  const cardBg = darkMode ? "#161B22" : "#fff";
+  const cardBorder = darkMode ? "#30363D" : C.line;
+  const textColor = darkMode ? "#E6EDF3" : C.ink;
+  const softColor = darkMode ? "#8B949E" : C.inkSoft;
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Cover photo hero */}
+      {(coverUrl || showCoverEdit) && (
+        <div style={{ borderRadius: 14, overflow: "hidden", position: "relative" }}>
+          {coverUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={coverUrl} alt="Portada del viaje" style={{ width: "100%", height: 200, objectFit: "cover", display: "block" }} onError={() => setCoverUrl("")} />
+          )}
+          {!coverUrl && <div style={{ height: 80, background: C.paperDark, display: "flex", alignItems: "center", justifyContent: "center", color: C.inkSoft, fontFamily: F.mono, fontSize: 12 }}>Sin foto de portada</div>}
+          <button onClick={() => setShowCoverEdit(v => !v)} style={{ position: "absolute", top: 10, right: 10, background: "rgba(0,0,0,0.55)", color: "#fff", borderRadius: 6, padding: "4px 10px", fontFamily: F.mono, fontSize: 10 }}>
+            <Edit2 size={11} style={{ display: "inline", marginRight: 4 }} />PORTADA
+          </button>
+        </div>
+      )}
+      {!coverUrl && !showCoverEdit && (
+        <button onClick={() => setShowCoverEdit(true)} style={{ border: `1px dashed ${C.line}`, borderRadius: 8, padding: "10px 16px", color: C.inkSoft, fontFamily: F.mono, fontSize: 11, display: "flex", alignItems: "center", gap: 6 }}>
+          <Camera size={13} /> AÑADIR FOTO DE PORTADA DEL VIAJE
+        </button>
+      )}
+      {showCoverEdit && (
+        <div style={{ background: cardBg, border: `1px solid ${cardBorder}`, borderRadius: 10, padding: "14px 16px" }} className="flex flex-col gap-2">
+          <div style={{ fontFamily: F.mono, fontSize: 10, color: softColor }}>URL de imagen de portada</div>
+          <div className="flex gap-2">
+            <input value={coverInput} onChange={e => setCoverInput(e.target.value)} placeholder="https://…/foto.jpg"
+              style={{ ...inputStyle, flex: 1, background: darkMode ? "#0D1117" : "#fff", color: textColor, border: `1px solid ${cardBorder}` }} />
+            <button onClick={saveCover} style={{ background: C.teal, color: "#fff", borderRadius: 6, padding: "0 14px", fontFamily: F.mono, fontSize: 11 }}>OK</button>
+            <button onClick={() => setShowCoverEdit(false)} style={{ color: softColor, padding: "0 8px" }}><X size={14} /></button>
+          </div>
+        </div>
+      )}
+
       {/* Countdown hero card */}
       {days !== null && (
         <div style={{ background: `linear-gradient(135deg, ${C.navy}, ${C.navyMid})`, borderRadius: 12, padding: "24px 20px", color: C.paper, position: "relative", overflow: "hidden" }}>
@@ -2631,12 +2841,15 @@ function Resumen({ trip, session, days }: { trip: Trip; session: Session; days: 
         </div>
       </Card>
 
-      {/* Tip */}
-      <div style={{ border: `1px dashed ${C.line}`, borderRadius: 8, padding: "14px 16px" }}>
-        <p style={{ color: C.inkSoft, fontSize: 13, lineHeight: 1.7 }}>
-          Comparte el código <strong style={{ color: C.ink, fontFamily: F.mono }}>{session.code}</strong> con tu grupo.
-          Usa las pestañas para planificar el <strong style={{ color: C.ink }}>itinerario</strong>, dividir los <strong style={{ color: C.ink }}>gastos</strong>, preparar el <strong style={{ color: C.ink }}>equipaje</strong> y votar <strong style={{ color: C.ink }}>ideas</strong>.
+      {/* Tip + Print */}
+      <div style={{ border: `1px dashed ${darkMode ? "#30363D" : C.line}`, borderRadius: 8, padding: "14px 16px" }} className="flex flex-col gap-3">
+        <p style={{ color: softColor, fontSize: 13, lineHeight: 1.7 }}>
+          Comparte el código <strong style={{ color: textColor, fontFamily: F.mono }}>{session.code}</strong> con tu grupo.
+          Usa las pestañas para planificar el <strong style={{ color: textColor }}>itinerario</strong>, dividir los <strong style={{ color: textColor }}>gastos</strong>, preparar el <strong style={{ color: textColor }}>equipaje</strong> y votar <strong style={{ color: textColor }}>ideas</strong>.
         </p>
+        <button onClick={() => window.print()} style={{ display: "flex", alignItems: "center", gap: 6, color: softColor, fontFamily: F.mono, fontSize: 11, border: `1px solid ${darkMode ? "#30363D" : C.line}`, borderRadius: 6, padding: "6px 12px", alignSelf: "flex-start" }}>
+          <Printer size={12} /> IMPRIMIR / EXPORTAR PDF
+        </button>
       </div>
     </div>
   );
@@ -2982,12 +3195,17 @@ function calculateSettlements(expenses: Expense[], members: string[]) {
   return settlements;
 }
 
-function Gastos({ code, session, members }: { code: string; session: Session; members: string[] }) {
+function Gastos({ code, session, members, darkMode }: { code: string; session: Session; members: string[]; darkMode: boolean }) {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({ description: "", amount: "", paidBy: session.name, category: EXPENSE_CATEGORIES[0], date: "", splitWith: [] as string[] });
   const [err, setErr] = useState("");
   const [showSettle, setShowSettle] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filterCat, setFilterCat] = useState("");
+  const [filterPerson, setFilterPerson] = useState("");
+  const [filterFrom, setFilterFrom] = useState("");
+  const [filterTo, setFilterTo] = useState("");
   const key = `gastos:${code}`;
   useEffect(() => { loadShared<Expense[]>(key, []).then(e => { setExpenses(e); setLoading(false); }); }, [key]);
   const persist = useCallback(async (next: Expense[]) => { setExpenses(next); await saveShared(key, next); }, [key]);
@@ -3001,6 +3219,18 @@ function Gastos({ code, session, members }: { code: string; session: Session; me
     persist([...expenses, { id: uid(), description: form.description.trim(), amount, paidBy: form.paidBy, splitWith: form.splitWith, category: form.category, date: form.date || new Date().toISOString().slice(0, 10) }]);
     setForm(f => ({ ...f, description: "", amount: "", date: "" }));
   }
+
+  const filteredExpenses = useMemo(() => {
+    return expenses.filter(e => {
+      if (filterCat && e.category !== filterCat) return false;
+      if (filterPerson && e.paidBy !== filterPerson) return false;
+      if (filterFrom && e.date < filterFrom) return false;
+      if (filterTo && e.date > filterTo) return false;
+      return true;
+    });
+  }, [expenses, filterCat, filterPerson, filterFrom, filterTo]);
+
+  const activeFilters = [filterCat, filterPerson, filterFrom, filterTo].filter(Boolean).length;
 
   const total = useMemo(() => expenses.reduce((s, e) => s + e.amount, 0), [expenses]);
   const perPerson = useMemo(() => {
@@ -3105,21 +3335,60 @@ function Gastos({ code, session, members }: { code: string; session: Session; me
         )}
       </Card>
 
+      {/* Filters */}
+      <div>
+        <button onClick={() => setShowFilters(v => !v)} className="flex items-center gap-2"
+          style={{ fontFamily: F.mono, fontSize: 11, color: activeFilters > 0 ? C.teal : C.inkSoft, border: `1px solid ${activeFilters > 0 ? C.teal : C.line}`, borderRadius: 6, padding: "6px 12px" }}>
+          <Filter size={12} /> FILTRAR {activeFilters > 0 && `(${activeFilters} activos)`}
+        </button>
+        {showFilters && (
+          <div style={{ background: darkMode ? "#161B22" : C.paperDark, borderRadius: 10, padding: "12px 14px", marginTop: 8 }} className="flex flex-col gap-2">
+            <div className="flex flex-wrap gap-2">
+              <select value={filterCat} onChange={e => setFilterCat(e.target.value)} style={{ ...inputStyle, flex: "1 1 140px", appearance: "none", background: darkMode ? "#0D1117" : "#fff", color: darkMode ? "#E6EDF3" : C.ink }}>
+                <option value="">Todas las categorías</option>
+                {EXPENSE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+              <select value={filterPerson} onChange={e => setFilterPerson(e.target.value)} style={{ ...inputStyle, flex: "1 1 110px", appearance: "none", background: darkMode ? "#0D1117" : "#fff", color: darkMode ? "#E6EDF3" : C.ink }}>
+                <option value="">Todas las personas</option>
+                {members.map(m => <option key={m} value={m}>{m}</option>)}
+              </select>
+              <input type="date" value={filterFrom} onChange={e => setFilterFrom(e.target.value)} placeholder="Desde"
+                style={{ ...inputStyle, flex: "0 1 155px", background: darkMode ? "#0D1117" : "#fff", color: darkMode ? "#E6EDF3" : C.ink }} />
+              <input type="date" value={filterTo} onChange={e => setFilterTo(e.target.value)} placeholder="Hasta"
+                style={{ ...inputStyle, flex: "0 1 155px", background: darkMode ? "#0D1117" : "#fff", color: darkMode ? "#E6EDF3" : C.ink }} />
+            </div>
+            {activeFilters > 0 && (
+              <button onClick={() => { setFilterCat(""); setFilterPerson(""); setFilterFrom(""); setFilterTo(""); }}
+                style={{ fontFamily: F.mono, fontSize: 10, color: C.coral, alignSelf: "flex-start" }}>
+                <X size={10} style={{ display: "inline" }} /> LIMPIAR FILTROS
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+
+      {activeFilters > 0 && (
+        <div style={{ fontFamily: F.mono, fontSize: 11, color: C.inkSoft }}>
+          Mostrando {filteredExpenses.length} de {expenses.length} gastos · total filtrado: {filteredExpenses.reduce((s,e) => s+e.amount,0).toFixed(2)} €
+        </div>
+      )}
+
       {/* List */}
       <div className="flex flex-col gap-2">
-        {expenses.map(e => (
-          <div key={e.id} className="flex items-center gap-3 px-3 py-2" style={{ background: "#fff", border: `1px solid ${C.line}`, borderRadius: 6 }}>
+        {filteredExpenses.map(e => (
+          <div key={e.id} className="flex items-center gap-3 px-3 py-2" style={{ background: darkMode ? "#161B22" : "#fff", border: `1px solid ${darkMode ? "#30363D" : C.line}`, borderRadius: 6 }}>
             <span style={{ fontSize: 18, flexShrink: 0 }}>{e.category.split(" ")[0]}</span>
             <div className="flex-1 min-w-0">
-              <div style={{ fontWeight: 600, fontSize: 14 }}>{e.description}</div>
-              <div style={{ fontFamily: F.mono, fontSize: 11, color: C.inkSoft }}>
+              <div style={{ fontWeight: 600, fontSize: 14, color: darkMode ? "#E6EDF3" : C.ink }}>{e.description}</div>
+              <div style={{ fontFamily: F.mono, fontSize: 11, color: darkMode ? "#8B949E" : C.inkSoft }}>
                 Pagó {e.paidBy}{e.splitWith.length > 0 ? ` · con ${e.splitWith.join(", ")}` : " · todos"} · {e.date}
               </div>
             </div>
-            <span style={{ fontFamily: F.mono, fontSize: 14, fontWeight: 700, color: C.ink, flexShrink: 0 }}>{e.amount.toFixed(2)} €</span>
-            <button onClick={() => persist(expenses.filter(x => x.id !== e.id))} style={{ color: C.inkSoft, padding: 4 }}><Trash2 size={14} /></button>
+            <span style={{ fontFamily: F.mono, fontSize: 14, fontWeight: 700, color: darkMode ? "#E6EDF3" : C.ink, flexShrink: 0 }}>{e.amount.toFixed(2)} €</span>
+            <button onClick={() => persist(expenses.filter(x => x.id !== e.id))} style={{ color: darkMode ? "#8B949E" : C.inkSoft, padding: 4 }}><Trash2 size={14} /></button>
           </div>
         ))}
+        {filteredExpenses.length === 0 && expenses.length > 0 && <EmptyState icon={<Filter size={28} color={C.line} />} text="Ningún gasto coincide con los filtros." />}
         {expenses.length === 0 && <EmptyState icon={<Wallet size={28} color={C.line} />} text="Sin gastos todavía. Añade el primero." />}
       </div>
     </div>
@@ -3723,7 +3992,10 @@ const TYPE_GRADIENTS: Record<string, string> = {
   aventura:   "linear-gradient(135deg, #D4614A 0%, #8f2b18 100%)",
 };
 
-function DestCard({ dest, budget, onChoose, onOpen }: { dest: DestinationTemplate; budget: number; onChoose: () => void; onOpen: () => void }) {
+function DestCard({ dest, budget, onChoose, onOpen, isFavorite, onToggleFavorite }: {
+  dest: DestinationTemplate; budget: number; onChoose: () => void; onOpen: () => void;
+  isFavorite?: boolean; onToggleFavorite?: () => void;
+}) {
   const withinBudget = budget === 0 || dest.costPerPerson <= budget;
   const missing = budget > 0 ? dest.costPerPerson - budget : 0;
   const typeColor = TYPE_COLORS[dest.type] ?? C.inkSoft;
@@ -3747,6 +4019,12 @@ function DestCard({ dest, budget, onChoose, onOpen }: { dest: DestinationTemplat
               : `↓ faltan ${missing.toFixed(0)} €`}
           </div>
         </div>
+        {onToggleFavorite && (
+          <button onClick={e => { e.stopPropagation(); onToggleFavorite(); }}
+            style={{ position: "absolute", top: 10, left: 12, background: "rgba(0,0,0,0.25)", borderRadius: 999, width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Heart size={14} color="#fff" fill={isFavorite ? "#fff" : "transparent"} />
+          </button>
+        )}
         <div style={{ fontSize: 34, lineHeight: 1 }}>{dest.flag}</div>
         <div style={{ fontFamily: F.display, fontSize: 18, fontWeight: 700, color: "#fff", marginTop: 6, lineHeight: 1.2 }}>{dest.name}</div>
         <div style={{ fontFamily: F.mono, fontSize: 9, color: "rgba(255,255,255,0.75)", marginTop: 3 }}>{dest.country} · {dest.durationDays} días</div>
@@ -3880,6 +4158,43 @@ function DestModal({ dest, budget, onChoose, onClose, alternatives, onOpenAlt }:
             </div>
           </div>
 
+          {/* Tips per destination */}
+          {DEST_TIPS[dest.id] && (() => {
+            const tips = DEST_TIPS[dest.id];
+            return (
+              <div style={{ background: "#F0F7FF", borderRadius: 10, padding: "12px 14px", border: "1px solid #C8DEFF" }}>
+                <div style={{ fontFamily: F.mono, fontSize: 10, color: C.sky, fontWeight: 700, marginBottom: 10, letterSpacing: 1 }}>ℹ️ INFORMACIÓN PRÁCTICA</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+                  {[
+                    { icon: "📋", label: "Visado", val: tips.visa },
+                    { icon: "💵", label: "Moneda", val: tips.currency },
+                    { icon: "🔌", label: "Enchufe", val: tips.plug },
+                    { icon: "💝", label: "Propinas", val: tips.tip },
+                    { icon: "🚨", label: "Emergencias", val: tips.emergency },
+                  ].map(row => (
+                    <div key={row.label} className="flex gap-2 items-start" style={{ fontSize: 12 }}>
+                      <span style={{ flexShrink: 0, width: 20, textAlign: "center" }}>{row.icon}</span>
+                      <span style={{ fontFamily: F.mono, fontSize: 9, color: C.sky, width: 68, flexShrink: 0, paddingTop: 1 }}>{row.label.toUpperCase()}</span>
+                      <span style={{ color: C.ink, lineHeight: 1.5 }}>{row.val}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Currency converter */}
+          {(() => {
+            const cur = CURRENCIES.find(c => c.destIds.some(id => dest.id.includes(id) || id.includes(dest.id)));
+            if (!cur || cur.code === "EUR") return null;
+            return (
+              <div style={{ background: "#FFFBF0", borderRadius: 10, padding: "12px 14px", border: "1px solid #F0D9A0" }}>
+                <div style={{ fontFamily: F.mono, fontSize: 10, color: C.gold, fontWeight: 700, marginBottom: 8, letterSpacing: 1 }}>💱 CONVERSOR RÁPIDO</div>
+                <CurrencyWidget currency={cur} />
+              </div>
+            );
+          })()}
+
           <div style={{ height: 16 }} />
         </div>
 
@@ -3898,6 +4213,30 @@ function DestModal({ dest, budget, onChoose, onClose, alternatives, onOpenAlt }:
   );
 }
 
+function CurrencyWidget({ currency }: { currency: typeof CURRENCIES[0] }) {
+  const [eur, setEur] = useState("100");
+  const eurNum = parseFloat(eur.replace(",", ".")) || 0;
+  const converted = (eurNum * currency.rate).toLocaleString("es-ES", { maximumFractionDigits: 0 });
+  const back = (1 / currency.rate).toFixed(4);
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center gap-2">
+        <div style={{ position: "relative", flex: 1 }}>
+          <input value={eur} onChange={e => setEur(e.target.value)} style={{ ...inputStyle, fontFamily: F.mono, fontSize: 14, paddingRight: 28 }} />
+          <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", fontFamily: F.mono, fontSize: 12, color: C.inkSoft }}>€</span>
+        </div>
+        <RefreshCw size={14} color={C.inkSoft} />
+        <div style={{ flex: 1, background: C.paperDark, borderRadius: 8, padding: "9px 12px", fontFamily: F.mono, fontSize: 14, fontWeight: 700, color: C.ink }}>
+          {converted} <span style={{ fontSize: 10, fontWeight: 400, color: C.inkSoft }}>{currency.symbol}</span>
+        </div>
+      </div>
+      <div style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft }}>
+        1 € = {currency.rate >= 10 ? Math.round(currency.rate) : currency.rate} {currency.code} · 1 {currency.code} = {back} € · {currency.name}
+      </div>
+    </div>
+  );
+}
+
 function Destinos({ code, onSelect }: { code: string; onSelect: () => void }) {
   const [savings, setSavings] = useState<SavingsConfig | null>(null);
   const [loading, setLoading] = useState(true);
@@ -3906,13 +4245,24 @@ function Destinos({ code, onSelect }: { code: string; onSelect: () => void }) {
   const [preview, setPreview] = useState<DestinationTemplate | null>(null);
   const [chosen, setChosen] = useState<DestinationTemplate | null>(null);
   const [confirming, setConfirming] = useState(false);
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     loadShared<SavingsConfig>(`ahorro:${code}`, { targetBudget: 0, phases: [] }).then(c => {
       setSavings(c);
       setLoading(false);
     });
+    loadPersonal<string[]>("destFavorites", []).then(ids => setFavorites(new Set(ids)));
   }, [code]);
+
+  function toggleFavorite(id: string) {
+    setFavorites(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      savePersonal("destFavorites", Array.from(next));
+      return next;
+    });
+  }
 
   const budgetPerPerson = useMemo(() => {
     if (!savings) return 0;
@@ -3935,10 +4285,11 @@ function Destinos({ code, onSelect }: { code: string; onSelect: () => void }) {
   const visibleDests = useMemo(() => {
     const q = search.trim().toLowerCase();
     return DESTINATIONS.filter(d =>
-      (filter === "todos" || d.type === filter) &&
+      (filter === "todos" || d.type === filter || (filter === "favoritos" && favorites.has(d.id))) &&
+      (filter !== "favoritos" || favorites.has(d.id)) &&
       (!q || d.name.toLowerCase().includes(q) || d.country.toLowerCase().includes(q) || d.highlights.some(h => h.toLowerCase().includes(q)))
     );
-  }, [filter, search]);
+  }, [filter, search, favorites]);
 
   const withinBudget = useMemo(() =>
     visibleDests.filter(d => budgetPerPerson === 0 || d.costPerPerson <= budgetPerPerson),
@@ -3978,6 +4329,8 @@ function Destinos({ code, onSelect }: { code: string; onSelect: () => void }) {
         <DestCard key={dest.id} dest={dest} budget={budgetPerPerson}
           onChoose={() => { setChosen(dest); setConfirming(true); setPreview(null); }}
           onOpen={() => setPreview(dest)}
+          isFavorite={favorites.has(dest.id)}
+          onToggleFavorite={() => toggleFavorite(dest.id)}
         />
       ))}
     </div>
@@ -4033,6 +4386,15 @@ function Destinos({ code, onSelect }: { code: string; onSelect: () => void }) {
             {t.emoji} {t.label}
           </button>
         ))}
+        <button onClick={() => setFilter("favoritos")} style={{
+          padding: "7px 14px", borderRadius: 999, fontSize: 12, fontFamily: F.mono,
+          background: filter === "favoritos" ? "#B83C5C" : C.paperDark,
+          color: filter === "favoritos" ? "#fff" : C.inkSoft,
+          border: `1px solid ${filter === "favoritos" ? "#B83C5C" : C.line}`,
+          transition: "all 0.15s", fontWeight: filter === "favoritos" ? 700 : 400,
+        }}>
+          ❤️ Favoritos {favorites.size > 0 && `(${favorites.size})`}
+        </button>
       </div>
 
       {/* Within budget */}
@@ -4063,7 +4425,8 @@ function Destinos({ code, onSelect }: { code: string; onSelect: () => void }) {
 
       {budgetPerPerson === 0 && <DestGrid dests={visibleDests} />}
 
-      {visibleDests.length === 0 && <EmptyState icon={<Globe size={28} color={C.line} />} text="Sin destinos con ese filtro." />}
+      {visibleDests.length === 0 && filter === "favoritos" && <EmptyState icon={<Heart size={28} color={C.line} />} text="Aún no tienes favoritos. Pulsa el corazón en cualquier destino." />}
+      {visibleDests.length === 0 && filter !== "favoritos" && <EmptyState icon={<Globe size={28} color={C.line} />} text="Sin destinos con ese filtro." />}
 
       {preview && (
         <DestModal
@@ -4075,6 +4438,293 @@ function Destinos({ code, onSelect }: { code: string; onSelect: () => void }) {
           onOpenAlt={d => setPreview(d)}
         />
       )}
+    </div>
+  );
+}
+
+// ─── Reservas ─────────────────────────────────────────────────────────────────
+
+const BOOKING_TYPE_ICONS: Record<string, string> = { vuelo: "✈️", hotel: "🏨", actividad: "🎭", traslado: "🚗", otro: "📋" };
+
+function Reservas({ code, session, darkMode }: { code: string; session: Session; darkMode: boolean }) {
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState<Booking | null>(null);
+  const [form, setForm] = useState<Omit<Booking, "id">>({
+    type: "vuelo", title: "", confirmationCode: "", startDate: "", startTime: "",
+    endDate: "", endTime: "", location: "", bookingUrl: "", notes: "", amount: 0,
+  });
+  const [err, setErr] = useState("");
+  const key = `reservas:${code}`;
+
+  useEffect(() => { loadShared<Booking[]>(key, []).then(b => { setBookings(b); setLoading(false); }); }, [key]);
+  const persist = useCallback(async (next: Booking[]) => { setBookings(next); await saveShared(key, next); }, [key]);
+
+  const cardBg = darkMode ? "#161B22" : "#fff";
+  const cardBorder = darkMode ? "#30363D" : C.line;
+  const textColor = darkMode ? "#E6EDF3" : C.ink;
+  const softColor = darkMode ? "#8B949E" : C.inkSoft;
+  const paperBg = darkMode ? "#0D1117" : C.paper;
+
+  function openAdd() {
+    setEditing(null);
+    setForm({ type: "vuelo", title: "", confirmationCode: "", startDate: "", startTime: "", endDate: "", endTime: "", location: "", bookingUrl: "", notes: "", amount: 0 });
+    setShowForm(true); setErr("");
+  }
+
+  function openEdit(b: Booking) {
+    setEditing(b);
+    setForm({ type: b.type, title: b.title, confirmationCode: b.confirmationCode, startDate: b.startDate, startTime: b.startTime, endDate: b.endDate, endTime: b.endTime, location: b.location, bookingUrl: b.bookingUrl, notes: b.notes, amount: b.amount });
+    setShowForm(true); setErr("");
+  }
+
+  function save() {
+    setErr("");
+    if (!form.title.trim()) { setErr("Escribe un título."); return; }
+    if (!form.startDate) { setErr("Fecha de inicio necesaria."); return; }
+    if (editing) {
+      persist(bookings.map(b => b.id === editing.id ? { ...form, id: editing.id } : b));
+    } else {
+      persist([...bookings, { ...form, id: uid() }]);
+    }
+    setShowForm(false);
+  }
+
+  const sorted = [...bookings].sort((a, b) => a.startDate.localeCompare(b.startDate));
+
+  if (loading) return <SkeletonCards />;
+
+  const formInStyle = { ...inputStyle, background: cardBg, color: textColor, border: `1px solid ${cardBorder}` };
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Header */}
+      <div style={{ background: `linear-gradient(135deg, ${C.navy}, ${C.navyMid})`, borderRadius: 14, padding: "20px 20px", color: C.paper, position: "relative", overflow: "hidden" }} className="dot-grid">
+        <div className="glow-pulse" style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: 999, background: `radial-gradient(circle, ${C.teal}30, transparent 70%)`, pointerEvents: "none" }} />
+        <div style={{ fontFamily: F.mono, fontSize: 10, color: C.gold, letterSpacing: 1.5 }}>MIS RESERVAS</div>
+        <div style={{ fontFamily: F.display, fontSize: 28, fontWeight: 700, color: C.paper, marginTop: 4 }}>
+          {bookings.length} {bookings.length === 1 ? "reserva" : "reservas"}
+        </div>
+        <p style={{ fontFamily: F.mono, fontSize: 11, color: "#9FAEC4", marginTop: 4 }}>
+          Vuelos · hoteles · actividades · traslados — todo en un lugar
+        </p>
+      </div>
+
+      <button onClick={openAdd} style={{
+        display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+        background: C.teal, color: "#fff", borderRadius: 10, padding: "12px 16px",
+        fontFamily: F.mono, fontSize: 12, fontWeight: 700,
+      }}>
+        <Plus size={14} /> AÑADIR RESERVA
+      </button>
+
+      {/* Form modal */}
+      {showForm && (
+        <div className="fade-in" style={{ position: "fixed", inset: 0, zIndex: 200, display: "flex", flexDirection: "column", background: "#000a" }} onClick={() => setShowForm(false)}>
+          <div onClick={e => e.stopPropagation()} style={{ marginTop: "auto", background: paperBg, borderRadius: "20px 20px 0 0", maxHeight: "90dvh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+            <div style={{ padding: "18px 20px 0", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+              <div style={{ fontFamily: F.display, fontSize: 18, fontWeight: 700, color: textColor }}>{editing ? "Editar reserva" : "Nueva reserva"}</div>
+              <button onClick={() => setShowForm(false)}><X size={18} color={softColor} /></button>
+            </div>
+            <div className="overflow-y-auto" style={{ flex: 1, padding: "16px 20px 24px", display: "flex", flexDirection: "column", gap: 12 }}>
+              {/* Type selector */}
+              <div className="flex gap-2 flex-wrap">
+                {BOOKING_TYPES.map(t => (
+                  <button key={t.value} onClick={() => setForm(f => ({ ...f, type: t.value }))}
+                    style={{ padding: "6px 12px", borderRadius: 8, fontFamily: F.mono, fontSize: 11, background: form.type === t.value ? C.navy : (darkMode ? "#161B22" : C.paperDark), color: form.type === t.value ? "#fff" : softColor, border: `1px solid ${form.type === t.value ? C.navy : cardBorder}` }}>
+                    {t.emoji} {t.label}
+                  </button>
+                ))}
+              </div>
+
+              <input placeholder="Título (Vuelo MAD → NRT, Hotel Shinjuku…)" value={form.title}
+                onChange={e => setForm(f => ({ ...f, title: e.target.value }))} style={{ ...formInStyle, fontSize: 15 }} />
+
+              <div className="flex gap-2 flex-wrap">
+                <div style={{ flex: "1 1 200px" }}>
+                  <div style={{ fontFamily: F.mono, fontSize: 9, color: softColor, marginBottom: 4 }}>SALIDA / INICIO</div>
+                  <div className="flex gap-2">
+                    <input type="date" value={form.startDate} onChange={e => setForm(f => ({ ...f, startDate: e.target.value }))} style={{ ...formInStyle, flex: 1 }} />
+                    <input type="time" value={form.startTime} onChange={e => setForm(f => ({ ...f, startTime: e.target.value }))} style={{ ...formInStyle, width: 90 }} />
+                  </div>
+                </div>
+                <div style={{ flex: "1 1 200px" }}>
+                  <div style={{ fontFamily: F.mono, fontSize: 9, color: softColor, marginBottom: 4 }}>LLEGADA / FIN</div>
+                  <div className="flex gap-2">
+                    <input type="date" value={form.endDate} onChange={e => setForm(f => ({ ...f, endDate: e.target.value }))} style={{ ...formInStyle, flex: 1 }} />
+                    <input type="time" value={form.endTime} onChange={e => setForm(f => ({ ...f, endTime: e.target.value }))} style={{ ...formInStyle, width: 90 }} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-2 flex-wrap">
+                <input placeholder="Código de confirmación" value={form.confirmationCode}
+                  onChange={e => setForm(f => ({ ...f, confirmationCode: e.target.value }))} style={{ ...formInStyle, flex: "1 1 150px", fontFamily: F.mono }} />
+                <div style={{ position: "relative", flex: "0 1 130px" }}>
+                  <input placeholder="Importe" value={form.amount === 0 ? "" : String(form.amount)}
+                    onChange={e => setForm(f => ({ ...f, amount: parseFloat(e.target.value) || 0 }))} style={{ ...formInStyle, paddingRight: 26, width: "100%" }} />
+                  <Euro size={11} style={{ position: "absolute", right: 9, top: "50%", transform: "translateY(-50%)", color: softColor }} />
+                </div>
+              </div>
+
+              <input placeholder="Lugar / aeropuerto / hotel (opcional)" value={form.location}
+                onChange={e => setForm(f => ({ ...f, location: e.target.value }))} style={formInStyle} />
+              <input placeholder="Enlace de reserva (opcional)" value={form.bookingUrl}
+                onChange={e => setForm(f => ({ ...f, bookingUrl: e.target.value }))} style={formInStyle} />
+              <textarea placeholder="Notas adicionales…" value={form.notes}
+                onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
+                style={{ ...formInStyle, minHeight: 70, resize: "vertical" }} />
+
+              {err && <Banner type="error" msg={err} />}
+              <button onClick={save} style={{ background: C.teal, color: "#fff", borderRadius: 8, padding: "12px 16px", fontFamily: F.mono, fontSize: 12, fontWeight: 700 }}>
+                {editing ? "GUARDAR CAMBIOS" : "AÑADIR RESERVA"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Booking cards */}
+      <div className="flex flex-col gap-3">
+        {sorted.map(b => (
+          <div key={b.id} style={{ background: cardBg, border: `1px solid ${cardBorder}`, borderRadius: 12, overflow: "hidden" }}>
+            <div style={{ background: `linear-gradient(135deg, ${C.navyMid}, ${C.navy})`, padding: "12px 16px", display: "flex", alignItems: "center", gap: 10 }}>
+              <span style={{ fontSize: 22 }}>{BOOKING_TYPE_ICONS[b.type]}</span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontFamily: F.display, fontSize: 16, fontWeight: 700, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{b.title}</div>
+                <div style={{ fontFamily: F.mono, fontSize: 10, color: "#8A9BC1" }}>
+                  {b.startDate}{b.startTime ? ` ${b.startTime}` : ""}{(b.endDate && b.endDate !== b.startDate) ? ` → ${b.endDate}${b.endTime ? ` ${b.endTime}` : ""}` : ""}
+                </div>
+              </div>
+              {b.amount > 0 && <div style={{ fontFamily: F.display, fontSize: 15, fontWeight: 700, color: C.goldLight, flexShrink: 0 }}>{b.amount.toFixed(0)} €</div>}
+            </div>
+            <div style={{ padding: "10px 16px" }} className="flex flex-col gap-1.5">
+              {b.confirmationCode && (
+                <div className="flex items-center gap-2">
+                  <span style={{ fontFamily: F.mono, fontSize: 9, color: softColor, width: 90 }}>CONFIRMA</span>
+                  <span style={{ fontFamily: F.mono, fontSize: 12, fontWeight: 700, color: C.teal, letterSpacing: 1 }}>{b.confirmationCode}</span>
+                  <button onClick={() => navigator.clipboard?.writeText(b.confirmationCode)} style={{ color: softColor, padding: 2 }}><Copy size={11} /></button>
+                </div>
+              )}
+              {b.location && (
+                <div className="flex items-center gap-2">
+                  <span style={{ fontFamily: F.mono, fontSize: 9, color: softColor, width: 90 }}>LUGAR</span>
+                  <span style={{ fontSize: 13, color: textColor }}>{b.location}</span>
+                </div>
+              )}
+              {b.bookingUrl && (
+                <a href={b.bookingUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1"
+                  style={{ fontFamily: F.mono, fontSize: 10, color: C.sky, marginTop: 2 }}>
+                  <ExternalLink size={10} /> VER RESERVA
+                </a>
+              )}
+              {b.notes && <p style={{ fontSize: 12, color: softColor, lineHeight: 1.5, marginTop: 2 }}>{b.notes}</p>}
+              <div className="flex gap-2 mt-2">
+                <button onClick={() => openEdit(b)} style={{ fontFamily: F.mono, fontSize: 10, color: softColor, border: `1px solid ${cardBorder}`, borderRadius: 5, padding: "4px 10px", display: "flex", alignItems: "center", gap: 4 }}>
+                  <Edit2 size={10} /> EDITAR
+                </button>
+                <button onClick={() => persist(bookings.filter(x => x.id !== b.id))} style={{ fontFamily: F.mono, fontSize: 10, color: C.red, border: `1px solid ${C.red}33`, borderRadius: 5, padding: "4px 10px", display: "flex", alignItems: "center", gap: 4 }}>
+                  <Trash2 size={10} /> ELIMINAR
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+        {bookings.length === 0 && <EmptyState icon={<Ticket size={28} color={C.line} />} text="Sin reservas todavía. Añade vuelos, hoteles y actividades." />}
+      </div>
+    </div>
+  );
+}
+
+// ─── Diario ───────────────────────────────────────────────────────────────────
+
+function Diario({ code, session, darkMode }: { code: string; session: Session; darkMode: boolean }) {
+  const [entries, setEntries] = useState<DiaryEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [text, setText] = useState("");
+  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [mood, setMood] = useState(DIARY_MOODS[0]);
+  const [editId, setEditId] = useState<string | null>(null);
+  const key = `diario:${code}`;
+
+  useEffect(() => { loadShared<DiaryEntry[]>(key, []).then(e => { setEntries(e); setLoading(false); }); }, [key]);
+  const persist = useCallback(async (next: DiaryEntry[]) => { setEntries(next); await saveShared(key, next); }, [key]);
+
+  const cardBg = darkMode ? "#161B22" : "#fff";
+  const cardBorder = darkMode ? "#30363D" : C.line;
+  const textColor = darkMode ? "#E6EDF3" : C.ink;
+  const softColor = darkMode ? "#8B949E" : C.inkSoft;
+
+  function save() {
+    if (!text.trim()) return;
+    if (editId) {
+      persist(entries.map(e => e.id === editId ? { ...e, text: text.trim(), date, mood } : e));
+      setEditId(null);
+    } else {
+      persist([{ id: uid(), date, text: text.trim(), author: session.name, mood, addedAt: Date.now() }, ...entries]);
+    }
+    setText(""); setMood(DIARY_MOODS[0]);
+  }
+
+  function startEdit(e: DiaryEntry) {
+    setText(e.text); setDate(e.date); setMood(e.mood); setEditId(e.id);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  const sorted = [...entries].sort((a, b) => b.date.localeCompare(a.date) || b.addedAt - a.addedAt);
+
+  if (loading) return <SkeletonCards />;
+
+  return (
+    <div className="flex flex-col gap-4">
+      <Card>
+        <SectionLabel>{editId ? "Editando entrada" : "Nueva entrada"}</SectionLabel>
+        <div className="flex flex-col gap-3 mt-3">
+          <div className="flex gap-2 items-center flex-wrap">
+            <input type="date" value={date} onChange={e => setDate(e.target.value)} style={{ ...inputStyle, flex: "0 0 auto", background: darkMode ? "#0D1117" : "#fff", color: textColor, border: `1px solid ${cardBorder}` }} />
+            <div className="flex gap-1 flex-wrap">
+              {DIARY_MOODS.map(m => (
+                <button key={m} onClick={() => setMood(m)} style={{ fontSize: 20, opacity: mood === m ? 1 : 0.4, transition: "opacity 0.15s", transform: mood === m ? "scale(1.2)" : "scale(1)" }}>
+                  {m}
+                </button>
+              ))}
+            </div>
+          </div>
+          <textarea value={text} onChange={e => setText(e.target.value)} placeholder="¿Cómo fue el día? ¿Qué viste, comiste, sentiste?…"
+            style={{ ...inputStyle, minHeight: 120, resize: "vertical", lineHeight: 1.6, background: darkMode ? "#0D1117" : "#fff", color: textColor, border: `1px solid ${cardBorder}` }} />
+          <div className="flex gap-2">
+            <button onClick={save} style={{ flex: 1, background: C.navy, color: C.paper, borderRadius: 8, padding: "11px 16px", fontFamily: F.mono, fontSize: 12, fontWeight: 700 }}>
+              {editId ? "GUARDAR CAMBIOS" : "GUARDAR ENTRADA"}
+            </button>
+            {editId && (
+              <button onClick={() => { setEditId(null); setText(""); setMood(DIARY_MOODS[0]); }}
+                style={{ background: darkMode ? "#161B22" : C.paperDark, color: softColor, borderRadius: 8, padding: "11px 16px", fontFamily: F.mono, fontSize: 12 }}>
+                CANCELAR
+              </button>
+            )}
+          </div>
+        </div>
+      </Card>
+
+      {/* Entries */}
+      <div className="flex flex-col gap-3">
+        {sorted.map(e => (
+          <div key={e.id} style={{ background: cardBg, border: `1px solid ${cardBorder}`, borderRadius: 12, overflow: "hidden" }}>
+            <div style={{ background: `linear-gradient(135deg, ${C.navy}22, ${C.navyMid}22)`, padding: "10px 16px", display: "flex", alignItems: "center", gap: 8, borderBottom: `1px solid ${cardBorder}` }}>
+              <span style={{ fontSize: 22 }}>{e.mood}</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontFamily: F.mono, fontSize: 12, fontWeight: 600, color: textColor }}>{formatDateFull(e.date)}</div>
+                <div style={{ fontFamily: F.mono, fontSize: 10, color: softColor }}>{e.author}</div>
+              </div>
+              <button onClick={() => startEdit(e)} style={{ color: softColor, padding: 4 }}><Edit2 size={13} /></button>
+              <button onClick={() => persist(entries.filter(x => x.id !== e.id))} style={{ color: softColor, padding: 4 }}><Trash2 size={13} /></button>
+            </div>
+            <div style={{ padding: "12px 16px", fontSize: 14, color: textColor, lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{e.text}</div>
+          </div>
+        ))}
+        {entries.length === 0 && <EmptyState icon={<BookOpen size={28} color={C.line} />} text="Tu diario de viaje está vacío. Escribe la primera entrada." />}
+      </div>
     </div>
   );
 }

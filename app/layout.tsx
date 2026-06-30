@@ -25,12 +25,15 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Bitácora de Viaje",
   description: "Itinerarios, fotos y cuentas atrás compartidas con tu gente.",
+  manifest: "/manifest.json",
   icons: { icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>" },
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Bitácora" },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: "#16223A",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -39,7 +42,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="es"
       className={`${fraunces.variable} ${ibmPlexMono.variable} ${inter.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        {children}
+        <script dangerouslySetInnerHTML={{ __html: `
+          if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+              navigator.serviceWorker.register('/sw.js').catch(() => {});
+            });
+          }
+        `}} />
+      </body>
     </html>
   );
 }
