@@ -2396,6 +2396,20 @@ async function loadShared<T>(key: string, fallback: T): Promise<T> {
         try { localStorage.setItem(key, JSON.stringify(data)); } catch { /* ignore */ }
         return data as T;
       }
+      // KV is reachable but key doesn't exist yet — migrate from localStorage
+      try {
+        const local = localStorage.getItem(key);
+        if (local) {
+          const parsed = JSON.parse(local) as T;
+          // Seed KV with local data (fire-and-forget)
+          fetch("/api/store", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ key, value: parsed }),
+          }).catch(() => {});
+          return parsed;
+        }
+      } catch { /* ignore */ }
     }
   } catch { /* network issue — fall through */ }
   // localStorage fallback
