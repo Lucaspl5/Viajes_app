@@ -38,7 +38,7 @@ interface SavingsPhase {
   id: string; name: string; startDate: string; endDate: string; amountPerPerson: number;
 }
 interface SavingsConfig {
-  targetBudget: number; phases: SavingsPhase[];
+  targetBudget: number; phases: SavingsPhase[]; numPersonas?: number;
 }
 
 // ─── Design tokens ───────────────────────────────────────────────────────────
@@ -1263,24 +1263,36 @@ function formatMonth(dateStr: string) {
   return new Date(dateStr + "-01T12:00:00").toLocaleDateString("es-ES", { month: "long", year: "numeric" });
 }
 
+function monthsBetween(start: string, end: string): number {
+  if (!start || !end) return 1;
+  const [sy, sm] = start.split("-").map(Number);
+  const [ey, em] = end.split("-").map(Number);
+  return Math.max(1, (ey - sy) * 12 + (em - sm) + 1);
+}
+
 function Ahorro({ code, members }: { code: string; members: string[] }) {
-  const n = Math.max(members.length, 1);
   const [config, setConfig] = useState<SavingsConfig>({ targetBudget: 0, phases: [] });
   const [loading, setLoading] = useState(true);
   const [editTarget, setEditTarget] = useState(false);
   const [targetInput, setTargetInput] = useState("");
+  const [editN, setEditN] = useState(false);
+  const [nInput, setNInput] = useState("");
   const [phaseForm, setPhaseForm] = useState({ name: "", startDate: "", endDate: "", amountPerPerson: "" });
   const [phaseErr, setPhaseErr] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const key = `ahorro:${code}`;
 
+  const defaultN = Math.max(members.length, 1);
+  const n = config.numPersonas != null ? config.numPersonas : defaultN;
+
   useEffect(() => {
     loadShared<SavingsConfig>(key, { targetBudget: 0, phases: [] }).then(c => {
       setConfig(c);
       setTargetInput(c.targetBudget > 0 ? c.targetBudget.toString() : "");
+      setNInput((c.numPersonas ?? Math.max(members.length, 1)).toString());
       setLoading(false);
     });
-  }, [key]);
+  }, [key, members.length]);
 
   const persist = useCallback(async (next: SavingsConfig) => {
     setConfig(next);
@@ -1291,6 +1303,14 @@ function Ahorro({ code, members }: { code: string; members: string[] }) {
     const v = parseFloat(targetInput.replace(",", "."));
     persist({ ...config, targetBudget: isNaN(v) || v < 0 ? 0 : v });
     setEditTarget(false);
+  }
+
+  function saveN() {
+    const v = parseInt(nInput);
+    const num = isNaN(v) || v < 1 ? defaultN : v;
+    persist({ ...config, numPersonas: num });
+    setNInput(num.toString());
+    setEditN(false);
   }
 
   function addPhase() {
@@ -1322,19 +1342,21 @@ function Ahorro({ code, members }: { code: string; members: string[] }) {
     if (editingId === id) cancelEdit();
   }
 
-  const totalPerPerson = useMemo(() => config.phases.reduce((s, p) => s + p.amountPerPerson, 0), [config.phases]);
-  const totalGroup     = totalPerPerson * n;
-  const target         = config.targetBudget;
-  const covered        = target > 0 ? Math.min((totalGroup / target) * 100, 100) : 0;
-
-  // Cumulative per phase for the timeline
+  // Cumulative per phase — each phase total = monthly amount × months × people
   const phasesWithCumulative = useMemo(() => {
     let cum = 0;
     return config.phases.map(p => {
-      cum += p.amountPerPerson * n;
-      return { ...p, totalPhase: p.amountPerPerson * n, cumulative: cum };
+      const months = monthsBetween(p.startDate, p.endDate);
+      const phaseTotal = p.amountPerPerson * months * n;
+      cum += phaseTotal;
+      return { ...p, months, totalPhase: phaseTotal, perPersonTotal: p.amountPerPerson * months, cumulative: cum };
     });
   }, [config.phases, n]);
+
+  const totalPerPerson = useMemo(() => phasesWithCumulative.reduce((s, p) => s + p.perPersonTotal, 0), [phasesWithCumulative]);
+  const totalGroup     = phasesWithCumulative.reduce((s, p) => s + p.totalPhase, 0);
+  const target         = config.targetBudget;
+  const covered        = target > 0 ? Math.min((totalGroup / target) * 100, 100) : 0;
 
   if (loading) return <SkeletonCards />;
 
@@ -1349,8 +1371,26 @@ function Ahorro({ code, members }: { code: string; members: string[] }) {
             <div style={{ fontFamily: F.display, fontSize: "clamp(2rem,8vw,3rem)", fontWeight: 700, color: C.goldLight, lineHeight: 1, marginTop: 4 }}>
               {totalGroup.toFixed(2)} €
             </div>
-            <div style={{ fontFamily: F.mono, fontSize: 11, color: "#9FAEC4", marginTop: 4 }}>
-              {n} {n === 1 ? "persona" : "personas"} · {totalPerPerson.toFixed(2)} € por persona
+            <div className="flex items-center gap-2 mt-2">
+              {editN ? (
+                <div className="flex items-center gap-1">
+                  <input
+                    value={nInput}
+                    onChange={e => setNInput(e.target.value.replace(/\D/g, ""))}
+                    onKeyDown={e => { if (e.key === "Enter") saveN(); if (e.key === "Escape") setEditN(false); }}
+                    style={{ ...inputStyle, width: 52, fontFamily: F.mono, fontSize: 13, textAlign: "center", padding: "4px 6px" }}
+                    autoFocus
+                  />
+                  <button onClick={saveN} style={{ color: C.goldLight }}><Check size={14} /></button>
+                  <button onClick={() => setEditN(false)} style={{ color: "#7C8AA3" }}><X size={13} /></button>
+                </div>
+              ) : (
+                <button onClick={() => { setNInput(n.toString()); setEditN(true); }} className="flex items-center gap-1"
+                  style={{ fontFamily: F.mono, fontSize: 11, color: "#9FAEC4" }}>
+                  {n} {n === 1 ? "persona" : "personas"} <Edit2 size={11} color="#5C6D85" />
+                </button>
+              )}
+              <span style={{ fontFamily: F.mono, fontSize: 11, color: "#9FAEC4" }}>· {totalPerPerson.toFixed(2)} € por persona</span>
             </div>
           </div>
           <div className="flex flex-col items-end gap-1">
@@ -1407,7 +1447,7 @@ function Ahorro({ code, members }: { code: string; members: string[] }) {
       <Card>
         <SectionLabel>{editingId ? "Editar fase" : "Añadir fase de ahorro"}</SectionLabel>
         <p style={{ color: C.inkSoft, fontSize: 12, marginTop: 4, lineHeight: 1.5 }}>
-          Define un período (ej. &ldquo;Agosto → Octubre&rdquo;) y cuánto pone cada persona en la cuenta conjunta durante esa fase.
+          Define un período (ej. &ldquo;Agosto → Octubre&rdquo;) y cuánto aporta cada persona al mes. La app multiplica por los meses y por el número de personas.
         </p>
         <div className="flex flex-col gap-3 mt-3">
           <div className="flex flex-wrap gap-2">
@@ -1415,7 +1455,7 @@ function Ahorro({ code, members }: { code: string; members: string[] }) {
               onChange={e => setPhaseForm(f => ({ ...f, name: e.target.value }))}
               style={{ ...inputStyle, flex: "2 1 180px" }} />
             <div style={{ position: "relative", flex: "0 1 130px", minWidth: 110 }}>
-              <input placeholder="Por persona" value={phaseForm.amountPerPerson}
+              <input placeholder="€/mes por persona" value={phaseForm.amountPerPerson}
                 onChange={e => setPhaseForm(f => ({ ...f, amountPerPerson: e.target.value }))}
                 onKeyDown={e => e.key === "Enter" && addPhase()}
                 style={{ ...inputStyle, fontFamily: F.mono, paddingRight: 22 }} />
@@ -1433,14 +1473,18 @@ function Ahorro({ code, members }: { code: string; members: string[] }) {
           {phaseErr && <Banner type="error" msg={phaseErr} />}
 
           {/* Preview */}
-          {phaseForm.amountPerPerson && !isNaN(parseFloat(phaseForm.amountPerPerson)) && (
-            <div style={{ background: C.paperDark, borderRadius: 6, padding: "10px 14px", fontFamily: F.mono, fontSize: 12, color: C.inkSoft }}>
-              {n} {n === 1 ? "persona" : "personas"} × {parseFloat(phaseForm.amountPerPerson.replace(",", ".")).toFixed(2)} € ={" "}
-              <strong style={{ color: C.ink, fontSize: 14 }}>
-                {(parseFloat(phaseForm.amountPerPerson.replace(",", ".")) * n).toFixed(2)} €
-              </strong>{" "}en esta fase
-            </div>
-          )}
+          {phaseForm.amountPerPerson && !isNaN(parseFloat(phaseForm.amountPerPerson)) && (() => {
+            const amt = parseFloat(phaseForm.amountPerPerson.replace(",", "."));
+            const months = phaseForm.startDate && phaseForm.endDate ? monthsBetween(phaseForm.startDate, phaseForm.endDate) : null;
+            return (
+              <div style={{ background: C.paperDark, borderRadius: 6, padding: "10px 14px", fontFamily: F.mono, fontSize: 12, color: C.inkSoft }}>
+                {amt.toFixed(2)} €/mes × {months ?? "?"} {months ? (months === 1 ? "mes" : "meses") : "meses"} × {n} {n === 1 ? "persona" : "personas"} ={" "}
+                <strong style={{ color: C.ink, fontSize: 14 }}>
+                  {months ? (amt * months * n).toFixed(2) : "…"} €
+                </strong>{" "}en esta fase
+              </div>
+            );
+          })()}
 
           <div className="flex gap-2">
             <button onClick={addPhase} style={{ flex: 1, background: C.navy, color: C.paper, borderRadius: 5, padding: "11px 16px", fontFamily: F.mono, fontSize: 12 }}>
@@ -1492,12 +1536,14 @@ function Ahorro({ code, members }: { code: string; members: string[] }) {
                     {/* Per person / total */}
                     <div className="flex flex-wrap gap-3 mt-3">
                       <div style={{ flex: "1 1 100px", background: C.paperDark, borderRadius: 6, padding: "8px 10px" }}>
-                        <div style={{ fontFamily: F.mono, fontSize: 9, color: C.inkSoft, letterSpacing: 0.5 }}>POR PERSONA</div>
+                        <div style={{ fontFamily: F.mono, fontSize: 9, color: C.inkSoft, letterSpacing: 0.5 }}>€/MES · POR PERSONA</div>
                         <div style={{ fontFamily: F.display, fontSize: 20, fontWeight: 700, color: C.ink, marginTop: 2 }}>{phase.amountPerPerson.toFixed(2)} €</div>
+                        <div style={{ fontFamily: F.mono, fontSize: 9, color: C.inkSoft, marginTop: 2 }}>× {phase.months} {phase.months === 1 ? "mes" : "meses"}</div>
                       </div>
                       <div style={{ flex: "1 1 100px", background: C.navy, borderRadius: 6, padding: "8px 10px" }}>
                         <div style={{ fontFamily: F.mono, fontSize: 9, color: C.gold, letterSpacing: 0.5 }}>TOTAL FASE</div>
                         <div style={{ fontFamily: F.display, fontSize: 20, fontWeight: 700, color: C.goldLight, marginTop: 2 }}>{phase.totalPhase.toFixed(2)} €</div>
+                        <div style={{ fontFamily: F.mono, fontSize: 9, color: "#7C8AA3", marginTop: 2 }}>{n} {n === 1 ? "persona" : "personas"}</div>
                       </div>
                       <div style={{ flex: "1 1 100px", background: C.teal, borderRadius: 6, padding: "8px 10px" }}>
                         <div style={{ fontFamily: F.mono, fontSize: 9, color: "rgba(255,255,255,0.7)", letterSpacing: 0.5 }}>ACUMULADO</div>
