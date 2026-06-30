@@ -16,8 +16,8 @@ input, textarea, select { outline: none; }
 /* Scrollbar */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #C9BD9F; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #B0A47E; }
+::-webkit-scrollbar-thumb { background: #B8B0A6; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #9A9188; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -33,23 +33,23 @@ input, textarea, select { outline: none; }
 }
 @keyframes floatPlane {
   0%, 100% { transform: translateY(0) rotate(-6deg); }
-  50%       { transform: translateY(-14px) rotate(-4deg); }
+  50%       { transform: translateY(-16px) rotate(-3.5deg); }
 }
 
 .glow-pulse {
-  animation: glowPulse 3s ease-in-out infinite;
+  animation: glowPulse 3.5s ease-in-out infinite;
 }
 @keyframes glowPulse {
-  0%, 100% { opacity: 0.4; }
-  50%       { opacity: 0.75; }
+  0%, 100% { opacity: 0.42; }
+  50%       { opacity: 0.9; }
 }
 
 /* Skeleton */
 .skeleton {
-  background: linear-gradient(90deg, #EAE1CB 25%, #F4EFE2 50%, #EAE1CB 75%);
+  background: linear-gradient(90deg, #E8E3DA 25%, #F2EDE4 50%, #E8E3DA 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 @keyframes shimmer {
   0%   { background-position: 200% 0; }
@@ -58,46 +58,72 @@ input, textarea, select { outline: none; }
 
 /* Hero dot grid */
 .dot-grid {
-  background-image: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 
-/* Card hover lift */
+/* Card hover lift — spring-style overshoot */
 .card-lift {
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease;
 }
 .card-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.09);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.11), 0 2px 8px rgba(0,0,0,0.05);
 }
 
 /* Tab indicator slide */
-.tab-indicator {
-  transition: all 0.2s ease;
-}
+.tab-indicator { transition: all 0.2s ease; }
 
 /* Progress bar smooth */
-.progress-bar {
-  transition: width 0.5s cubic-bezier(.4,0,.2,1);
-}
+.progress-bar { transition: width 0.5s cubic-bezier(.4,0,.2,1); }
 
 /* Vote button */
-.vote-btn {
-  transition: all 0.15s ease;
-}
-.vote-btn:active {
-  transform: scale(0.92);
-}
+.vote-btn { transition: all 0.15s ease; }
+.vote-btn:active { transform: scale(0.91); }
 
-/* Badge bounce */
+/* Badge bounce — more dramatic spring */
 .badge-bounce {
-  animation: badgePop 0.3s cubic-bezier(.4,0,.2,1);
+  animation: badgePop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 @keyframes badgePop {
-  0%   { transform: scale(0.7); }
-  60%  { transform: scale(1.1); }
-  100% { transform: scale(1); }
+  0%   { transform: scale(0.6); opacity: 0; }
+  100% { transform: scale(1);   opacity: 1; }
 }
+
+/* Button press */
+.btn-press { transition: transform 0.12s ease; }
+.btn-press:active { transform: scale(0.95); }
+
+/* Glass morphism utility */
+.glass {
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.13);
+}
+
+/* Gradient text — gold to teal */
+.gradient-text {
+  background: linear-gradient(120deg, #FCD34D 0%, #F59E0B 45%, #00C48C 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Animated underline on hover */
+.hover-underline {
+  position: relative;
+}
+.hover-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0;
+  width: 0; height: 2px;
+  background: currentColor;
+  transition: width 0.25s ease;
+  border-radius: 1px;
+}
+.hover-underline:hover::after { width: 100%; }
 
 /* Print / PDF export */
 @media print {

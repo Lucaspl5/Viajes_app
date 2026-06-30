@@ -10,6 +10,7 @@ import {
   Heart, BookOpen, CreditCard, Moon, Sun, Printer,
   Filter, BookMarked, Ticket, StickyNote, RefreshCw,
 } from "lucide-react";
+import { animate, stagger, spring } from "animejs";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -68,13 +69,23 @@ interface DestinationTemplate {
 // ─── Design tokens ───────────────────────────────────────────────────────────
 
 const C = {
-  paper: "#F4EFE2", paperDark: "#EAE1CB",
-  ink: "#1E2A3A", inkSoft: "#5B6472",
-  navy: "#16223A", navyMid: "#1E2F4A",
-  red: "#BD4332", teal: "#3F7A78",
-  gold: "#B8893F", goldLight: "#F0C96A",
-  line: "#C9BD9F", green: "#2A7A4B",
-  coral: "#D4614A", sky: "#4A90B8",
+  // Backgrounds
+  paper: "#F5F4F1", paperDark: "#ECEAE4",
+  // Text
+  ink: "#0E1726", inkSoft: "#64748B",
+  // Brand blues — deeper, richer midnight
+  navy: "#0B1930", navyMid: "#142644",
+  // Accents — vivid & saturated
+  teal: "#00C48C",       // electric emerald-teal
+  gold: "#F59E0B",       // vivid amber
+  goldLight: "#FCD34D",  // bright yellow-gold
+  red: "#F43F5E",        // vivid rose-red
+  coral: "#FB7185",      // soft coral
+  sky: "#38BDF8",        // sky blue
+  green: "#10B981",      // emerald
+  purple: "#8B5CF6",     // violet accent
+  // Borders
+  line: "#E2DDD6",
 } as const;
 
 const F = {
@@ -82,6 +93,56 @@ const F = {
   mono: "var(--font-mono), 'Courier New', monospace",
   body: "var(--font-body), system-ui, sans-serif",
 } as const;
+
+// ─── Animation utilities ──────────────────────────────────────────────────────
+
+function useAnimeIn(ref: React.RefObject<HTMLElement | null>, deps: unknown[] = []) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.opacity = "0";
+    el.style.transform = "translateY(18px)";
+    animate(el, {
+      opacity: [0, 1],
+      translateY: [18, 0],
+      duration: 520,
+      ease: "out(3)",
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+}
+
+function useAnimeStagger(ref: React.RefObject<HTMLElement | null>, deps: unknown[] = []) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const children = Array.from(el.children) as HTMLElement[];
+    if (!children.length) return;
+    children.forEach(c => { c.style.opacity = "0"; c.style.transform = "translateY(20px)"; });
+    animate(children, {
+      opacity: [0, 1],
+      translateY: [20, 0],
+      delay: stagger(65),
+      duration: 460,
+      ease: "out(3)",
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+}
+
+function AnimatedIn({ children, className, style, delay = 0 }: {
+  children: React.ReactNode; className?: string; style?: React.CSSProperties; delay?: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.opacity = "0";
+    el.style.transform = "translateY(16px)";
+    animate(el, { opacity: [0, 1], translateY: [16, 0], duration: 480, delay, ease: "out(3)" });
+  }, [delay]);
+  return <div ref={ref} className={className} style={style}>{children}</div>;
+}
 
 const EXPENSE_CATEGORIES = ["✈️ Transporte", "🏨 Alojamiento", "🍽️ Comida", "🎭 Actividades", "🛍️ Compras", "💊 Salud", "📦 Otros"];
 const BOOKING_TYPES: { value: Booking["type"]; label: string; emoji: string }[] = [
@@ -2377,9 +2438,12 @@ function Perf() {
   );
 }
 
-function Card({ children, className, style }: { children: React.ReactNode; className?: string; style?: React.CSSProperties }) {
+function Card({ children, className, style, hover = true }: { children: React.ReactNode; className?: string; style?: React.CSSProperties; hover?: boolean }) {
   return (
-    <div className={className} style={{ background: "#fff", border: `1px solid ${C.line}`, borderRadius: 8, padding: 18, ...style }}>
+    <div
+      className={`${hover ? "card-lift" : ""} ${className ?? ""}`}
+      style={{ background: "#fff", border: `1px solid ${C.line}`, borderRadius: 12, padding: 18, boxShadow: "0 1px 4px rgba(0,0,0,0.05)", ...style }}
+    >
       {children}
     </div>
   );
@@ -2484,37 +2548,59 @@ function EntryScreen({ onEnter, externalError, prefillCode }: { onEnter: (code: 
 
   const isJoin = mode === "join";
 
+  // Landing entrance animation
+  const heroRef = useRef<HTMLDivElement>(null);
+  const formCardRef = useRef<HTMLDivElement>(null);
+  const pillsRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const tl = [
+      { el: heroRef.current, opts: { opacity: [0, 1], translateY: [30, 0], duration: 700, ease: "out(3)" } },
+      { el: formCardRef.current, opts: { opacity: [0, 1], translateY: [40, 0], scale: [0.96, 1], duration: 600, delay: 160, ease: "out(3)" } },
+    ];
+    tl.forEach(({ el, opts }) => {
+      if (!el) return;
+      el.style.opacity = "0";
+      animate(el, opts as Parameters<typeof animate>[1]);
+    });
+    if (pillsRef.current) {
+      const pills = Array.from(pillsRef.current.children) as HTMLElement[];
+      pills.forEach(p => { p.style.opacity = "0"; p.style.transform = "scale(0.85)"; });
+      animate(pills, { opacity: [0, 1], scale: [0.85, 1], delay: stagger(40, { start: 320 }), duration: 380, ease: "out(2)" });
+    }
+  }, []);
+
   return (
     <div style={{ minHeight: "100dvh", fontFamily: F.body, color: C.ink, display: "flex", flexDirection: "column" }}>
       {/* Hero top panel */}
       <div
         className="dot-grid relative overflow-hidden"
-        style={{ background: `linear-gradient(135deg, ${C.navy} 0%, #0F1A2E 60%, #162038 100%)`, flex: "0 0 auto" }}
+        style={{ background: `linear-gradient(135deg, ${C.navy} 0%, #0A1626 55%, #142644 100%)`, flex: "0 0 auto" }}
       >
         {/* Glow orbs */}
-        <div className="glow-pulse" style={{ position: "absolute", top: -60, right: -60, width: 260, height: 260, borderRadius: 999, background: `radial-gradient(circle, ${C.gold}22, transparent 70%)`, pointerEvents: "none" }} />
-        <div className="glow-pulse" style={{ position: "absolute", bottom: -40, left: 40, width: 180, height: 180, borderRadius: 999, background: `radial-gradient(circle, ${C.teal}33, transparent 70%)`, pointerEvents: "none", animationDelay: "1.5s" }} />
+        <div className="glow-pulse" style={{ position: "absolute", top: -60, right: -60, width: 300, height: 300, borderRadius: 999, background: `radial-gradient(circle, ${C.gold}28, transparent 70%)`, pointerEvents: "none" }} />
+        <div className="glow-pulse" style={{ position: "absolute", bottom: -40, left: 40, width: 200, height: 200, borderRadius: 999, background: `radial-gradient(circle, ${C.teal}35, transparent 70%)`, pointerEvents: "none", animationDelay: "1.5s" }} />
+        <div className="glow-pulse" style={{ position: "absolute", top: "40%", left: "35%", width: 150, height: 150, borderRadius: 999, background: `radial-gradient(circle, ${C.purple}20, transparent 70%)`, pointerEvents: "none", animationDelay: "3s" }} />
 
         <div className="max-w-5xl mx-auto px-6 py-12 relative">
           <div className="flex flex-col md:flex-row items-center gap-10">
             {/* Left: Branding */}
-            <div className="flex-1 text-center md:text-left">
+            <div ref={heroRef} className="flex-1 text-center md:text-left">
               <div className="float inline-block mb-6">
                 <Plane size={52} color={C.gold} strokeWidth={1.2} />
               </div>
-              <h1 style={{ fontFamily: F.display, fontSize: "clamp(2.2rem, 5vw, 3.6rem)", fontWeight: 700, color: "#fff", lineHeight: 1.1, letterSpacing: -1 }}>
+              <h1 style={{ fontFamily: F.display, fontSize: "clamp(2.4rem, 5vw, 3.8rem)", fontWeight: 700, color: "#fff", lineHeight: 1.05, letterSpacing: -1 }}>
                 Bitácora<br />de Viaje
               </h1>
-              <p style={{ color: "#B9C3D6", fontSize: 16, marginTop: 12, maxWidth: 340, lineHeight: 1.6 }}>
+              <p style={{ color: "#AAB8D0", fontSize: 16, marginTop: 14, maxWidth: 340, lineHeight: 1.65 }}>
                 Planifica, comparte y revive tus aventuras junto a tu gente — sin apps, sin contraseñas.
               </p>
               {/* Feature pills */}
-              <div className="flex flex-wrap gap-2 mt-6 justify-center md:justify-start">
+              <div ref={pillsRef} className="flex flex-wrap gap-2 mt-6 justify-center md:justify-start">
                 {[
                   ["🌍", "Destinos"], ["✈️", "Itinerario"], ["🗺️", "Mapa"],
                   ["🧳", "Equipaje"], ["💶", "Gastos"], ["💡", "Ideas"], ["📸", "Fotos"],
                 ].map(([icon, label]) => (
-                  <span key={label} style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", color: "#B9C3D6", fontSize: 12, fontFamily: F.mono, borderRadius: 999, padding: "4px 10px" }}>
+                  <span key={label} style={{ background: "rgba(255,255,255,0.09)", border: "1px solid rgba(255,255,255,0.14)", color: "#C3D0E8", fontSize: 12, fontFamily: F.mono, borderRadius: 999, padding: "5px 11px" }}>
                     {icon} {label}
                   </span>
                 ))}
@@ -2522,7 +2608,7 @@ function EntryScreen({ onEnter, externalError, prefillCode }: { onEnter: (code: 
             </div>
 
             {/* Right: Form card */}
-            <div style={{ width: "100%", maxWidth: 400, background: "#fff", borderRadius: 12, overflow: "hidden", boxShadow: "0 24px 60px rgba(0,0,0,0.35)" }}>
+            <div ref={formCardRef} style={{ width: "100%", maxWidth: 400, background: "#fff", borderRadius: 16, overflow: "hidden", boxShadow: "0 32px 80px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.06)" }}>
               {/* Mode toggle */}
               <div className="flex" style={{ borderBottom: `1px solid ${C.line}` }}>
                 {([["create", "✈ Crear viaje"], ["join", "Unirme"]] as const).map(([k, label]) => (
@@ -2672,6 +2758,16 @@ export default function App() {
   }
 
   const days = useCountdown(trip?.startDate ?? null);
+  const contentRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+    el.style.opacity = "0";
+    el.style.transform = "translateY(10px)";
+    animate(el, { opacity: [0, 1], translateY: [10, 0], duration: 280, ease: "out(2)" });
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [tab]);
 
   if (loading) {
     return (
@@ -2709,7 +2805,7 @@ export default function App() {
   return (
     <div style={{ background: dk ? dk.bg : C.paper, fontFamily: F.body, color: dk ? dk.text : C.ink, minHeight: "100dvh", transition: "background 0.3s" }}>
       {/* Header */}
-      <header style={{ background: dk ? dk.bgHeader : `linear-gradient(135deg, ${C.navy} 0%, ${C.navyMid} 100%)`, color: C.paper }} className="dot-grid">
+      <header style={{ background: dk ? dk.bgHeader : `linear-gradient(135deg, ${C.navy} 0%, ${C.navyMid} 60%, #1A3560 100%)`, color: C.paper }} className="dot-grid">
         <div className="max-w-4xl mx-auto px-4 pt-4 pb-0">
           <div className="flex items-center justify-between mb-3">
             <button onClick={leave} className="flex items-center gap-1" style={{ color: "#7C8AA3", fontSize: 11, fontFamily: F.mono }}>
@@ -2781,7 +2877,7 @@ export default function App() {
       </header>
 
       {/* Content */}
-      <main className="max-w-4xl mx-auto px-4 py-6 fade-in" key={tab}>
+      <main ref={contentRef as React.RefObject<HTMLElement>} className="max-w-4xl mx-auto px-4 py-6" style={{ opacity: 0 }}>
         {tab === "resumen"    && <Resumen trip={trip} session={session} days={days} darkMode={darkMode} />}
         {tab === "reservas"   && <Reservas code={session.code} session={session} darkMode={darkMode} />}
         {tab === "itinerario" && <Itinerario code={session.code} />}
@@ -2823,8 +2919,27 @@ function Resumen({ trip, session, days, darkMode }: { trip: Trip; session: Sessi
   const textColor = darkMode ? "#E6EDF3" : C.ink;
   const softColor = darkMode ? "#8B949E" : C.inkSoft;
 
+  // Stagger entrance for the whole resumen section
+  const sectionRef = useRef<HTMLDivElement>(null);
+  useAnimeStagger(sectionRef);
+
+  // Spring bounce for the countdown
+  const countdownRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = countdownRef.current;
+    if (!el || days === null) return;
+    el.style.opacity = "0";
+    el.style.transform = "scale(0.88)";
+    animate(el, {
+      opacity: [0, 1],
+      scale: [0.88, 1],
+      duration: 900,
+      ease: spring({ stiffness: 180, damping: 14, mass: 1 }),
+    });
+  }, [days]);
+
   return (
-    <div className="flex flex-col gap-4">
+    <div ref={sectionRef} className="flex flex-col gap-4">
       {/* Cover photo hero */}
       {(coverUrl || showCoverEdit) && (
         <div style={{ borderRadius: 14, overflow: "hidden", position: "relative" }}>
@@ -2839,7 +2954,7 @@ function Resumen({ trip, session, days, darkMode }: { trip: Trip; session: Sessi
         </div>
       )}
       {!coverUrl && !showCoverEdit && (
-        <button onClick={() => setShowCoverEdit(true)} style={{ border: `1px dashed ${C.line}`, borderRadius: 8, padding: "10px 16px", color: C.inkSoft, fontFamily: F.mono, fontSize: 11, display: "flex", alignItems: "center", gap: 6 }}>
+        <button onClick={() => setShowCoverEdit(true)} style={{ border: `1px dashed ${C.line}`, borderRadius: 10, padding: "10px 16px", color: C.inkSoft, fontFamily: F.mono, fontSize: 11, display: "flex", alignItems: "center", gap: 6 }}>
           <Camera size={13} /> AÑADIR FOTO DE PORTADA DEL VIAJE
         </button>
       )}
@@ -2857,15 +2972,16 @@ function Resumen({ trip, session, days, darkMode }: { trip: Trip; session: Sessi
 
       {/* Countdown hero card */}
       {days !== null && (
-        <div style={{ background: `linear-gradient(135deg, ${C.navy}, ${C.navyMid})`, borderRadius: 12, padding: "24px 20px", color: C.paper, position: "relative", overflow: "hidden" }}>
-          <div className="glow-pulse" style={{ position: "absolute", top: -30, right: -30, width: 140, height: 140, borderRadius: 999, background: `radial-gradient(circle, ${C.gold}25, transparent 70%)`, pointerEvents: "none" }} />
-          <div style={{ fontFamily: F.mono, fontSize: 10, color: C.gold, letterSpacing: 2 }}>CUENTA ATRÁS</div>
-          <div style={{ fontFamily: F.display, fontSize: "clamp(3rem, 10vw, 5rem)", fontWeight: 700, color: C.goldLight, lineHeight: 1, marginTop: 4 }}>
+        <div ref={countdownRef} style={{ background: `linear-gradient(135deg, ${C.navy} 0%, ${C.navyMid} 60%, #1A3560 100%)`, borderRadius: 14, padding: "26px 22px", color: C.paper, position: "relative", overflow: "hidden" }}>
+          <div className="glow-pulse" style={{ position: "absolute", top: -40, right: -40, width: 180, height: 180, borderRadius: 999, background: `radial-gradient(circle, ${C.gold}30, transparent 70%)`, pointerEvents: "none" }} />
+          <div className="glow-pulse" style={{ position: "absolute", bottom: -20, left: 20, width: 120, height: 120, borderRadius: 999, background: `radial-gradient(circle, ${C.teal}25, transparent 70%)`, pointerEvents: "none", animationDelay: "2s" }} />
+          <div style={{ fontFamily: F.mono, fontSize: 10, color: C.gold, letterSpacing: 2.5 }}>CUENTA ATRÁS</div>
+          <div style={{ fontFamily: F.display, fontSize: "clamp(3.2rem, 11vw, 5.5rem)", fontWeight: 700, color: C.goldLight, lineHeight: 1, marginTop: 4 }}>
             {days > 0 ? days : days === 0 ? "¡HOY!" : "¡EN MARCHA!"}
           </div>
-          {days > 0 && <div style={{ fontFamily: F.mono, fontSize: 12, color: "#9FAEC4", marginTop: 4 }}>días para {trip.destination || trip.name}</div>}
+          {days > 0 && <div style={{ fontFamily: F.mono, fontSize: 12, color: "#8BAFD4", marginTop: 4 }}>días para {trip.destination || trip.name}</div>}
           {trip.startDate && (
-            <div style={{ marginTop: 12, fontFamily: F.mono, fontSize: 11, color: "#7C8AA3" }}>
+            <div style={{ marginTop: 12, fontFamily: F.mono, fontSize: 11, color: "#6080A4" }}>
               {formatDate(trip.startDate)}{trip.endDate ? ` → ${formatDate(trip.endDate)}` : ""}{dur ? ` · ${dur} días` : ""}
             </div>
           )}
@@ -2904,30 +3020,41 @@ function Resumen({ trip, session, days, darkMode }: { trip: Trip; session: Sessi
 
 function SyncButton({ code, onSync }: { code: string; onSync: (t: Trip) => void }) {
   const [syncing, setSyncing] = useState(false);
-  const [done, setDone] = useState(false);
+  const [status, setStatus] = useState<"idle" | "ok" | "no_kv">("idle");
 
   async function sync() {
-    setSyncing(true);
-    // Force a fresh fetch by bypassing localStorage cache
+    setSyncing(true); setStatus("idle");
     try {
       const res = await fetch(`/api/store?key=${encodeURIComponent(`trip:${code}`)}`);
       if (res.ok) {
         const data = await res.json();
-        if (data) { onSync(data as Trip); setDone(true); setTimeout(() => setDone(false), 2000); setSyncing(false); return; }
+        if (data) {
+          // Also update localStorage with the fresh data
+          try { localStorage.setItem(`trip:${code}`, JSON.stringify(data)); } catch { /* ignore */ }
+          onSync(data as Trip);
+          setStatus("ok");
+          setTimeout(() => setStatus("idle"), 2500);
+          setSyncing(false);
+          return;
+        }
       }
-    } catch { /* fall through */ }
-    // Fallback: just re-read localStorage
-    try {
-      const r = localStorage.getItem(`trip:${code}`);
-      if (r) { onSync(JSON.parse(r) as Trip); }
-    } catch { /* ignore */ }
+      if (res.status === 503) {
+        setStatus("no_kv");
+        setTimeout(() => setStatus("idle"), 4000);
+      }
+    } catch { /* network error */ }
     setSyncing(false);
   }
 
+  const label = status === "ok" ? "SINCRONIZADO" : status === "no_kv" ? "SIN KV" : "SYNC";
+  const color = status === "ok" ? C.teal : status === "no_kv" ? C.gold : "#7C8AA3";
+  const title = status === "no_kv" ? "Activa Vercel KV en el dashboard para sincronizar entre dispositivos" : "Sincronizar viaje";
+
   return (
-    <button onClick={sync} disabled={syncing} style={{ color: done ? "#4AC99B" : "#7C8AA3", padding: "4px 8px", borderRadius: 6, border: "1px solid #2D3E5A", display: "flex", alignItems: "center", gap: 4, fontFamily: "var(--font-mono)", fontSize: 10 }}>
-      {done ? <Check size={11} /> : <RefreshCw size={11} className={syncing ? "animate-spin" : ""} />}
-      {done ? "OK" : "SYNC"}
+    <button onClick={sync} disabled={syncing} title={title}
+      style={{ color, padding: "4px 8px", borderRadius: 6, border: "1px solid #2D3E5A", display: "flex", alignItems: "center", gap: 4, fontFamily: "var(--font-mono)", fontSize: 10, transition: "color 0.2s" }}>
+      {status === "ok" ? <Check size={11} /> : <RefreshCw size={11} className={syncing ? "animate-spin" : ""} />}
+      {label}
     </button>
   );
 }
