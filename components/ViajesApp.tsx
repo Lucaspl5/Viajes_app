@@ -81,26 +81,6 @@ const DEST_TYPE_FILTERS = [
 
 const DESTINATIONS: DestinationTemplate[] = [
   {
-    id: "tenerife", name: "Tenerife", country: "España", flag: "🇪🇸",
-    costPerPerson: 320, durationDays: 5, type: "playa",
-    description: "Playa, volcán y eterna primavera a pocas horas de vuelo. El Teide, las playas negras y Los Gigantes en una isla que lo tiene todo.",
-    highlights: ["Teide", "Playa de las Américas", "Los Gigantes", "Loro Parque"],
-    itinerary: [
-      { date: "", title: "Día 1 — Llegada y Playa de las Américas", items: [{ time: "12:00", text: "Vuelo a Tenerife Sur (TFS)" }, { time: "15:00", text: "Check-in y primer chapuzón en Playa de las Américas" }, { time: "20:30", text: "Cena en el paseo marítimo" }] },
-      { date: "", title: "Día 2 — El Teide", items: [{ time: "08:00", text: "Ruta hacia el Parque Nacional del Teide" }, { time: "10:30", text: "Teleférico hasta los 3.500 m" }, { time: "14:00", text: "Bajada y visita al pueblo de La Orotava" }, { time: "20:00", text: "Cena en Puerto de la Cruz" }] },
-      { date: "", title: "Día 3 — Norte salvaje", items: [{ time: "09:30", text: "Los Gigantes — acantilados de 800 m" }, { time: "11:00", text: "Excursión en barco: delfines y ballenas" }, { time: "16:30", text: "Playa de la Arena (arena negra volcánica)" }] },
-      { date: "", title: "Día 4 — Loro Parque y Santa Cruz", items: [{ time: "10:00", text: "Loro Parque en Puerto de la Cruz" }, { time: "18:00", text: "Sunset en Punta del Hidalgo" }, { time: "21:00", text: "Cena de despedida en Santa Cruz" }] },
-      { date: "", title: "Día 5 — Regreso", items: [{ time: "09:00", text: "Último baño en la playa" }, { time: "13:00", text: "Traslado al aeropuerto y vuelo de regreso" }] },
-    ],
-    mapPlaces: [
-      { name: "Teide", lat: 28.27, lon: -16.64, note: "Pico más alto de España (3.718 m)" },
-      { name: "Playa de las Américas", lat: 28.05, lon: -16.72, note: "Playa principal, animada" },
-      { name: "Los Gigantes", lat: 28.24, lon: -16.84, note: "Acantilados espectaculares" },
-      { name: "Loro Parque", lat: 28.41, lon: -16.55, note: "Parque zoológico y de naturaleza" },
-      { name: "La Orotava", lat: 28.39, lon: -16.52, note: "Pueblo histórico colonial" },
-    ],
-  },
-  {
     id: "oporto", name: "Oporto", country: "Portugal", flag: "🇵🇹",
     costPerPerson: 340, durationDays: 3, type: "ciudad",
     description: "Vino de Oporto, azulejos azules y el río Duero entre bodegas históricas. Un fin de semana perfecto.",
@@ -158,25 +138,6 @@ const DESTINATIONS: DestinationTemplate[] = [
     ],
   },
   {
-    id: "praga", name: "Praga", country: "Rep. Checa", flag: "🇨🇿",
-    costPerPerson: 600, durationDays: 4, type: "ciudad",
-    description: "La ciudad de las cien torres: casco medieval intacto, cerveza artesanal y el río Moldava. La joya de Europa del Este.",
-    highlights: ["Castillo de Praga", "Puente Carlos", "Barrio Judío", "Reloj Astronómico"],
-    itinerary: [
-      { date: "", title: "Día 1 — Ciudad Vieja", items: [{ time: "13:00", text: "Llegada a Václav Havel Airport" }, { time: "16:00", text: "Plaza de la Ciudad Vieja y Reloj Astronómico (da las horas)" }, { time: "18:00", text: "Puente Carlos al atardecer" }, { time: "20:00", text: "Cena en taberna checa con cerveza Pilsner Urquell" }] },
-      { date: "", title: "Día 2 — Castillo de Praga", items: [{ time: "09:00", text: "Castillo de Praga — el más grande del mundo" }, { time: "11:00", text: "Catedral de San Vito" }, { time: "12:30", text: "Callejón del Oro" }, { time: "15:00", text: "Malá Strana (ciudad pequeña)" }, { time: "17:00", text: "Colina de Petřín — vistas panorámicas" }] },
-      { date: "", title: "Día 3 — Josefov y cerveza", items: [{ time: "09:30", text: "Barrio Judío Josefov y sinagoga Pinkas" }, { time: "13:00", text: "Almuerzo de svíčková con knedlíky" }, { time: "15:30", text: "Paseo por Wenceslao" }, { time: "18:00", text: "Tour de bares y cervezas artesanales de Praga" }] },
-      { date: "", title: "Día 4 — Mercado y regreso", items: [{ time: "09:00", text: "Mercado de Náplavka a orillas del Moldava" }, { time: "12:00", text: "Último trdelník (dulce local)" }, { time: "15:00", text: "Traslado al aeropuerto" }] },
-    ],
-    mapPlaces: [
-      { name: "Castillo de Praga", lat: 50.09, lon: 14.40, note: "El complejo castillo más grande del mundo" },
-      { name: "Puente Carlos", lat: 50.09, lon: 14.41, note: "Puente medieval con 30 estatuas barrocas" },
-      { name: "Plaza de la Ciudad Vieja", lat: 50.09, lon: 14.42, note: "Reloj Astronómico medieval del s. XV" },
-      { name: "Josefov", lat: 50.09, lon: 14.42, note: "El barrio judío mejor conservado de Europa" },
-      { name: "Colina de Petřín", lat: 50.08, lon: 14.40, note: "Torre-mirador, la Torre Eiffel checa" },
-    ],
-  },
-  {
     id: "estambul", name: "Estambul", country: "Turquía", flag: "🇹🇷",
     costPerPerson: 750, durationDays: 6, type: "cultura",
     description: "Donde Europa se encuentra con Asia: mezquitas, el Gran Bazar y el Bósforo. Una ciudad de contrastes absolutos.",
@@ -195,26 +156,6 @@ const DESTINATIONS: DestinationTemplate[] = [
       { name: "Palacio Topkapi", lat: 41.01, lon: 28.98, note: "Residencia de los sultanes otomanos 400 años" },
       { name: "Bósforo", lat: 41.09, lon: 29.06, note: "El estrecho que separa Europa de Asia" },
       { name: "Balat", lat: 41.03, lon: 28.95, note: "Barrio histórico multiétnico con arte callejero" },
-    ],
-  },
-  {
-    id: "roma", name: "Roma", country: "Italia", flag: "🇮🇹",
-    costPerPerson: 850, durationDays: 5, type: "cultura",
-    description: "La Ciudad Eterna: 2.500 años de historia en cada esquina. Coliseo, Vaticano, pasta y dolce vita.",
-    highlights: ["Coliseo", "Vaticano", "Fontana di Trevi", "Trastevere"],
-    itinerary: [
-      { date: "", title: "Día 1 — El Coliseo y el Foro Romano", items: [{ time: "10:00", text: "Llegada a Fiumicino" }, { time: "14:00", text: "Coliseo y Arco de Constantino (reserva previa)" }, { time: "16:30", text: "Foro Romano y Palatino" }, { time: "20:00", text: "Cena en Trastevere con carbonara auténtica" }] },
-      { date: "", title: "Día 2 — El Vaticano", items: [{ time: "08:30", text: "Museos Vaticanos y Capilla Sixtina (entrada reservada)" }, { time: "12:00", text: "Basílica de San Pedro y cúpula" }, { time: "15:00", text: "Castel Sant'Angelo" }, { time: "20:00", text: "Aperitivo en el barrio Prati" }] },
-      { date: "", title: "Día 3 — Centro histórico", items: [{ time: "09:30", text: "Fontana di Trevi — echar la moneda" }, { time: "10:30", text: "Panteón (2.000 años sin grietas)" }, { time: "12:00", text: "Plaza Navona" }, { time: "15:30", text: "Campo de' Fiori" }, { time: "19:30", text: "Aperitivo romano con Campari Spritz" }] },
-      { date: "", title: "Día 4 — Borghese y el Aventino", items: [{ time: "09:00", text: "Galería Borghese (reserva obligatoria)" }, { time: "12:00", text: "Jardines de Villa Borghese" }, { time: "16:00", text: "Barrio de Trastevere a pie" }, { time: "20:00", text: "Cena con pizza romana en Trastevere" }] },
-      { date: "", title: "Día 5 — Gelato final", items: [{ time: "09:00", text: "Barrio Testaccio (el más auténtico)" }, { time: "12:00", text: "Última pasta all'amatriciana" }, { time: "14:00", text: "Gelato de Giolitti" }, { time: "16:30", text: "Traslado al aeropuerto" }] },
-    ],
-    mapPlaces: [
-      { name: "Coliseo", lat: 41.89, lon: 12.49, note: "Anfiteatro romano del año 80 d.C." },
-      { name: "Vaticano", lat: 41.90, lon: 12.45, note: "El Estado más pequeño del mundo, Capilla Sixtina" },
-      { name: "Fontana di Trevi", lat: 41.90, lon: 12.48, note: "La fuente más famosa del mundo" },
-      { name: "Panteón", lat: 41.90, lon: 12.48, note: "Templo romano del año 125 d.C., cúpula sin grietas" },
-      { name: "Trastevere", lat: 41.89, lon: 12.47, note: "El barrio más auténtico y bohemio de Roma" },
     ],
   },
   {
@@ -254,27 +195,6 @@ const DESTINATIONS: DestinationTemplate[] = [
       { name: "Montmartre", lat: 48.89, lon: 2.34, note: "Barrio bohemio con artistas y el Sacré-Cœur" },
       { name: "Versalles", lat: 48.80, lon: 2.12, note: "Palacio real del Rey Sol, a 30 min" },
       { name: "Notre-Dame", lat: 48.85, lon: 2.35, note: "Catedral gótica en reconstrucción" },
-    ],
-  },
-  {
-    id: "santorini", name: "Santorini", country: "Grecia", flag: "🇬🇷",
-    costPerPerson: 1300, durationDays: 6, type: "playa",
-    description: "Casas blancas, cúpulas azules y el atardecer más fotografiado del Mediterráneo. El lujo griego accesible.",
-    highlights: ["Oía", "Caldera", "Playa Roja", "Volcán Nea Kameni"],
-    itinerary: [
-      { date: "", title: "Día 1 — Bienvenido a la caldera", items: [{ time: "15:00", text: "Vuelo a Santorini (JTR) vía Atenas" }, { time: "18:00", text: "Check-in en hotel en Imerovigli" }, { time: "20:00", text: "Cena con vistas al volcán y el sol hundiéndose" }] },
-      { date: "", title: "Día 2 — Oía y el atardecer", items: [{ time: "09:00", text: "Ruta a pie de Fira a Oía (10 km, 3h)" }, { time: "13:00", text: "Almuerzo en Imerovigli" }, { time: "16:00", text: "Oía: casas blancas y callejones azules" }, { time: "19:30", text: "El atardecer de Oía (llegar 1h antes por el gentío)" }] },
-      { date: "", title: "Día 3 — Playas volcánicas", items: [{ time: "10:00", text: "Playa Roja (Kokkini Paralia) — arena roja volcánica" }, { time: "13:00", text: "Playa Negra de Perissa" }, { time: "14:30", text: "Almuerzo con pulpo a la brasa" }, { time: "17:00", text: "Playa de Kamari" }] },
-      { date: "", title: "Día 4 — Volcán y aguas termales", items: [{ time: "09:00", text: "Barco al volcán de Nea Kameni" }, { time: "11:00", text: "Baño en las aguas termales naturales" }, { time: "13:30", text: "Parada en la isla de Thirassia" }, { time: "16:00", text: "Regreso a Fira" }] },
-      { date: "", title: "Día 5 — Akrotiri y vino", items: [{ time: "09:30", text: "Ruinas de Akrotiri (la Pompeya griega, 1.600 a.C.)" }, { time: "12:00", text: "Cata de vinos de la isla en bodega volcánica" }, { time: "16:00", text: "Playa de Vlychada" }] },
-      { date: "", title: "Día 6 — Regreso", items: [{ time: "09:00", text: "Desayuno griego: yogur, miel y feta" }, { time: "11:00", text: "Últimas fotos y compras" }, { time: "14:00", text: "Traslado al aeropuerto" }] },
-    ],
-    mapPlaces: [
-      { name: "Oía", lat: 36.46, lon: 25.37, note: "El atardecer más famoso del Mediterráneo" },
-      { name: "Fira", lat: 36.43, lon: 25.43, note: "Capital de Santorini, al borde del cráter" },
-      { name: "Playa Roja", lat: 36.35, lon: 25.40, note: "Arena volcánica roja, única en Europa" },
-      { name: "Akrotiri", lat: 36.35, lon: 25.40, note: "Ruinas minoicas de 3.600 años, perfectamente conservadas" },
-      { name: "Volcán Nea Kameni", lat: 36.40, lon: 25.40, note: "Volcán activo en el centro de la caldera" },
     ],
   },
   {
@@ -848,6 +768,665 @@ const DESTINATIONS: DestinationTemplate[] = [
       { name: "Glaciar Perito Moreno", lat: -50.49, lon: -73.06, note: "El glaciar que avanza 2m al día" },
       { name: "Buenos Aires", lat: -34.61, lon: -58.38, note: "Capital apasionada del tango y la carne" },
       { name: "Monte Fitz Roy", lat: -49.27, lon: -73.05, note: "El pico más fotogénico de la Patagonia" },
+    ],
+  },
+  // ── Populares ──
+  {
+    id: "dubai", name: "Dubai", country: "Emiratos Árabes", flag: "🇦🇪",
+    costPerPerson: 1600, durationDays: 6, type: "ciudad",
+    description: "El futuro en el desierto: el Burj Khalifa (el edificio más alto del mundo), playas artificiales, zocos de oro y oro, safaris en dunas y lujo sin límites.",
+    highlights: ["Burj Khalifa", "Palm Jumeirah", "Desierto en 4x4", "Zoco del Oro"],
+    itinerary: [
+      { date: "", title: "Día 1 — Llegada y Downtown", items: [{ time: "12:00", text: "Llegada a Dubai International (DXB)" }, { time: "17:00", text: "Burj Khalifa: subida al piso 124 al atardecer" }, { time: "19:00", text: "Dubai Fountain Show junto al lago" }, { time: "21:00", text: "Cena en Dubai Mall" }] },
+      { date: "", title: "Día 2 — Old Dubai", items: [{ time: "09:00", text: "Abra (barca de madera) al Zoco del Oro" }, { time: "11:00", text: "Zoco de las Especias: azafrán y oud" }, { time: "14:00", text: "Al Fahidi: barrio histórico con bastakiya" }, { time: "20:00", text: "Brunch del viernes en hotel 5 estrellas" }] },
+      { date: "", title: "Día 3 — Safari en el desierto", items: [{ time: "15:00", text: "Recogida en 4x4 Land Cruiser" }, { time: "17:00", text: "Dune bashing en las dunas rojas" }, { time: "18:30", text: "Atardecer en las dunas + foto de camello" }, { time: "20:00", text: "Cena beduina bajo las estrellas (barbacoa + danza)" }] },
+      { date: "", title: "Días 4-5 — Playa y Marina", items: [{ time: "10:00", text: "JBR Beach: playa artificial con skyline" }, { time: "13:00", text: "Palm Jumeirah: monorraíl hasta Atlantis" }, { time: "16:00", text: "Dubai Marina: yates y rascacielos" }, { time: "Día 5", text: "Global Village: 90 países en un parque" }] },
+      { date: "", title: "Día 6 — Regreso", items: [{ time: "09:00", text: "Souq Madinat Jumeirah" }, { time: "14:00", text: "Vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Burj Khalifa", lat: 25.20, lon: 55.27, note: "828m — el edificio más alto del mundo" },
+      { name: "Palm Jumeirah", lat: 25.11, lon: 55.14, note: "Isla artificial en forma de palmera" },
+      { name: "Zoco del Oro", lat: 25.27, lon: 55.30, note: "El mayor mercado de oro del mundo" },
+      { name: "Dunas de Hatta", lat: 24.80, lon: 56.12, note: "El desierto rojo a 1h de Dubai" },
+    ],
+  },
+  {
+    id: "singapur", name: "Singapur", country: "Singapur", flag: "🇸🇬",
+    costPerPerson: 1900, durationDays: 6, type: "ciudad",
+    description: "La ciudad-estado más futurista del mundo: Gardens by the Bay con sus supertrees, Chinatown, Little India, la calle Hawker y el mejor street food de Asia.",
+    highlights: ["Gardens by the Bay", "Marina Bay Sands", "Hawker centres", "Sentosa"],
+    itinerary: [
+      { date: "", title: "Día 1 — Marina Bay", items: [{ time: "11:00", text: "Llegada a Changi Airport (el mejor del mundo)" }, { time: "16:00", text: "Marina Bay Sands: piscina en el piso 57" }, { time: "20:00", text: "Gardens by the Bay: Light Show de los supertrees" }] },
+      { date: "", title: "Día 2 — Barrios étnicos", items: [{ time: "09:00", text: "Chinatown: templo Sri Mariamman y mercado" }, { time: "12:00", text: "Hawker Centre Maxwell: char kway teow y laksa" }, { time: "15:00", text: "Little India: templo Sri Veeramakaliamman" }, { time: "18:00", text: "Arab Street y Kampong Glam" }] },
+      { date: "", title: "Día 3 — Naturaleza urbana", items: [{ time: "09:00", text: "Singapore Botanic Gardens (UNESCO)" }, { time: "13:00", text: "Orchard Road: el shopping más lujoso de Asia" }, { time: "16:00", text: "Jewel Changi: la cascada interior más alta del mundo" }] },
+      { date: "", title: "Días 4-5 — Sentosa y Universal", items: [{ time: "10:00", text: "Universal Studios Singapore" }, { time: "15:00", text: "Playa de Sentosa" }, { time: "Día 5", text: "Zoo de Singapur: el mejor del mundo (estilo libre)" }] },
+      { date: "", title: "Día 6 — Regreso", items: [{ time: "10:00", text: "Chill final en Gardens by the Bay" }, { time: "14:00", text: "Vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Marina Bay Sands", lat: 1.28, lon: 103.86, note: "Hotel con piscina infinita en el piso 57" },
+      { name: "Gardens by the Bay", lat: 1.28, lon: 103.86, note: "Supertrees y el Grove con clima artificial" },
+      { name: "Hawker Centre Lau Pa Sat", lat: 1.28, lon: 103.85, note: "Comer street food de lujo a precio de kiosco" },
+      { name: "Sentosa", lat: 1.25, lon: 103.83, note: "Isla de ocio con playas y Universal Studios" },
+    ],
+  },
+  {
+    id: "turquia", name: "Turquía: Estambul & Capadocia", country: "Turquía", flag: "🇹🇷",
+    costPerPerson: 980, durationDays: 9, type: "cultura",
+    description: "Dos mundos en uno: Estambul donde Europa se funde con Asia, el bazar de las especias, Santa Sofía — y Capadocia con globos aerostáticos sobre chimeneas de hadas.",
+    highlights: ["Santa Sofía", "Gran Bazar", "Globos en Capadocia", "Pamukkale"],
+    itinerary: [
+      { date: "", title: "Días 1-3 — Estambul", items: [{ time: "11:00", text: "Llegada a Istanbul Airport" }, { time: "15:00", text: "Santa Sofía: 1.500 años de historia en una cúpula" }, { time: "17:00", text: "Mezquita Azul y Hipódromo" }, { time: "Día 2", text: "Gran Bazar: 4.000 tiendas" }, { time: "14:00", text: "Bazar de las Especias y crucero por el Bósforo" }, { time: "Día 3", text: "Palacio de Topkapi y el barrio de Balat" }] },
+      { date: "", title: "Día 4 — Pamukkale", items: [{ time: "07:00", text: "Vuelo o bus nocturno a Pamukkale" }, { time: "11:00", text: "Terrazas de travertino blanco: bañarse en las cascadas" }, { time: "15:00", text: "Hierápolis: ciudad romana con necrópolis" }] },
+      { date: "", title: "Días 5-7 — Capadocia", items: [{ time: "05:00", text: "¡Globo aerostático al amanecer sobre el valle!" }, { time: "09:00", text: "Valle de Göreme: chimeneas de hadas" }, { time: "13:00", text: "Museo al aire libre de Göreme (iglesias rupestres)" }, { time: "Día 6", text: "Ciudad subterránea de Derinkuyu (8 pisos bajo tierra)" }, { time: "Día 7", text: "Ihlara Valley: senderismo junto al río" }] },
+      { date: "", title: "Días 8-9 — Costa Egea", items: [{ time: "09:00", text: "Éfeso: la ciudad romana más grande de Asia Menor" }, { time: "Día 9", text: "Vuelo de regreso desde Estambul" }] },
+    ],
+    mapPlaces: [
+      { name: "Santa Sofía (Estambul)", lat: 41.01, lon: 28.98, note: "Basílica bizantina convertida en mezquita" },
+      { name: "Göreme (Capadocia)", lat: 38.64, lon: 34.83, note: "Centro de los globos aerostáticos" },
+      { name: "Pamukkale", lat: 37.92, lon: 29.12, note: "Terrazas blancas de travertino Patrimonio UNESCO" },
+      { name: "Éfeso", lat: 37.94, lon: 27.34, note: "La ciudad romana mejor conservada de Asia" },
+    ],
+  },
+  {
+    id: "santorini", name: "Santorini", country: "Grecia", flag: "🇬🇷",
+    costPerPerson: 1100, durationDays: 6, type: "playa",
+    description: "La postal más icónica del Mediterráneo: cúpulas azules de Oia, atardeceres que paran el corazón, vino Assyrtiko volcánico y aguas turquesas de la caldera.",
+    highlights: ["Atardecer de Oia", "Caldera", "Playa de Perissa", "Vino volcánico"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Fira y la Caldera", items: [{ time: "12:00", text: "Llegada a Santorini (JTR) o ferry desde Atenas" }, { time: "15:00", text: "Fira: paseo por el borde del cráter" }, { time: "18:00", text: "Primera cata de vino Assyrtiko volcánico" }, { time: "Día 2", text: "Crucero por la caldera: aguas termales y volcán activo" }] },
+      { date: "", title: "Días 3-4 — Oia", items: [{ time: "10:00", text: "Senderismo Fira-Oia: 10 km por el borde del cráter" }, { time: "14:00", text: "Pueblo de Oia: calles blancas y cúpulas azules" }, { time: "19:30", text: "El atardecer más famoso del mundo (llegar 1h antes)" }, { time: "Día 4", text: "Akrotiri: Pompeya griega enterrada bajo ceniza" }] },
+      { date: "", title: "Días 5-6 — Playas", items: [{ time: "10:00", text: "Playa Roja (Red Beach): arena volcánica rojiza" }, { time: "13:00", text: "Playa de Perissa: arena negra y aguas cristalinas" }, { time: "16:00", text: "Playa de Kamari: chiringuitos con mojito" }, { time: "Día 6", text: "Ferry a Atenas o vuelo de vuelta" }] },
+    ],
+    mapPlaces: [
+      { name: "Oia", lat: 36.46, lon: 25.37, note: "El atardecer más fotografiado del mundo" },
+      { name: "Fira", lat: 36.43, lon: 25.43, note: "Capital de Santorini sobre el borde del cráter" },
+      { name: "Akrotiri", lat: 36.36, lon: 25.40, note: "La Pompeya griega bajo la ceniza volcánica" },
+      { name: "Red Beach", lat: 36.35, lon: 25.39, note: "Playa de arena volcánica roja única en Europa" },
+    ],
+  },
+  {
+    id: "praga", name: "Praga", country: "República Checa", flag: "🇨🇿",
+    costPerPerson: 580, durationDays: 4, type: "ciudad",
+    description: "La ciudad de las cien torres: el casco medieval mejor conservado de Europa, el Puente de Carlos, el barrio judío y la cerveza más barata y buena del mundo.",
+    highlights: ["Puente de Carlos", "Castillo de Praga", "Barrio Judío", "Cerveza Pilsner"],
+    itinerary: [
+      { date: "", title: "Día 1 — Malá Strana y el Castillo", items: [{ time: "10:00", text: "Castillo de Praga: la fortaleza más grande del mundo" }, { time: "13:00", text: "Catedral de San Vito en la cima" }, { time: "16:00", text: "Bajada por las callejuelas de Malá Strana" }, { time: "19:00", text: "Svíčková (ternera con nata) en taberna checa" }] },
+      { date: "", title: "Día 2 — Staré Město", items: [{ time: "09:00", text: "Puente de Carlos al amanecer (sin turistas)" }, { time: "11:00", text: "Reloj Astronómico en la Plaza del Ayuntamiento" }, { time: "13:00", text: "Barrio Judío (Josefov): 6 sinagogas" }, { time: "20:00", text: "Pub en el casco histórico: Pilsner Urquell a 1,5€" }] },
+      { date: "", title: "Días 3-4 — Vinohrady y Holešovice", items: [{ time: "10:00", text: "DOX Centre: arte contemporáneo" }, { time: "13:00", text: "Mercado de Holešovice" }, { time: "16:00", text: "Barrio de Vinohrady: cafés bohemios" }, { time: "Día 4", text: "Kutná Hora: iglesia de huesos (1h desde Praga)" }] },
+    ],
+    mapPlaces: [
+      { name: "Castillo de Praga", lat: 50.09, lon: 14.40, note: "El complejo de castillo más grande del mundo" },
+      { name: "Puente de Carlos", lat: 50.09, lon: 14.41, note: "Puente gótico del s. XIV con 30 estatuas" },
+      { name: "Plaza del Ayuntamiento", lat: 50.09, lon: 14.42, note: "Reloj Astronómico medieval del s. XV" },
+      { name: "Kutná Hora", lat: 49.95, lon: 15.27, note: "Iglesia de huesos con 40.000 esqueletos decorativos" },
+    ],
+  },
+  {
+    id: "roma", name: "Roma", country: "Italia", flag: "🇮🇹",
+    costPerPerson: 870, durationDays: 5, type: "cultura",
+    description: "La Ciudad Eterna: el Coliseo donde rugían los leones, el Vaticano con la Capilla Sixtina, la Fontana di Trevi, el Panteón y la mejor pasta del mundo.",
+    highlights: ["Coliseo", "Vaticano & Capilla Sixtina", "Fontana di Trevi", "Panteón"],
+    itinerary: [
+      { date: "", title: "Día 1 — Roma Antigua", items: [{ time: "09:00", text: "Coliseo: el anfiteatro más grande jamás construido" }, { time: "12:00", text: "Foro Romano y Palatino" }, { time: "15:00", text: "Circo Máximo" }, { time: "20:00", text: "Cena de cacio e pepe en Trastevere" }] },
+      { date: "", title: "Día 2 — Vaticano", items: [{ time: "09:00", text: "Museos Vaticanos (reserva obligatoria)" }, { time: "12:00", text: "Capilla Sixtina: el techo de Miguel Ángel" }, { time: "14:00", text: "Basílica de San Pedro y la cúpula" }, { time: "18:00", text: "Castillo de Sant'Angelo al atardecer" }] },
+      { date: "", title: "Día 3 — Barroco romano", items: [{ time: "09:00", text: "Panteón: 2.000 años perfectamente conservado" }, { time: "11:00", text: "Fontana di Trevi (llegar temprano)" }, { time: "13:00", text: "Piazza di Spagna y la escalinata" }, { time: "16:00", text: "Piazza Navona con Bernini" }] },
+      { date: "", title: "Días 4-5 — Barrios y excursión", items: [{ time: "10:00", text: "Trastevere: el barrio más auténtico de Roma" }, { time: "13:00", text: "Testaccio: mercado y historia obrera" }, { time: "Día 5", text: "Tívoli: Villa Adriana y Villa d'Este (1h desde Roma)" }] },
+    ],
+    mapPlaces: [
+      { name: "Coliseo", lat: 41.89, lon: 12.49, note: "El anfiteatro romano — s. I d.C." },
+      { name: "Vaticano (Capilla Sixtina)", lat: 41.90, lon: 12.45, note: "La Creación de Adán pintada por Miguel Ángel" },
+      { name: "Fontana di Trevi", lat: 41.90, lon: 12.48, note: "La fuente barroca más grande del mundo" },
+      { name: "Panteón", lat: 41.90, lon: 12.48, note: "El edificio mejor conservado de la Roma antigua" },
+    ],
+  },
+  {
+    id: "tenerife", name: "Tenerife", country: "España", flag: "🇪🇸",
+    costPerPerson: 450, durationDays: 6, type: "naturaleza",
+    description: "La isla grande de Canarias: el Teide (el volcán más alto de España), Masca entre barrancos, playas de Playa de las Américas y el bosque de laurisilva.",
+    highlights: ["Teide", "Masca", "Anaga", "Playa de las Américas"],
+    itinerary: [
+      { date: "", title: "Día 1 — Sur y llegada", items: [{ time: "11:00", text: "Llegada a Tenerife Sur (TFS)" }, { time: "15:00", text: "Playa de las Américas: primer baño atlántico" }, { time: "19:00", text: "Los Cristianos: cerveza y puesta de sol" }] },
+      { date: "", title: "Día 2 — Teide", items: [{ time: "08:00", text: "Conducción al Parque Nacional del Teide" }, { time: "11:00", text: "Teleférico al pico (3.555m)" }, { time: "14:00", text: "Parador del Teide: morcilla canaria y papas arrugadas" }, { time: "21:00", text: "Observación de estrellas: los mejores cielos de Europa" }] },
+      { date: "", title: "Día 3 — Masca y Buenavista", items: [{ time: "09:00", text: "Pueblo de Masca: el más pintoresco de Canarias" }, { time: "12:00", text: "Barranco de Masca: senderismo hasta el mar (3h)" }, { time: "16:00", text: "Regreso en barco a Los Gigantes" }] },
+      { date: "", title: "Días 4-6 — Norte y Anaga", items: [{ time: "09:00", text: "Bosque de laurisilva del Anaga (UNESCO)" }, { time: "13:00", text: "San Cristóbal de La Laguna: ciudad colonial" }, { time: "Día 5", text: "Playa del Duque y Costa Adeje" }, { time: "Día 6", text: "Vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Teide", lat: 28.27, lon: -16.64, note: "El volcán más alto de España (3.718m)" },
+      { name: "Masca", lat: 28.34, lon: -16.85, note: "El pueblo más inaccesible y bonito de Tenerife" },
+      { name: "Anaga", lat: 28.57, lon: -16.17, note: "Bosque de laurisilva Patrimonio UNESCO" },
+      { name: "Playa de Las Américas", lat: 28.05, lon: -16.72, note: "La Costa del Sol canaria" },
+    ],
+  },
+  // ── Europa menos conocida ──
+  {
+    id: "islas-feroe", name: "Islas Feroe", country: "Islas Feroe (Dinamarca)", flag: "🇫🇴",
+    costPerPerson: 1400, durationDays: 6, type: "naturaleza",
+    description: "El secreto mejor guardado de Europa: acantilados de 400m sobre el Atlántico Norte, pueblos de tejado de hierba, cascadas que caen al mar y ovejas por todas partes.",
+    highlights: ["Múlafossur", "Lago Sørvágsvatn", "Gasadalur", "Saksun"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Tórshavn y alrededores", items: [{ time: "12:00", text: "Llegada a Vágar Airport" }, { time: "15:00", text: "Tórshavn: la capital más pequeña y más encantadora de Europa" }, { time: "Día 2", text: "Kirkjubøur: las ruinas de catedral más antiguas del norte" }] },
+      { date: "", title: "Días 3-4 — Vágar", items: [{ time: "09:00", text: "Lago Sørvágsvatn: la ilusión óptica del lago que flota sobre el océano" }, { time: "13:00", text: "Gasadalur: cascada Múlafossur cayendo al Atlántico" }, { time: "Día 4", text: "Saksun: laguna cerrada y casas de turba" }] },
+      { date: "", title: "Días 5-6 — Eysturoy y norte", items: [{ time: "09:00", text: "Gjógv: el pueblo al borde del barranco" }, { time: "12:00", text: "Eiðisvatn: el lago entre dos mares" }, { time: "15:00", text: "Viðareiði: el pueblo más al norte" }, { time: "Día 6", text: "Vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Múlafossur (Gasadalur)", lat: 62.10, lon: -7.37, note: "Cascada cayendo al Atlántico — la foto más viral de Feroe" },
+      { name: "Lago Sørvágsvatn", lat: 62.07, lon: -7.28, note: "El lago que parece flotar sobre el océano" },
+      { name: "Tórshavn", lat: 62.01, lon: -6.77, note: "La capital vikinga más pequeña del mundo" },
+      { name: "Saksun", lat: 62.22, lon: -7.16, note: "Pueblo con iglesia de turba y laguna cerrada" },
+    ],
+  },
+  {
+    id: "albania", name: "Albania", country: "Albania", flag: "🇦🇱",
+    costPerPerson: 490, durationDays: 7, type: "playa",
+    description: "El secreto más barato del Mediterráneo: costa albanesa con aguas rivalizando con Grecia, Berat la ciudad de las mil ventanas, Gjirokastër medieval — y todo por la mitad de precio.",
+    highlights: ["Riviera albanesa", "Berat", "Gjirokastër", "Lago Ohrid"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Tirana", items: [{ time: "12:00", text: "Llegada a Rinas. Skanderbeg Square" }, { time: "15:00", text: "Bunkart 2: búnker convertido en museo de la dictadura" }, { time: "Día 2", text: "Barrio de Blloku: antes prohibido, ahora los mejores cafés" }] },
+      { date: "", title: "Días 3-4 — Berat y Gjirokastër", items: [{ time: "09:00", text: "Berat: la ciudad de las mil ventanas (UNESCO)" }, { time: "13:00", text: "Castillo de Berat con vistas" }, { time: "Día 4", text: "Gjirokastër: ciudad otomana Patrimonio UNESCO" }] },
+      { date: "", title: "Días 5-7 — Riviera", items: [{ time: "10:00", text: "Ksamil: 4 islas y aguas turquesas (mejor que Grecia, mitad de precio)" }, { time: "13:00", text: "Butrint: ciudad griega-romana-bizantina (UNESCO)" }, { time: "Día 6", text: "Dhermi: la mejor playa de la riviera" }, { time: "Día 7", text: "Vuelo de regreso desde Tirana" }] },
+    ],
+    mapPlaces: [
+      { name: "Berat", lat: 40.71, lon: 19.95, note: "Ciudad Patrimonio UNESCO — mil ventanas otomanas" },
+      { name: "Ksamil", lat: 39.77, lon: 20.01, note: "Aguas turquesas que rivalizan con el Caribe" },
+      { name: "Gjirokastër", lat: 40.08, lon: 20.14, note: "Ciudad otomana entera Patrimonio UNESCO" },
+      { name: "Butrint", lat: 39.75, lon: 20.02, note: "Ruinas griegas, romanas y bizantinas" },
+    ],
+  },
+  {
+    id: "georgia", name: "Georgia (el país)", country: "Georgia", flag: "🇬🇪",
+    costPerPerson: 720, durationDays: 8, type: "aventura",
+    description: "La cuna del vino (8.000 años de viticultura), la Kazbegi con el monte Kazbeji entre nubes, Tbilisi bohemia y llena de arte, y los monasterios de roca del s. VI.",
+    highlights: ["Kazbegi", "Tbilisi", "Bodega en qvevri", "Vardzia rupestre"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Tbilisi", items: [{ time: "12:00", text: "Llegada a Tbilisi Internacional" }, { time: "15:00", text: "Ciudad vieja: balcones de madera tallada" }, { time: "18:00", text: "Baños de azufre del barrio Abanotubani" }, { time: "Día 2", text: "Casco histórico y mercado de Narikala" }, { time: "Noche", text: "Vino naranja georgiano (Rkatsiteli en qvevri)" }] },
+      { date: "", title: "Días 3-4 — Kazbegi", items: [{ time: "09:00", text: "Autopista Militar Georgiana: vistas del Cáucaso" }, { time: "13:00", text: "Kazbegi: el pueblo entre glaciares" }, { time: "15:00", text: "Subida a la iglesia de Gergeti (2.170m)" }, { time: "Día 4", text: "Senderismo al glaciar del Kazbeji" }] },
+      { date: "", title: "Días 5-6 — Kakheti (vino)", items: [{ time: "09:00", text: "Región vinícola de Kakheti" }, { time: "12:00", text: "Sighnaghi: el pueblo del amor (bodas 24h)" }, { time: "15:00", text: "Bodega Twins: vino en qvevri enterrada" }, { time: "Día 6", text: "Monasterio de Alaverdi (s. XI)" }] },
+      { date: "", title: "Días 7-8 — Vardzia", items: [{ time: "09:00", text: "Vardzia: ciudad rupestre del s. XII (3.000 habitaciones)" }, { time: "14:00", text: "Frontera con Armenia: Bavra" }, { time: "Día 8", text: "Regreso a Tbilisi y vuelo" }] },
+    ],
+    mapPlaces: [
+      { name: "Tbilisi (ciudad vieja)", lat: 41.69, lon: 44.80, note: "Balcones tallados sobre el río Mtkvari" },
+      { name: "Kazbegi (iglesia Gergeti)", lat: 42.66, lon: 44.65, note: "Iglesia sobre la nube con el Kazbeji detrás" },
+      { name: "Sighnaghi", lat: 41.61, lon: 45.92, note: "El pueblo del amor en la región del vino" },
+      { name: "Vardzia", lat: 41.38, lon: 43.28, note: "Ciudad monástica excavada en la roca (s. XII)" },
+    ],
+  },
+  {
+    id: "eslovenia", name: "Eslovenia", country: "Eslovenia", flag: "🇸🇮",
+    costPerPerson: 650, durationDays: 5, type: "naturaleza",
+    description: "El país más verde de Europa: el lago Bled con el castillo en el acantilado, las grutas de Postojna con dragones de cueva, Triglav nevado y Liubliana encantadora.",
+    highlights: ["Lago Bled", "Grutas Postojna", "Liubliana", "Triglav"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Liubliana", items: [{ time: "11:00", text: "Llegada a Brnik o Trieste" }, { time: "14:00", text: "Liubliana: la capital peatonal más bonita de Europa" }, { time: "16:00", text: "Castillo de Liubliana con teleférico" }, { time: "Noche", text: "Cankarjeva nabrezje: terrazas junto al río" }] },
+      { date: "", title: "Días 3-4 — Bled y Triglav", items: [{ time: "09:00", text: "Lago Bled: la postal más perfecta de Europa" }, { time: "11:00", text: "Pletna (barca tradicional) a la isla con campana de los deseos" }, { time: "14:00", text: "Castillo de Bled sobre el acantilado" }, { time: "Día 4", text: "Vintgar: gorge de 1,6 km entre paredes de roca" }] },
+      { date: "", title: "Día 5 — Postojna y Predjama", items: [{ time: "09:00", text: "Grutas de Postojna: 24 km de estalactitas" }, { time: "12:00", text: "Proteus: el dragón de cueva (anfibio único)" }, { time: "14:00", text: "Castillo de Predjama: castillo empotrado en la roca" }, { time: "17:00", text: "Vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Lago Bled", lat: 46.36, lon: 14.09, note: "La postal perfecta: lago, isla, castillo y montaña" },
+      { name: "Liubliana", lat: 46.05, lon: 14.51, note: "La capital más verde y peatonal de Europa" },
+      { name: "Grutas de Postojna", lat: 45.78, lon: 14.20, note: "24 km de estalactitas — las mayores de Europa" },
+      { name: "Castillo de Predjama", lat: 45.82, lon: 14.13, note: "Castillo medieval dentro de una cueva" },
+    ],
+  },
+  {
+    id: "bosnia", name: "Bosnia: Sarajevo & Mostar", country: "Bosnia-Herzegovina", flag: "🇧🇦",
+    costPerPerson: 430, durationDays: 5, type: "cultura",
+    description: "Donde Oriente se funde con Occidente: Sarajevo la ciudad del Puente entre religiones, el puente Stari Most de Mostar que data del s. XVI y la historia del siglo XX más impactante.",
+    highlights: ["Stari Most (Mostar)", "Sarajevo", "Blagaj", "Kravice"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Sarajevo", items: [{ time: "11:00", text: "Llegada a Sarajevo" }, { time: "14:00", text: "Baščaršija: el gran bazar otomano" }, { time: "16:00", text: "Túnel de la Esperanza: el túnel del asedio (1992-95)" }, { time: "Día 2", text: "Esquina del Atentado: donde empezó la WWI" }, { time: "14:00", text: "Mezquita de Gazi Husrev-beg (s. XVI)" }] },
+      { date: "", title: "Días 3-4 — Mostar", items: [{ time: "09:00", text: "Bus a Mostar (3h)" }, { time: "13:00", text: "Stari Most: el puente que cayó en 1993 y fue reconstruido" }, { time: "16:00", text: "Ver a los buzos saltar desde 21m al río Neretva" }, { time: "Día 4", text: "Blagaj: tekke (monasterio derviche) junto al manantial" }] },
+      { date: "", title: "Día 5 — Cataratas Kravice", items: [{ time: "10:00", text: "Kravice: mini cataratas del Niágara en versión bosnia" }, { time: "14:00", text: "Počitelj: pueblo medieval otomano" }, { time: "17:00", text: "Regreso y vuelo" }] },
+    ],
+    mapPlaces: [
+      { name: "Stari Most (Mostar)", lat: 43.34, lon: 17.82, note: "Puente del s. XVI reconstruido tras la guerra" },
+      { name: "Sarajevo (Baščaršija)", lat: 43.86, lon: 18.43, note: "El gran bazar otomano del s. XV" },
+      { name: "Blagaj", lat: 43.26, lon: 17.90, note: "Monasterio derviche junto a manantial kárstico" },
+      { name: "Cataratas de Kravice", lat: 43.16, lon: 17.62, note: "Cascadas del Niágara en miniatura bosníaca" },
+    ],
+  },
+  {
+    id: "tallinn", name: "Tallin & Estonia", country: "Estonia", flag: "🇪🇪",
+    costPerPerson: 560, durationDays: 4, type: "cultura",
+    description: "El casco medieval mejor conservado del Báltico, el país más digital del mundo (e-residency, votación online), la bahía de Tallin y la isla de Saaremaa.",
+    highlights: ["Old Town medieval", "Toompea Hill", "Kadriorg", "Isla Saaremaa"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Tallin Old Town", items: [{ time: "11:00", text: "Llegada a Lennart Meri Airport" }, { time: "14:00", text: "Toompea Hill: panorámica de la ciudad" }, { time: "16:00", text: "Raekoja Plats: la plaza medieval más bonita del Báltico" }, { time: "Noche", text: "Cerveza negra estonia en taberna medieval" }, { time: "Día 2", text: "Torres de la muralla del s. XIV: subida y vistas" }] },
+      { date: "", title: "Día 3 — Kadriorg y playa", items: [{ time: "10:00", text: "Palacio de Kadriorg (regalo de Pedro el Grande)" }, { time: "13:00", text: "Kumu: el mejor museo de arte de los países bálticos" }, { time: "15:00", text: "Pirita Beach: playa báltica" }, { time: "19:00", text: "Barrio de Kalamaja: hipster y cafés de especialidad" }] },
+      { date: "", title: "Día 4 — Regreso", items: [{ time: "09:00", text: "Mercado de Balti Jaam" }, { time: "12:00", text: "Último kohuke (snack de queso típico estonio)" }, { time: "14:00", text: "Vuelo de vuelta" }] },
+    ],
+    mapPlaces: [
+      { name: "Toompea Hill (Tallin)", lat: 59.44, lon: 24.74, note: "Colina del castillo con el mejor mirador" },
+      { name: "Raekoja Plats", lat: 59.44, lon: 24.75, note: "La plaza medieval más preservada del Báltico" },
+      { name: "Kadriorg", lat: 59.44, lon: 24.79, note: "Palacio barroco regalado por el Zar" },
+      { name: "Kalamaja", lat: 59.45, lon: 24.73, note: "Barrio bohemio con casas de madera del s. XIX" },
+    ],
+  },
+  {
+    id: "montenegro", name: "Montenegro", country: "Montenegro", flag: "🇲🇪",
+    costPerPerson: 550, durationDays: 6, type: "playa",
+    description: "El mini-país que lo tiene todo: la bahía de Kotor (el más impresionante fiord mediterráneo), Budva con sus playas, el lago Škoder y el Parque Nacional de Durmitor.",
+    highlights: ["Bahía de Kotor", "Budva", "Durmitor", "Lago Škoder"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Kotor", items: [{ time: "11:00", text: "Llegada a Tivat o Dubrovnik (1h en bus)" }, { time: "14:00", text: "Casco medieval de Kotor (UNESCO)" }, { time: "16:00", text: "Subida a las murallas: 1.350 escalones y vistas" }, { time: "Día 2", text: "Bahía de Kotor en barco: la bahía más bonita del Mediterráneo" }] },
+      { date: "", title: "Días 3-4 — Budva y Sveti Stefan", items: [{ time: "10:00", text: "Budva: la Mónaco balcánica" }, { time: "13:00", text: "Sveti Stefan: hotel-isla medieval (foto desde la colina)" }, { time: "Día 4", text: "Playas de Jaz y Mogren" }] },
+      { date: "", title: "Días 5-6 — Durmitor", items: [{ time: "09:00", text: "Parque Nacional de Durmitor: trekking de altura" }, { time: "14:00", text: "Cañón del Tara: el cañón más profundo de Europa (1.300m)" }, { time: "Día 6", text: "Rafting en el río Tara" }] },
+    ],
+    mapPlaces: [
+      { name: "Bahía de Kotor", lat: 42.43, lon: 18.77, note: "El fiordo mediterráneo más espectacular" },
+      { name: "Sveti Stefan", lat: 42.26, lon: 18.89, note: "Hotel-isla medieval — la foto más icónica de Montenegro" },
+      { name: "Cañón del Tara", lat: 43.15, lon: 19.32, note: "El cañón más profundo de Europa" },
+      { name: "Durmitor", lat: 43.15, lon: 19.01, note: "Parque Nacional con picos de más de 2.500m" },
+    ],
+  },
+  // ── Asia y Oriente Medio menos explorados ──
+  {
+    id: "uzbekistan", name: "Uzbekistán: Ruta de la Seda", country: "Uzbekistán", flag: "🇺🇿",
+    costPerPerson: 980, durationDays: 9, type: "cultura",
+    description: "Las ciudades más antiguas del mundo: Samarcanda con sus cúpulas azules de Tamerlán, Bujará con 140 monumentos medievales y Jiva la ciudad museo intacta.",
+    highlights: ["Registán (Samarcanda)", "Bujará", "Jiva", "Camello en el desierto"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Taskent", items: [{ time: "12:00", text: "Llegada a Tashkent" }, { time: "15:00", text: "Metro de Tashkent: las estaciones más bonitas del mundo" }, { time: "Día 2", text: "Chorsu Bazaar: el bazar más grande de Asia Central" }] },
+      { date: "", title: "Días 3-4 — Samarcanda", items: [{ time: "08:00", text: "Tren de alta velocidad a Samarcanda (2h)" }, { time: "11:00", text: "Registán: tres medersas del s. XV — sin palabras" }, { time: "15:00", text: "Shah-i-Zinda: callejón de mausoleos de cerámica azul" }, { time: "Día 4", text: "Tumba de Tamerlán (Gur-e-Amir)" }] },
+      { date: "", title: "Días 5-6 — Bujará", items: [{ time: "09:00", text: "Tren a Bujará" }, { time: "12:00", text: "Poi Kalón: el minarete medieval que ni Gengis Kan destruyó" }, { time: "15:00", text: "Ark: la fortaleza de 2.500 años" }, { time: "Día 6", text: "Bujará Old Town de noche: la más medieval del mundo" }] },
+      { date: "", title: "Días 7-9 — Jiva", items: [{ time: "09:00", text: "Vuelo a Urgench + bus a Jiva" }, { time: "13:00", text: "Itchan Kala: el centro histórico más intacto de Asia (UNESCO)" }, { time: "Día 8", text: "Desierto de Kizilkum: noche en yurta y amanecer" }, { time: "Día 9", text: "Vuelo de regreso desde Taskent" }] },
+    ],
+    mapPlaces: [
+      { name: "Registán (Samarcanda)", lat: 39.65, lon: 66.97, note: "El complejo de medersas más impresionante de Asia" },
+      { name: "Bujará Old Town", lat: 39.77, lon: 64.42, note: "La ciudad medieval más intacta de Asia Central" },
+      { name: "Jiva (Itchan Kala)", lat: 41.38, lon: 60.36, note: "Ciudad museo Patrimonio UNESCO" },
+      { name: "Taskent (metro)", lat: 41.30, lon: 69.24, note: "El metro con las estaciones más bellas del mundo" },
+    ],
+  },
+  {
+    id: "cambodia", name: "Camboya & Angkor Wat", country: "Camboya", flag: "🇰🇭",
+    costPerPerson: 1050, durationDays: 8, type: "cultura",
+    description: "El templo más grande del mundo: Angkor Wat al amanecer cuando la silueta emerge de la niebla, Ta Prohm con raíces gigantes, Phnom Penh y las playas del sur.",
+    highlights: ["Angkor Wat al amanecer", "Ta Prohm (Tomb Raider)", "Phnom Penh", "Koh Rong"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Phnom Penh", items: [{ time: "12:00", text: "Llegada a Phnom Penh" }, { time: "15:00", text: "Palacio Real y la Pagoda de Plata" }, { time: "Día 2", text: "Tuol Sleng: prisión S-21 — historia del Khmer Rouge" }, { time: "14:00", text: "Campos de Exterminio de Choeung Ek (obligatorio)" }] },
+      { date: "", title: "Días 3-5 — Siem Reap y Angkor", items: [{ time: "04:30", text: "Angkor Wat al amanecer: el momento más mágico del viaje" }, { time: "09:00", text: "Angkor Thom: la ciudad de un millón de habitantes" }, { time: "12:00", text: "Bayon: 216 caras sonrientes de piedra" }, { time: "Día 4", text: "Ta Prohm: el templo de Tomb Raider con raíces enormes" }, { time: "Día 5", text: "Templos periféricos en bici" }] },
+      { date: "", title: "Días 6-8 — Playas", items: [{ time: "08:00", text: "Vuelo a Sihanoukville" }, { time: "11:00", text: "Ferry a Koh Rong: la isla más virgen de Camboya" }, { time: "Días 7-8", text: "Playa y bioluminiscencia nocturna" }] },
+    ],
+    mapPlaces: [
+      { name: "Angkor Wat", lat: 13.41, lon: 103.87, note: "El templo más grande jamás construido (s. XII)" },
+      { name: "Ta Prohm", lat: 13.43, lon: 103.89, note: "Templo devorado por raíces de la selva" },
+      { name: "Phnom Penh", lat: 11.56, lon: 104.93, note: "Capital con historia del Khmer Rouge" },
+      { name: "Koh Rong", lat: 10.62, lon: 103.24, note: "Isla virgen con bioluminiscencia nocturna" },
+    ],
+  },
+  {
+    id: "indonesia-bali", name: "Indonesia: Bali & Komodo", country: "Indonesia", flag: "🇮🇩",
+    costPerPerson: 1550, durationDays: 11, type: "naturaleza",
+    description: "La isla de los dioses: arrozales escalonados de Tegalalang, templos sobre el agua, surf en Uluwatu y los dragones de Komodo — los lagartos más grandes del mundo.",
+    highlights: ["Arrozales Tegalalang", "Templo Tanah Lot", "Dragones de Komodo", "Ubud"],
+    itinerary: [
+      { date: "", title: "Días 1-3 — Ubud", items: [{ time: "12:00", text: "Llegada a Ngurah Rai (Denpasar)" }, { time: "16:00", text: "Ubud: el corazón cultural de Bali" }, { time: "Día 2", text: "Arrozales de Tegalalang: los más fotogénicos del mundo" }, { time: "14:00", text: "Bosque de monos de Ubud (cuidado con el móvil)" }, { time: "Día 3", text: "Templo Tirta Empul: baño de purificación" }] },
+      { date: "", title: "Días 4-5 — Sur de Bali", items: [{ time: "09:00", text: "Tanah Lot: el templo sobre la roca en el mar al atardecer" }, { time: "14:00", text: "Uluwatu: templo en el acantilado + surf" }, { time: "19:00", text: "Kecak Fire Dance en el templo de Uluwatu" }, { time: "Día 5", text: "Seminyak y Canggu: cafés, surf y fiesta" }] },
+      { date: "", title: "Días 6-8 — Volcán Batur", items: [{ time: "03:00", text: "Subida nocturna al Gunung Batur (1.717m)" }, { time: "06:00", text: "Amanecer sobre el volcán y el lago" }, { time: "Día 7", text: "Munduk: cascadas en la selva norte" }, { time: "Día 8", text: "Lovina Beach: avistamiento de delfines" }] },
+      { date: "", title: "Días 9-11 — Komodo", items: [{ time: "09:00", text: "Vuelo a Labuan Bajo (1h)" }, { time: "13:00", text: "Isla de Komodo: dragones de Komodo en libertad" }, { time: "Día 10", text: "Pink Beach: playa de arena rosa" }, { time: "Día 11", text: "Vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Ubud (Tegalalang)", lat: -8.43, lon: 115.28, note: "Arrozales escalonados Patrimonio UNESCO" },
+      { name: "Tanah Lot", lat: -8.62, lon: 115.09, note: "Templo sobre roca en el mar al atardecer" },
+      { name: "Isla de Komodo", lat: -8.55, lon: 119.49, note: "Los dragones más grandes del mundo" },
+      { name: "Uluwatu", lat: -8.83, lon: 115.09, note: "Templo en el acantilado con surf world-class" },
+    ],
+  },
+  {
+    id: "filipinas", name: "Filipinas: Palawan", country: "Filipinas", flag: "🇵🇭",
+    costPerPerson: 1400, durationDays: 10, type: "playa",
+    description: "La mejor isla del mundo según Condé Nast: El Nido con sus lagunas turquesas entre karst, Coron con naufragios de la WWII para bucear, y el río subterráneo más largo del mundo.",
+    highlights: ["El Nido", "Coron (buceo en naufragios)", "Puerto Princesa", "Bacuit Bay"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Manila", items: [{ time: "12:00", text: "Llegada a NAIA" }, { time: "15:00", text: "Intramuros: ciudad amurallada española" }, { time: "Día 2", text: "Vuelo a Puerto Princesa" }] },
+      { date: "", title: "Días 3-4 — Puerto Princesa", items: [{ time: "09:00", text: "Río subterráneo: 8,2 km navegables en la oscuridad" }, { time: "14:00", text: "Manglares de Honda Bay" }, { time: "Día 4", text: "Snorkel en Dos Palmas" }] },
+      { date: "", title: "Días 5-7 — El Nido", items: [{ time: "08:00", text: "Vuelo a El Nido" }, { time: "10:00", text: "Tour A: Big Lagoon, Small Lagoon, Secret Lagoon" }, { time: "Día 6", text: "Tour C: Shimizu, Matinloc Shrine, Hidden Beach" }, { time: "Día 7", text: "Kayak individual entre los karst" }] },
+      { date: "", title: "Días 8-10 — Coron", items: [{ time: "09:00", text: "Ferry o vuelo a Coron" }, { time: "11:00", text: "Buceo en los naufragios japoneses de la WWII" }, { time: "Día 9", text: "Lago Kayangan: el lago más limpio de Asia" }, { time: "Día 10", text: "Vuelo de regreso a Manila" }] },
+    ],
+    mapPlaces: [
+      { name: "El Nido (Bacuit Bay)", lat: 11.19, lon: 119.39, note: "La mejor bahía del mundo — lagunitas turquesas" },
+      { name: "Puerto Princesa (río subterráneo)", lat: 9.74, lon: 118.74, note: "8km de río navegable en cueva (UNESCO)" },
+      { name: "Coron", lat: 11.99, lon: 120.20, note: "Naufragios de la WWII para bucear" },
+      { name: "Lago Kayangan", lat: 11.97, lon: 120.14, note: "El lago más limpio de Asia" },
+    ],
+  },
+  {
+    id: "laos", name: "Laos", country: "Laos", flag: "🇱🇦",
+    costPerPerson: 890, durationDays: 9, type: "naturaleza",
+    description: "El país más tranquilo del Sudeste Asiático: Luang Prabang Patrimonio UNESCO con monjes al amanecer, las cascadas de Kuang Si de color turquesa y el Mekong.",
+    highlights: ["Luang Prabang", "Cascadas Kuang Si", "Monjes al amanecer", "Vang Vieng"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Vientián", items: [{ time: "12:00", text: "Llegada a Wattay International" }, { time: "15:00", text: "Pha That Luang: el stupa nacional de Laos" }, { time: "Día 2", text: "Buda Park: jardín con 200 esculturas religiosas" }] },
+      { date: "", title: "Días 3-4 — Vang Vieng", items: [{ time: "08:00", text: "Bus a Vang Vieng (4h por la selva)" }, { time: "13:00", text: "Kayak y tubing en el río Nam Song" }, { time: "Día 4", text: "Cueva de Tham Chang y laguna azul" }] },
+      { date: "", title: "Días 5-7 — Luang Prabang", items: [{ time: "05:30", text: "Tak Bat: procesión de 200 monjes al amanecer" }, { time: "09:00", text: "Mercado de artesanía nocturno" }, { time: "Día 6", text: "Cascadas Kuang Si: turquesa imposible (bañarse permitido)" }, { time: "Día 7", text: "Templo Wat Xieng Thong: el más bello de Laos" }] },
+      { date: "", title: "Días 8-9 — Río Mekong", items: [{ time: "09:00", text: "Crucero lento por el Mekong 2 días hasta Tailandia" }, { time: "Todo el día", text: "Pueblos remotos, paisajes de selva y karma infinito" }] },
+    ],
+    mapPlaces: [
+      { name: "Luang Prabang", lat: 19.89, lon: 102.14, note: "Ciudad Patrimonio UNESCO junto al Mekong" },
+      { name: "Cascadas de Kuang Si", lat: 19.71, lon: 101.99, note: "Cascadas de agua turquesa para bañarse" },
+      { name: "Vang Vieng", lat: 18.92, lon: 102.45, note: "Valle kárstico con ríos y grutas" },
+      { name: "Vientián (Pha That Luang)", lat: 17.97, lon: 102.61, note: "El símbolo nacional de Laos" },
+    ],
+  },
+  // ── África ──
+  {
+    id: "marruecos-norte", name: "Marruecos: Fez & Sahara", country: "Marruecos", flag: "🇲🇦",
+    costPerPerson: 850, durationDays: 9, type: "cultura",
+    description: "Más allá de Marrakech: Fez la medina más grande del mundo medieval, el desierto del Sahara con noches de millones de estrellas, Chefchaouen la ciudad azul y las gargantas del Todra.",
+    highlights: ["Fez Medina", "Desierto Merzouga", "Chefchaouen azul", "Gargantas Todra"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Chefchaouen", items: [{ time: "12:00", text: "Llegada a Tánger o vuelo a Fez" }, { time: "15:00", text: "Chefchaouen: cada calle pintada de azul índigo" }, { time: "Día 2", text: "Senderismo al mirador sobre el pueblo" }] },
+      { date: "", title: "Días 3-4 — Fez", items: [{ time: "09:00", text: "Fez el-Bali: la medina medieval más grande del mundo" }, { time: "12:00", text: "Tenerías de cuero: vista desde las terrazas de las tiendas" }, { time: "15:00", text: "Medersa Bou Inania: el arte islámico más perfecto" }, { time: "Día 4", text: "Barrio judío (Mellah) y palacio Real" }] },
+      { date: "", title: "Días 5-6 — Desierto Merzouga", items: [{ time: "08:00", text: "Conducción por el Alto Atlas (cordillera)" }, { time: "16:00", text: "Dunas de Erg Chebbi: subir la duna más alta (150m)" }, { time: "18:30", text: "Atardecer sahariense — silencio absoluto" }, { time: "Noche", text: "Campamento beduino, té y cielo estrellado" }] },
+      { date: "", title: "Días 7-9 — Gorges y regreso", items: [{ time: "08:00", text: "Gargantas del Todra: paredes de 300m en 10m de anchura" }, { time: "13:00", text: "Valle del Dadès: kasbahs en el desierto" }, { time: "Día 8", text: "Ouarzazate: la Hollywood del desierto" }, { time: "Día 9", text: "Vuelo de regreso desde Marrakech" }] },
+    ],
+    mapPlaces: [
+      { name: "Chefchaouen", lat: 35.17, lon: -5.27, note: "La ciudad pintada de azul del Rif" },
+      { name: "Fez el-Bali", lat: 34.06, lon: -5.00, note: "La medina medieval más grande del mundo" },
+      { name: "Dunas de Erg Chebbi (Merzouga)", lat: 31.10, lon: -3.97, note: "Las dunas más altas del Sahara marroquí (150m)" },
+      { name: "Gargantas del Todra", lat: 31.59, lon: -5.59, note: "Paredes de 300m separadas por 10m" },
+    ],
+  },
+  {
+    id: "etiopia", name: "Etiopía", country: "Etiopía", flag: "🇪🇹",
+    costPerPerson: 1600, durationDays: 11, type: "cultura",
+    description: "El origen de la humanidad: Lucy y los australopitecos en el museo, las iglesias rupestres de Lalibela (el octavo milagro del mundo), el Valle del Rift y la tribu Mursi.",
+    highlights: ["Iglesias de Lalibela", "Valle del Rift", "Tribu Mursi", "Danakil (el infierno)"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Addis Abeba", items: [{ time: "12:00", text: "Llegada a Bole International" }, { time: "15:00", text: "Museo Nacional: cráneo de Lucy (3,2 millones de años)" }, { time: "Día 2", text: "Mercado Mercato: el mayor mercado al aire libre de África" }] },
+      { date: "", title: "Días 3-5 — Lalibela", items: [{ time: "08:00", text: "Vuelo a Lalibela" }, { time: "10:00", text: "Iglesias rupestres del s. XII: excavadas en la roca sólida" }, { time: "13:00", text: "Bet Giyorgis: la más perfecta, en forma de cruz desde arriba" }, { time: "Día 4", text: "Iglesias del grupo norte: túneles y liturgias en geez" }, { time: "Día 5", text: "Pueblo de Lalibela: el Jerusalén africano" }] },
+      { date: "", title: "Días 6-7 — Omo Valley (tribus)", items: [{ time: "08:00", text: "Vuelo a Jinka" }, { time: "12:00", text: "Tribu Mursi: las mujeres con platos en los labios" }, { time: "Día 7", text: "Tribu Hamar: danza de la lluvia" }] },
+      { date: "", title: "Días 8-11 — Depresión de Danakil", items: [{ time: "08:00", text: "La región más caliente y baja de la Tierra (-116m)" }, { time: "14:00", text: "Lago Dallol: géiseres de ácido sulfúrico multicolor" }, { time: "Noche", text: "Campamento a 50°C" }, { time: "Días 10-11", text: "Erta Ale: el lago de lava más antiguo del mundo" }] },
+    ],
+    mapPlaces: [
+      { name: "Lalibela", lat: 12.03, lon: 39.05, note: "Iglesias rupestres del s. XII — el octavo milagro" },
+      { name: "Depresión de Danakil", lat: 14.24, lon: 40.30, note: "La región más caliente de la Tierra (-116m)" },
+      { name: "Addis Abeba (Museo Lucy)", lat: 9.00, lon: 38.75, note: "El cráneo de Lucy: nuestro ancestro de 3,2M de años" },
+      { name: "Erta Ale", lat: 13.60, lon: 40.67, note: "El lago de lava más antiguo del mundo" },
+    ],
+  },
+  {
+    id: "namibia", name: "Namibia", country: "Namibia", flag: "🇳🇦",
+    costPerPerson: 2400, durationDays: 11, type: "naturaleza",
+    description: "El país más despoblado de África: las dunas rojas de Sossusvlei (las más altas del mundo), los elefantes de Etosha, Swakopmund alemana en el desierto y esqueletos de ballenas.",
+    highlights: ["Dunes Sossusvlei", "Deadvlei", "Etosha", "Skeleton Coast"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Windhoek", items: [{ time: "12:00", text: "Llegada a Hosea Kutako" }, { time: "15:00", text: "Windhoek: ciudad alemana en el corazón de África" }, { time: "Día 2", text: "Ruta hacia el sur por el desierto" }] },
+      { date: "", title: "Días 3-4 — Sossusvlei", items: [{ time: "05:00", text: "Duna 45 al amanecer: 170m de arena roja" }, { time: "07:00", text: "Deadvlei: árboles muertos de 900 años en el desierto blanco" }, { time: "10:00", text: "Big Daddy Dune: la duna más alta (325m)" }, { time: "Día 4", text: "NamibRand: la oscuridad más estrellada del mundo" }] },
+      { date: "", title: "Días 5-6 — Swakopmund", items: [{ time: "09:00", text: "Swakopmund: cerveza alemana en el desierto costero" }, { time: "14:00", text: "Skeleton Coast: esqueletos de ballenas en la playa" }, { time: "Día 6", text: "Sandboarding en las dunas costeras" }] },
+      { date: "", title: "Días 7-11 — Etosha", items: [{ time: "09:00", text: "Parque Nacional de Etosha: el mayor de Namibia" }, { time: "Días 7-9", text: "Waterhole: elefantes, rinocerontes y leones al abrevadero" }, { time: "Noche", text: "Night drive: guepardos y leopardos" }, { time: "Días 10-11", text: "Regreso a Windhoek y vuelo" }] },
+    ],
+    mapPlaces: [
+      { name: "Deadvlei (Sossusvlei)", lat: -24.76, lon: 15.29, note: "Árboles muertos de 900 años en sartén blanca" },
+      { name: "Duna 45", lat: -24.73, lon: 15.44, note: "La duna más famosa: 170m de arena roja" },
+      { name: "Etosha", lat: -19.13, lon: 15.91, note: "El mayor parque nacional de Namibia" },
+      { name: "Swakopmund", lat: -22.68, lon: 14.53, note: "Ciudad alemana en el desierto costero" },
+    ],
+  },
+  {
+    id: "rwanda", name: "Rwanda: Gorilas de Montaña", country: "Rwanda", flag: "🇷🇼",
+    costPerPerson: 3100, durationDays: 7, type: "naturaleza",
+    description: "La experiencia más emocionante de la vida: sentarse a 1 metro de una familia de gorilas de montaña en los Virunga, la Kigali más limpia de África y el lago Kivu.",
+    highlights: ["Trekking gorilas", "Volcanoes NP", "Kigali", "Lago Kivu"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Kigali", items: [{ time: "12:00", text: "Llegada a Kigali Internacional" }, { time: "15:00", text: "Kigali: la capital más limpia y segura de África" }, { time: "Día 2", text: "Memorial del Genocidio: historia impactante del 1994" }, { time: "15:00", text: "Mercado artesanal y colinas de Kigali" }] },
+      { date: "", title: "Días 3-5 — Parque de los Volcanes", items: [{ time: "07:00", text: "Trek de 2-6h en busca de los gorilas" }, { time: "Mediodía", text: "1 hora con la familia de gorilas: la experiencia de la vida" }, { time: "Día 4", text: "Trek de Golden Monkeys: otros primates únicos" }, { time: "Día 5", text: "Subida al Bisoke (3.711m) entre volcanes" }] },
+      { date: "", title: "Días 6-7 — Lago Kivu", items: [{ time: "09:00", text: "Conducción al Lago Kivu" }, { time: "12:00", text: "Gisenyi: playa y cerveza Primus a orillas del lago" }, { time: "Día 7", text: "Kayak y visita a la isla Idjwi" }] },
+    ],
+    mapPlaces: [
+      { name: "Parque de los Volcanes", lat: -1.47, lon: 29.54, note: "El único lugar para ver gorilas de montaña" },
+      { name: "Kigali", lat: -1.95, lon: 30.06, note: "La capital más limpia de África" },
+      { name: "Lago Kivu", lat: -2.05, lon: 29.21, note: "Lago de montaña entre Rwanda y Congo" },
+      { name: "Volcán Bisoke", lat: -1.47, lon: 29.49, note: "3.711m — con cráter y lago en la cima" },
+    ],
+  },
+  {
+    id: "madagascar", name: "Madagascar", country: "Madagascar", flag: "🇲🇬",
+    costPerPerson: 2100, durationDays: 12, type: "naturaleza",
+    description: "El continente perdido: el 90% de su fauna no existe en ningún otro lugar. Baobabs gigantes al atardecer, lémures en la nariz, chamelones cambiando de color y playas de cuento.",
+    highlights: ["Avenida de los Baobabs", "Lémures", "Tsingy de Bemaraha", "Playas Nosy Be"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Antananarivo", items: [{ time: "12:00", text: "Llegada a Ivato" }, { time: "15:00", text: "Rova: el palacio de la reina merina" }, { time: "Día 2", text: "Lemur Island: lémures comiendo de tu mano" }] },
+      { date: "", title: "Días 3-4 — Avenida de los Baobabs", items: [{ time: "08:00", text: "RN7 hacia el sur: la ruta más bella de Madagascar" }, { time: "17:00", text: "Avenida de los Baobabs: los últimos gigantes vivos al atardecer" }, { time: "Noche", text: "Dormir bajo los baobabs" }] },
+      { date: "", title: "Días 5-7 — Tsingy de Bemaraha", items: [{ time: "09:00", text: "Tsingy: agujas de piedra caliza de 50m (UNESCO)" }, { time: "14:00", text: "Puentes de cuerda entre las agujas" }, { time: "Día 6", text: "Bosque de baobabs del norte" }, { time: "Día 7", text: "Río Tsiribihina en canoa 3 días" }] },
+      { date: "", title: "Días 8-12 — Nosy Be", items: [{ time: "09:00", text: "Vuelo a Nosy Be: las Seychelles de Madagascar" }, { time: "13:00", text: "Nosy Iranja: playa de arena blanca en banco de arena" }, { time: "Días 9-10", text: "Snorkel con mantas y tiburones ballena" }, { time: "Días 11-12", text: "Selva de Lokobe: lémures nocturnos" }] },
+    ],
+    mapPlaces: [
+      { name: "Avenida de los Baobabs", lat: -20.25, lon: 44.42, note: "Baobabs de 800 años — símbolo de Madagascar" },
+      { name: "Tsingy de Bemaraha", lat: -18.77, lon: 44.72, note: "Agujas de piedra caliza Patrimonio UNESCO" },
+      { name: "Nosy Be", lat: -13.35, lon: 48.27, note: "Isla tropical con snorkel y playas vírgenes" },
+      { name: "Lemur Island (Antananarivo)", lat: -19.75, lon: 47.00, note: "Lémures comiendo de tu mano" },
+    ],
+  },
+  // ── América Latina ──
+  {
+    id: "bolivia", name: "Bolivia: Salar de Uyuni", country: "Bolivia", flag: "🇧🇴",
+    costPerPerson: 1100, durationDays: 9, type: "naturaleza",
+    description: "El espejo más grande del mundo: el Salar de Uyuni, la laguna roja con flamencos, la ciudad más alta del mundo (Potosí), el Lago Titicaca boliviano y La Paz.",
+    highlights: ["Salar de Uyuni", "Laguna Colorada", "Potosí", "La Paz"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — La Paz", items: [{ time: "12:00", text: "Llegada al aeropuerto de El Alto (4.060m)" }, { time: "15:00", text: "Teleférico urbano: la red de cable más larga del mundo" }, { time: "Noche", text: "Zona Rosa: mercado de brujas y hoja de coca" }, { time: "Día 2", text: "Camino de la Muerte en bicicleta (3.600m de descenso)" }] },
+      { date: "", title: "Días 3-4 — Uyuni", items: [{ time: "08:00", text: "Vuelo a Uyuni" }, { time: "12:00", text: "Cementerio de trenes: locomotoras oxidadas en el desierto" }, { time: "15:00", text: "Primer contacto con el salar (10.582 km²)" }, { time: "Noche", text: "Hotel de sal: paredes, cama y mesa de sal" }] },
+      { date: "", title: "Días 5-6 — Circuito sur (lagunas)", items: [{ time: "07:00", text: "Laguna Colorada: roja por algas + flamencos" }, { time: "12:00", text: "Géiseres Sol de Mañana a 4.850m (04:00 de la mañana)" }, { time: "15:00", text: "Laguna Verde: al pie del Volcán Licancabur" }, { time: "Día 6", text: "Horizonte perfecto del salar con charco reflectante" }] },
+      { date: "", title: "Días 7-9 — Potosí y Lago Titicaca", items: [{ time: "09:00", text: "Potosí: la ciudad minera a 4.090m — el cerro que financió Europa" }, { time: "13:00", text: "Minas de Cerro Rico: descenso con dinamita activa" }, { time: "Días 8-9", text: "Lago Titicaca: Isla del Sol — cuna del Imperio Inca" }] },
+    ],
+    mapPlaces: [
+      { name: "Salar de Uyuni", lat: -20.14, lon: -67.49, note: "El espejo más grande del mundo (10.582 km²)" },
+      { name: "Laguna Colorada", lat: -22.17, lon: -67.78, note: "Laguna roja con flamencos a 4.278m" },
+      { name: "Potosí", lat: -19.59, lon: -65.75, note: "La ciudad minera que financió el Imperio Español" },
+      { name: "La Paz", lat: -16.50, lon: -68.15, note: "La capital más alta del mundo (3.640m)" },
+    ],
+  },
+  {
+    id: "ecuador-galapagos", name: "Ecuador & Galápagos", country: "Ecuador", flag: "🇪🇨",
+    costPerPerson: 2600, durationDays: 10, type: "naturaleza",
+    description: "El laboratorio de Darwin: las islas donde los animales nunca aprendieron a tener miedo a los humanos. Iguanas marinas, tortugas gigantes centenarias, lobos marinos y pingüinos en el Ecuador.",
+    highlights: ["Galápagos (lobos marinos)", "Tortugas gigantes", "Quito colonial", "Volcán Cotopaxi"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Quito", items: [{ time: "12:00", text: "Llegada a Mariscal Sucre (2.800m)" }, { time: "15:00", text: "Quito Colonial: el centro histórico más conservado de América" }, { time: "Día 2", text: "Mitad del Mundo: foto pisando el Ecuador" }, { time: "14:00", text: "Volcán Cotopaxi (5.897m) en la distancia" }] },
+      { date: "", title: "Días 3-7 — Galápagos (crucero)", items: [{ time: "08:00", text: "Vuelo a Baltra (2h)" }, { time: "12:00", text: "Embarcación en el crucero" }, { time: "Día 3", text: "Isla Santa Cruz: tortugas gigantes en libertad" }, { time: "Día 4", text: "Isla Española: piqueros patas azules y albatros" }, { time: "Día 5", text: "Isla Fernandina: iguanas marinas y lobos marinos" }, { time: "Día 6", text: "Buceo con tiburones de Galápagos" }, { time: "Día 7", text: "Pingüinos de Galápagos en la Línea del Ecuador" }] },
+      { date: "", title: "Días 8-10 — Ruta Indígena", items: [{ time: "09:00", text: "Regreso a Quito" }, { time: "11:00", text: "Otavalo: mercado indígena más grande de Sudamérica" }, { time: "Día 9", text: "Laguna de Quilotoa: lago volcánico verde" }, { time: "Día 10", text: "Vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Galápagos (Isla Santa Cruz)", lat: -0.74, lon: -90.31, note: "El archipiélago de Darwin — fauna única" },
+      { name: "Quito (Centro Histórico)", lat: -0.22, lon: -78.51, note: "El centro colonial mejor conservado de América" },
+      { name: "Volcán Cotopaxi", lat: -0.68, lon: -78.44, note: "El volcán activo más alto del mundo (5.897m)" },
+      { name: "Laguna Quilotoa", lat: -0.86, lon: -78.90, note: "Lago volcánico de color verde esmeralda" },
+    ],
+  },
+  {
+    id: "brasil", name: "Brasil: Río & Amazonia", country: "Brasil", flag: "🇧🇷",
+    costPerPerson: 1800, durationDays: 11, type: "aventura",
+    description: "Rio de Janeiro con el Cristo Redentor y el Carnaval, la selva amazónica más virgen del mundo, las cataratas de Iguazú y las playas de Florianópolis.",
+    highlights: ["Cristo Redentor", "Amazonia", "Cataratas Iguazú", "Carnaval"],
+    itinerary: [
+      { date: "", title: "Días 1-3 — Río de Janeiro", items: [{ time: "12:00", text: "Llegada a Galeão" }, { time: "16:00", text: "Cristo Redentor al atardecer: la vista que defina Brasil" }, { time: "Día 2", text: "Ipanema y Copacabana: fútbol en la playa" }, { time: "14:00", text: "Pan de Azúcar en teleférico" }, { time: "Día 3", text: "Lapa: samba y caipirinha toda la noche" }] },
+      { date: "", title: "Días 4-6 — Amazonia", items: [{ time: "08:00", text: "Vuelo a Manaus (3h)" }, { time: "14:00", text: "Confluencia del Negro y el Solimões: dos ríos que no se mezclan" }, { time: "Día 5", text: "Lodge en la selva: piranhas al atardecer" }, { time: "Día 6", text: "Canoa al amanecer: tucanes y monos capuchino" }] },
+      { date: "", title: "Días 7-8 — Lençóis Maranhenses", items: [{ time: "09:00", text: "Vuelo a São Luís" }, { time: "14:00", text: "Lençóis Maranhenses: dunas blancas con lagunas de agua dulce" }, { time: "Día 8", text: "Nadar en las lagunas azules entre dunas" }] },
+      { date: "", title: "Días 9-11 — Iguazú y vuelta", items: [{ time: "09:00", text: "Vuelo a Foz do Iguaçu" }, { time: "12:00", text: "Cataratas de Iguazú lado brasileño: vista panorámica" }, { time: "Día 10", text: "Lado argentino: caminar sobre el agua" }, { time: "Día 11", text: "Vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Cristo Redentor (Río)", lat: -22.95, lon: -43.21, note: "La estatua más famosa de Brasil" },
+      { name: "Amazonia (Manaus)", lat: -3.10, lon: -60.03, note: "La selva tropical más grande del mundo" },
+      { name: "Lençóis Maranhenses", lat: -2.49, lon: -43.12, note: "Dunas blancas con lagunas de agua dulce" },
+      { name: "Cataratas del Iguazú (Brasil)", lat: -25.69, lon: -54.44, note: "275 cataratas — más impresionantes que las del Niágara" },
+    ],
+  },
+  {
+    id: "chile", name: "Chile: Atacama & Torres del Paine", country: "Chile", flag: "🇨🇱",
+    costPerPerson: 2300, durationDays: 11, type: "naturaleza",
+    description: "El país más largo del mundo: el desierto de Atacama (el más árido de la Tierra) con géiseres y flamencos, y Torres del Paine en el fin del mundo.",
+    highlights: ["Valle de la Luna", "Torres del Paine", "Géiseres Tatio", "San Pedro de Atacama"],
+    itinerary: [
+      { date: "", title: "Días 1-4 — San Pedro de Atacama", items: [{ time: "12:00", text: "Vuelo a Calama + bus a San Pedro (1h)" }, { time: "17:00", text: "Valle de la Luna: atardecer en el desierto" }, { time: "Día 2 04:00", text: "Géiseres del Tatio: 4.320m y 86°C de vapor" }, { time: "Día 3", text: "Laguna Cejar: flotar como en el Mar Muerto" }, { time: "Día 4", text: "Atacama grande: Salar de Atacama y flamencos" }] },
+      { date: "", title: "Días 5-6 — Santiago", items: [{ time: "09:00", text: "Vuelo a Santiago" }, { time: "14:00", text: "Barrio Lastarria: gastronomía chilena" }, { time: "Día 6", text: "Cerro San Cristóbal: panorámica con los Andes nevados" }] },
+      { date: "", title: "Días 7-11 — Torres del Paine", items: [{ time: "08:00", text: "Vuelo a Punta Arenas + bus a Torres del Paine (5h)" }, { time: "Días 7-9", text: "W Trek: Las Torres, Valle del Francés, Mirador Grey" }, { time: "Día 10", text: "Glaciar Grey: iceberg azul y condores" }, { time: "Día 11", text: "Vuelo de regreso desde Punta Arenas" }] },
+    ],
+    mapPlaces: [
+      { name: "Valle de la Luna (Atacama)", lat: -22.90, lon: -68.26, note: "Paisaje marciano en el desierto más árido del mundo" },
+      { name: "Torres del Paine", lat: -51.00, lon: -73.00, note: "Torres de granito — trekking Patrimonio UNESCO" },
+      { name: "Géiseres del Tatio", lat: -22.33, lon: -68.02, note: "El campo de géiseres más alto del mundo (4.320m)" },
+      { name: "Glaciar Grey", lat: -51.10, lon: -73.24, note: "Glaciar azul con icebergs desprendiéndose" },
+    ],
+  },
+  // ── Destinos verdaderamente insólitos ──
+  {
+    id: "svalbard", name: "Svalbard", country: "Noruega (Ártico)", flag: "🇸🇯",
+    costPerPerson: 2800, durationDays: 7, type: "aventura",
+    description: "El archipiélago más septentrional del mundo: osos polares superan en número a las personas, auroras boreales todo el invierno, sol de medianoche en verano y glaciares que llegan al mar.",
+    highlights: ["Osos polares", "Auroras boreales", "Glaciar Nordenskiöld", "Longyearbyen"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Longyearbyen", items: [{ time: "12:00", text: "Llegada a Longyearbyen (la ciudad más al norte con vuelos regulares)" }, { time: "15:00", text: "Museo de Svalbard: historia de minería y exploración polar" }, { time: "Noche", text: "Aurora boreal desde la ciudad (oct-feb)" }, { time: "Día 2", text: "Obligatorio: llevar rifle para salir de la ciudad (osos polares)" }] },
+      { date: "", title: "Días 3-4 — Safari polar", items: [{ time: "08:00", text: "Snowmobile o perros de trineo hasta el glaciar" }, { time: "12:00", text: "Glaciar de Nordenskiöld: hielo azul de 10.000 años" }, { time: "Día 4", text: "Búsqueda de osos polares en barco" }, { time: "16:00", text: "Foca de Weddell y renos árticos en la costa" }] },
+      { date: "", title: "Días 5-7 — Expedición", items: [{ time: "08:00", text: "Barco de expedición al norte (82°N)" }, { time: "14:00", text: "Hielo marino: caminar sobre el pack ice" }, { time: "Noche", text: "Cena con vista a las auroras desde el barco" }, { time: "Día 7", text: "Vuelo de regreso via Oslo" }] },
+    ],
+    mapPlaces: [
+      { name: "Longyearbyen", lat: 78.22, lon: 15.65, note: "La ciudad más al norte del mundo con vuelos regulares" },
+      { name: "Nordenskiöld (glaciar)", lat: 78.47, lon: 16.54, note: "Glaciar que llega al mar ártico" },
+      { name: "Ny-Ålesund", lat: 78.93, lon: 11.93, note: "El asentamiento permanente más septentrional del mundo" },
+      { name: "Spitsbergen (norte)", lat: 80.00, lon: 15.00, note: "Zona de osos polares y hielo marino" },
+    ],
+  },
+  {
+    id: "mongolia", name: "Mongolia", country: "Mongolia", flag: "🇲🇳",
+    costPerPerson: 1700, durationDays: 10, type: "aventura",
+    description: "El país menos densamente poblado del mundo: stepas infinitas, desierto de Gobi con dinosaurios, los descendientes de Gengis Kan y una noche en yurta bajo el cielo más oscuro del planeta.",
+    highlights: ["Desierto del Gobi", "Noche en yurta", "Stepas infinitas", "Festival Naadam"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Ulán Bator", items: [{ time: "12:00", text: "Llegada a Chinggis Khaan International" }, { time: "15:00", text: "Sukhbaatar Square: el Times Square de Mongolia" }, { time: "Día 2", text: "Monasterio Gandan: el mayor monasterio budista" }] },
+      { date: "", title: "Días 3-5 — Stepas centrales", items: [{ time: "08:00", text: "Jeep 4x4 hacia las stepas: no hay carreteras, solo GPS" }, { time: "14:00", text: "Primer ger (yurta): familia nómada en la estepa" }, { time: "Noche", text: "Cielo estrellado sin ninguna luz artificial en 100km" }, { time: "Día 4", text: "A caballo por las stepas — los mejores jinetes del mundo" }, { time: "Día 5", text: "Kharkhorin: la antigua capital del Imperio Mongol" }] },
+      { date: "", title: "Días 6-8 — Desierto del Gobi", items: [{ time: "08:00", text: "Vuelo interno a Dalanzadgad" }, { time: "12:00", text: "Dunas de Khongoryn Els: 800m de arena cantante" }, { time: "Día 7", text: "Yacimiento de dinosaurios: huevos de Velociraptor in situ" }, { time: "Día 8", text: "Cañón de Yolyn Am: hielo eterno en el desierto (julio)" }] },
+      { date: "", title: "Días 9-10 — Regreso", items: [{ time: "09:00", text: "Vuelo a UB" }, { time: "14:00", text: "Mercado Negro de Ulán Bator: casamirmir y deels" }, { time: "Día 10", text: "Vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Desierto del Gobi (Khongoryn Els)", lat: 43.77, lon: 102.20, note: "Dunas cantantes de 800m en el mayor desierto de Asia" },
+      { name: "Stepas centrales", lat: 47.19, lon: 102.60, note: "Estepa infinita: el mayor pastizal del mundo" },
+      { name: "Kharkhorin", lat: 47.21, lon: 102.84, note: "La antigua capital del Imperio Mongol de Gengis Kan" },
+      { name: "Ulán Bator", lat: 47.89, lon: 106.91, note: "La capital más fría del mundo" },
+    ],
+  },
+  {
+    id: "kirguistan", name: "Kirguistán", country: "Kirguistán", flag: "🇰🇬",
+    costPerPerson: 980, durationDays: 9, type: "aventura",
+    description: "La Suiza de Asia Central: nieve perpetua en las cimas del Tian Shan, el lago Son Kul a 3.000m entre yurtas y caballos, el épico cañón de Skazka y hospitalidad nómada sin igual.",
+    highlights: ["Lago Son Kul", "Cañón Skazka", "Ala-Archa", "Yurtas nómadas"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Biskek", items: [{ time: "12:00", text: "Llegada a Manas International" }, { time: "15:00", text: "Plaza Ala-Too y la estatua de Manas" }, { time: "Día 2", text: "Cañón de Konorchek: formaciones de tierra roja" }] },
+      { date: "", title: "Días 3-4 — Ala-Archa y Karakol", items: [{ time: "09:00", text: "Parque Nacional Ala-Archa: glaciares a 40 min de la capital" }, { time: "Día 4", text: "Bus a Karakol (6h por el lago Issyk-Kul: el 2º mayor lago de montaña)" }] },
+      { date: "", title: "Días 5-6 — Cañón Skazka y Jeti-Oguz", items: [{ time: "09:00", text: "Cañón Skazka: formaciones de arcilla en mil colores" }, { time: "14:00", text: "Jeti-Oguz: las 7 rocas rojas y el valle de los osos" }, { time: "Día 6", text: "Barskoon: cascada y valle alpino" }] },
+      { date: "", title: "Días 7-9 — Son Kul", items: [{ time: "08:00", text: "Ascenso a Son Kul (3.016m) en jeep" }, { time: "14:00", text: "Yurta junto al lago: caballos libres y el horizonte eterno" }, { time: "Noche", text: "Cena de beshbarmak con familia kirguiza" }, { time: "Día 8", text: "A caballo alrededor del lago" }, { time: "Día 9", text: "Descenso y vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Lago Son Kul", lat: 41.84, lon: 75.12, note: "Lago alpino a 3.016m rodeado de yurtas y caballos" },
+      { name: "Cañón Skazka", lat: 42.25, lon: 77.30, note: "Formaciones de arcilla multicolor — el 'Cuento de Hadas'" },
+      { name: "Ala-Archa", lat: 42.57, lon: 74.49, note: "Glaciares y cimas de más de 4.000m a 40 min de la capital" },
+      { name: "Lago Issyk-Kul", lat: 42.49, lon: 77.28, note: "El segundo lago de montaña más grande del mundo" },
+    ],
+  },
+  {
+    id: "bhutan", name: "Bután", country: "Bután", flag: "🇧🇹",
+    costPerPerson: 3200, durationDays: 9, type: "cultura",
+    description: "El único país que mide la Felicidad Nacional Bruta: el monasterio de Tigres Nest colgado en el acantilado a 3.120m, valles sagrados protegidos del turismo masivo y el último reino budista del Himalaya.",
+    highlights: ["Tigres Nest (Paro Taktsang)", "Punakha Dzong", "Senderismo himalayo", "Archery"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Paro y llegada", items: [{ time: "12:00", text: "Llegada a Paro — uno de los aterrizajes más difíciles del mundo" }, { time: "15:00", text: "Dzong de Rinpung: fortaleza medieval sobre el río" }, { time: "Día 2 07:00", text: "Subida al Tigres Nest (4h, 3.120m): el monasterio más sagrado de Bután" }] },
+      { date: "", title: "Días 3-4 — Timpú", items: [{ time: "09:00", text: "Timpú: la única capital del mundo sin semáforos" }, { time: "12:00", text: "Memorial Chorten: la ronda budista diaria" }, { time: "15:00", text: "Takin Reserve: el animal nacional único de Bután" }, { time: "Día 4", text: "Taller de pintura de thangkas" }] },
+      { date: "", title: "Días 5-6 — Valle de Punakha", items: [{ time: "09:00", text: "Paso de Dochula (3.100m): 108 stupas y el Himalaya nevado" }, { time: "13:00", text: "Punakha Dzong: la fortaleza más bella de Bután" }, { time: "Día 6", text: "Rafting en el río Pho Chhu" }] },
+      { date: "", title: "Días 7-9 — Bumthang", items: [{ time: "09:00", text: "Vuelo interno a Jakar" }, { time: "12:00", text: "Valle de Bumthang: los templos más sagrados del s. VII" }, { time: "Día 8", text: "Trek de Duer Hot Springs" }, { time: "Día 9", text: "Vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Tigres Nest (Paro)", lat: 27.49, lon: 89.36, note: "Monasterio en el acantilado a 3.120m — lo más sagrado de Bután" },
+      { name: "Punakha Dzong", lat: 27.61, lon: 89.87, note: "La fortaleza más bella del reino" },
+      { name: "Timpú", lat: 27.47, lon: 89.64, note: "La única capital del mundo sin semáforos" },
+      { name: "Paso de Dochula", lat: 27.50, lon: 89.74, note: "108 stupas con vistas al Himalaya en días claros" },
+    ],
+  },
+  {
+    id: "iran", name: "Irán: Persia Eterna", country: "Irán", flag: "🇮🇷",
+    costPerPerson: 1100, durationDays: 10, type: "cultura",
+    description: "El gran incomprendido del turismo: Isfahán con sus mezquitas de mosaico azul que quitan el habla, Persépolis la capital del Imperio Persa, Shiraz y los jardines persas — y la hospitalidad más cálida del mundo.",
+    highlights: ["Mezquita Imam (Isfahán)", "Persépolis", "Bazar de Teherán", "Shiraz"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Teherán", items: [{ time: "12:00", text: "Llegada a IKA" }, { time: "15:00", text: "Gran Bazar de Teherán: 10km de galerías" }, { time: "Día 2", text: "Golestán Palace (UNESCO) y Museo de Joyas Nacionales (el más impresionante del mundo)" }] },
+      { date: "", title: "Días 3-5 — Isfahán", items: [{ time: "08:00", text: "Vuelo a Isfahán" }, { time: "11:00", text: "Naghsh-e-Jahan: la segunda plaza más grande del mundo (UNESCO)" }, { time: "13:00", text: "Mezquita Imam: los mosaicos azules más perfectos del islam" }, { time: "16:00", text: "Puente Si-o-se-pol: 33 arcos sobre el río" }, { time: "Día 4", text: "Mezquita Sheikh Lotfollah: solo para los Shas, cúpula que cambia de color" }, { time: "Día 5", text: "Barrio armenio de Jolfa y catedral" }] },
+      { date: "", title: "Días 6-7 — Yazd y desierto", items: [{ time: "09:00", text: "Yazd: la ciudad zoroástrica de adobe" }, { time: "14:00", text: "Torres del Silencio: donde los zoroastristas dejaban los muertos" }, { time: "Día 7", text: "Desierto de Dasht-e Kavir: dunas al amanecer" }] },
+      { date: "", title: "Días 8-10 — Shiraz y Persépolis", items: [{ time: "09:00", text: "Persépolis: la capital imperial de Darío el Grande (518 a.C.)" }, { time: "14:00", text: "Jardín de Eram y Bagh-e Afifabad (jardines persas UNESCO)" }, { time: "Día 9", text: "Mezquita Nasir al-Mulk: el mosaico de colores que proyecta luz" }, { time: "Día 10", text: "Vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Mezquita Imam (Isfahán)", lat: 32.65, lon: 51.68, note: "Los mosaicos de cerámica azul más perfectos del mundo" },
+      { name: "Persépolis", lat: 29.93, lon: 52.89, note: "Capital del Imperio Persa de Darío (s. VI a.C.)" },
+      { name: "Yazd", lat: 31.89, lon: 54.37, note: "La ciudad zoroástrica de adobe más antigua habitada" },
+      { name: "Mezquita Nasir al-Mulk (Shiraz)", lat: 29.61, lon: 52.54, note: "El arcoíris interior al amanecer" },
+    ],
+  },
+  {
+    id: "groenlandia", name: "Groenlandia", country: "Groenlandia (Dinamarca)", flag: "🇬🇱",
+    costPerPerson: 3500, durationDays: 8, type: "aventura",
+    description: "La isla más grande del mundo: 80% cubierta de hielo, icebergs del tamaño de rascacielos, auroras boreales todo el invierno, ballenas jorobadas y los últimos inuit.",
+    highlights: ["Glaciar Sermeq (Ilulissat)", "Auroras boreales", "Icebergs gigantes", "Kayak ártico"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Kangerlussuaq y Nuuk", items: [{ time: "12:00", text: "Llegada a Kangerlussuaq" }, { time: "15:00", text: "Tundra ártica: bueyes almizcleros en libertad" }, { time: "Día 2", text: "Nuuk: la capital más pequeña del mundo" }, { time: "14:00", text: "Museo Nacional de Groenlandia: momias inuit de 500 años" }] },
+      { date: "", title: "Días 3-5 — Ilulissat", items: [{ time: "09:00", text: "Vuelo a Ilulissat" }, { time: "12:00", text: "Fiordo de Hielo de Ilulissat (UNESCO): icebergs que producen el 10% del hielo ártico" }, { time: "15:00", text: "Kayak entre icebergs del tamaño de edificios" }, { time: "Día 4", text: "Senderismo sobre el casquete de hielo" }, { time: "Noche", text: "Aurora boreal desde el iglú de cristal" }] },
+      { date: "", title: "Días 6-8 — Qaqortoq (sur)", items: [{ time: "09:00", text: "Vuelo al sur: fiordos verdes (el único verde de Groenlandia)" }, { time: "12:00", text: "Hvalsey: la iglesia vikinga más antigua del Nuevo Mundo (s. XIV)" }, { time: "Día 7", text: "Balleneros: avistamiento de ballenas jorobadas" }, { time: "Día 8", text: "Vuelo de regreso via Copenhague" }] },
+    ],
+    mapPlaces: [
+      { name: "Fiordo de Hielo de Ilulissat", lat: 69.22, lon: -51.10, note: "Patrimonio UNESCO — icebergs de 40km de largo" },
+      { name: "Nuuk", lat: 64.18, lon: -51.74, note: "La capital más pequeña del mundo (58.000 hab.)" },
+      { name: "Casquete de Hielo (Inland Ice)", lat: 67.00, lon: -44.00, note: "El segundo casquete de hielo más grande del mundo" },
+      { name: "Qaqortoq (sur)", lat: 60.72, lon: -46.04, note: "Fiordos verdes y restos vikingos del s. X" },
+    ],
+  },
+  {
+    id: "cabo-verde", name: "Cabo Verde", country: "Cabo Verde", flag: "🇨🇻",
+    costPerPerson: 850, durationDays: 7, type: "playa",
+    description: "El archipiélago africano con alma latinoamericana: Sal con sus playas de arena blanca y kitesurf, Fogo con el volcán que destruyó todo en 2014, Santiago y la música morna de Cesária Évora.",
+    highlights: ["Playa Santa Maria (Sal)", "Volcán Fogo", "Mindelo (São Vicente)", "Kitesurf"],
+    itinerary: [
+      { date: "", title: "Días 1-3 — Isla de Sal", items: [{ time: "12:00", text: "Llegada a Amilcar Cabral (SAL)" }, { time: "15:00", text: "Playa Santa Maria: agua cálida a 26°C" }, { time: "Día 2", text: "Kitesurf o windsurf en Ponta Preta" }, { time: "Día 3", text: "Pedra de Lume: laguna de sal donde flotar" }] },
+      { date: "", title: "Días 4-5 — Isla de Fogo", items: [{ time: "09:00", text: "Vuelo a Fogo" }, { time: "12:00", text: "Volcán Pico do Fogo (2.829m): subida al cráter" }, { time: "16:00", text: "Chã das Caldeiras: pueblo reconstruido después de la lava de 2014" }, { time: "Noche", text: "Vino Fogo: el único vino cultivado en la lava" }] },
+      { date: "", title: "Días 6-7 — Santiago y vuelta", items: [{ time: "09:00", text: "Vuelo a Praia (Santiago)" }, { time: "12:00", text: "Cidade Velha: primera ciudad colonial europea en África (UNESCO)" }, { time: "15:00", text: "Musik de morna: el fado africano" }, { time: "Día 7", text: "Vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Playa Santa Maria (Sal)", lat: 16.59, lon: -22.90, note: "La mejor playa de Cabo Verde" },
+      { name: "Volcán Pico do Fogo", lat: 14.95, lon: -24.35, note: "El volcán activo más imponente del Atlántico" },
+      { name: "Cidade Velha (Santiago)", lat: 14.91, lon: -23.60, note: "Primera ciudad colonial europea en África tropical (UNESCO)" },
+      { name: "Pedra de Lume (Sal)", lat: 16.77, lon: -22.88, note: "Laguna de sal volcánica donde se flota sin esfuerzo" },
+    ],
+  },
+  {
+    id: "mozambique", name: "Mozambique", country: "Mozambique", flag: "🇲🇿",
+    costPerPerson: 1800, durationDays: 10, type: "playa",
+    description: "Las playas más vírgenes de África: el archipiélago de Quirimbas sin turistas, las islas de coral del Bazaruto, las tortugas marinas de Tofo y la arquitectura colonial portuguesa de Ilha de Moçambique.",
+    highlights: ["Archipiélago Quirimbas", "Isla de Moçambique (UNESCO)", "Buceo Tofo", "Bazaruto"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Maputo", items: [{ time: "12:00", text: "Llegada a Maputo" }, { time: "15:00", text: "Mercado de Artesanato e ferro fundido" }, { time: "Día 2", text: "Malangane: la playa más cercana a la capital" }] },
+      { date: "", title: "Días 3-4 — Tofo", items: [{ time: "08:00", text: "Bus a Inhambane (7h)" }, { time: "16:00", text: "Playa de Tofo: una de las mejores playas de África" }, { time: "Día 4", text: "Buceo o snorkel con mantas y tiburones ballena" }] },
+      { date: "", title: "Días 5-6 — Bazaruto", items: [{ time: "09:00", text: "Vuelo a Vilankulo" }, { time: "12:00", text: "Dhow (barco tradicional) a las islas Bazaruto" }, { time: "14:00", text: "Snorkel en el arrecife: dugongos y tortugas" }, { time: "Día 6", text: "Dos Milles Ilhas: banco de arena desierto" }] },
+      { date: "", title: "Días 7-10 — Ilha de Moçambique", items: [{ time: "09:00", text: "Vuelo a Nampula + bus a Ilha de Moçambique" }, { time: "13:00", text: "Ilha de Moçambique: la ciudad de coral Patrimonio UNESCO" }, { time: "16:00", text: "Fortaleza de São Sebastião (s. XVI)" }, { time: "Días 9-10", text: "Archipiélago de Quirimbas: buceo en aguas prístinas" }] },
+    ],
+    mapPlaces: [
+      { name: "Playa de Tofo", lat: -23.86, lon: 35.55, note: "Buceo con mantas y tiburones ballena" },
+      { name: "Ilha de Moçambique", lat: -15.03, lon: 40.73, note: "Ciudad de coral Patrimonio UNESCO del s. XVI" },
+      { name: "Archipiélago Bazaruto", lat: -21.65, lon: 35.45, note: "Dugongos y arrecifes vírgenes" },
+      { name: "Archipiélago Quirimbas", lat: -11.10, lon: 40.65, note: "Las playas más vírgenes de África" },
+    ],
+  },
+  {
+    id: "libano", name: "Líbano", country: "Líbano", flag: "🇱🇧",
+    costPerPerson: 890, durationDays: 6, type: "cultura",
+    description: "La joya incomprendida del Mediterráneo Oriental: Beirut resurge entre escombros con la escena gastronómica más vibrante del mundo árabe, Baalbek con los templos romanos más grandes jamás construidos y las nieves del Líbano.",
+    highlights: ["Baalbek (Roma)", "Beirut Hamra", "Cedros del Líbano", "Jbeil (Biblos)"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Beirut", items: [{ time: "12:00", text: "Llegada a Rafic Hariri International" }, { time: "15:00", text: "Barrio de Gemmayzeh: grafitis y cafés entre edificios en ruinas" }, { time: "19:00", text: "Barrio de Mar Mikhael: la mejor escena gastronómica del Mediterráneo Oriental" }, { time: "Día 2", text: "Corniche al amanecer + hummus en Barbar (24h)" }] },
+      { date: "", title: "Día 3 — Baalbek", items: [{ time: "08:00", text: "Conducción al Valle de la Bekaa (2h)" }, { time: "11:00", text: "Baalbek: el templo romano más grande y mejor conservado del mundo" }, { time: "14:00", text: "Templo de Baco: más grande que el Partenón" }, { time: "17:00", text: "Viñedos del Bekaa: Château Musar" }] },
+      { date: "", title: "Día 4 — Biblos y cedros", items: [{ time: "09:00", text: "Jbeil (Biblos): la ciudad habitada más antigua del mundo (5.000 a.C.)" }, { time: "13:00", text: "Puerto fenicio y castillo de los cruzados" }, { time: "16:00", text: "Bosque de los Cedros del Líbano (los originales del Templo de Salomón)" }] },
+      { date: "", title: "Días 5-6 — Tiro y Sidón", items: [{ time: "09:00", text: "Sidón: mercado medieval y jabón de laurel" }, { time: "12:00", text: "Tiro: la ciudad fenicia con hipódromo romano en el mar" }, { time: "Día 6", text: "Regreso a Beirut y vuelo" }] },
+    ],
+    mapPlaces: [
+      { name: "Baalbek", lat: 34.00, lon: 36.21, note: "Los templos romanos más grandes jamás construidos" },
+      { name: "Beirut (Gemmayzeh)", lat: 33.89, lon: 35.52, note: "El barrio más vibrante del mundo árabe" },
+      { name: "Biblos (Jbeil)", lat: 34.12, lon: 35.65, note: "La ciudad habitada más antigua del mundo (7.000 años)" },
+      { name: "Cedros del Líbano", lat: 34.25, lon: 36.06, note: "Los cedros originales mencionados en la Biblia" },
     ],
   },
 ];
@@ -2414,89 +2993,146 @@ const TYPE_COLORS: Record<string, string> = {
   playa: "#4A90B8", ciudad: "#3F7A78", cultura: "#B8893F",
   naturaleza: "#2A7A4B", aventura: "#D4614A",
 };
+const TYPE_GRADIENTS: Record<string, string> = {
+  playa:      "linear-gradient(135deg, #4A90B8 0%, #1a5f82 100%)",
+  ciudad:     "linear-gradient(135deg, #3F7A78 0%, #1d4f4e 100%)",
+  cultura:    "linear-gradient(135deg, #B8893F 0%, #7a540f 100%)",
+  naturaleza: "linear-gradient(135deg, #2A7A4B 0%, #0f4f28 100%)",
+  aventura:   "linear-gradient(135deg, #D4614A 0%, #8f2b18 100%)",
+};
 
-function DestCard({ dest, budget, onChoose }: { dest: DestinationTemplate; budget: number; onChoose: () => void }) {
-  const [open, setOpen] = useState(false);
+function DestCard({ dest, budget, onChoose, onOpen }: { dest: DestinationTemplate; budget: number; onChoose: () => void; onOpen: () => void }) {
   const withinBudget = budget === 0 || dest.costPerPerson <= budget;
   const missing = budget > 0 ? dest.costPerPerson - budget : 0;
   const typeColor = TYPE_COLORS[dest.type] ?? C.inkSoft;
+  const gradient = TYPE_GRADIENTS[dest.type] ?? TYPE_GRADIENTS.aventura;
 
   return (
-    <div className="card-lift" style={{ background: "#fff", border: `1px solid ${withinBudget ? C.line : C.paperDark}`, borderRadius: 10, overflow: "hidden", opacity: withinBudget ? 1 : 0.72 }}>
-      <div className="flex items-start gap-3 p-4" style={{ cursor: "pointer" }} onClick={() => setOpen(v => !v)}>
-        <div style={{ fontSize: 30, lineHeight: 1, flexShrink: 0, marginTop: 2 }}>{dest.flag}</div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2 flex-wrap">
-            <div>
-              <div style={{ fontFamily: F.display, fontSize: 17, fontWeight: 700, color: C.ink }}>{dest.name}</div>
-              <div style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft }}>{dest.country} · {dest.durationDays} días</div>
-            </div>
-            <div style={{ textAlign: "right", flexShrink: 0 }}>
-              <div style={{ fontFamily: F.display, fontSize: 18, fontWeight: 700, color: withinBudget ? C.green : C.red }}>
-                ~{dest.costPerPerson.toLocaleString("es-ES")} €
-              </div>
-              <div style={{ fontFamily: F.mono, fontSize: 9, color: withinBudget ? C.green : C.red }}>
-                {withinBudget
-                  ? (budget > 0 ? `SOBRAN ~${(budget - dest.costPerPerson).toFixed(0)} €` : "TODO INCLUIDO · POR PERSONA")
-                  : `FALTAN ~${missing.toFixed(0)} €`}
-              </div>
-            </div>
+    <div className="card-lift" onClick={onOpen} style={{
+      background: "#fff", border: `1px solid ${withinBudget ? C.line : "#e0cccc"}`,
+      borderRadius: 14, overflow: "hidden", cursor: "pointer",
+      opacity: withinBudget ? 1 : 0.78, display: "flex", flexDirection: "column",
+    }}>
+      {/* Coloured header */}
+      <div style={{ background: gradient, padding: "18px 16px 14px", position: "relative", minHeight: 88 }}>
+        <div style={{ position: "absolute", top: 10, right: 12, background: withinBudget ? "rgba(255,255,255,0.2)" : "rgba(255,80,80,0.25)", borderRadius: 8, padding: "4px 10px" }}>
+          <div style={{ fontFamily: F.display, fontSize: 15, fontWeight: 700, color: "#fff" }}>
+            ~{dest.costPerPerson.toLocaleString("es-ES")} €
           </div>
-          <div className="flex items-center gap-2 mt-2 flex-wrap">
-            <span style={{ fontFamily: F.mono, fontSize: 10, padding: "2px 8px", borderRadius: 999, background: `${typeColor}22`, color: typeColor, border: `1px solid ${typeColor}44` }}>
-              {dest.type.toUpperCase()}
-            </span>
-            {dest.highlights.slice(0, 3).map(h => (
-              <span key={h} style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft }}>{h}</span>
-            ))}
+          <div style={{ fontFamily: F.mono, fontSize: 8, color: "rgba(255,255,255,0.8)", textAlign: "right" }}>
+            {withinBudget
+              ? (budget > 0 ? `↑ ${(budget - dest.costPerPerson).toFixed(0)} € sobrante` : "por persona")
+              : `↓ faltan ${missing.toFixed(0)} €`}
           </div>
         </div>
-        <ChevronDown size={15} color={C.inkSoft} style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 0.2s", flexShrink: 0, marginTop: 3 }} />
+        <div style={{ fontSize: 34, lineHeight: 1 }}>{dest.flag}</div>
+        <div style={{ fontFamily: F.display, fontSize: 18, fontWeight: 700, color: "#fff", marginTop: 6, lineHeight: 1.2 }}>{dest.name}</div>
+        <div style={{ fontFamily: F.mono, fontSize: 9, color: "rgba(255,255,255,0.75)", marginTop: 3 }}>{dest.country} · {dest.durationDays} días</div>
       </div>
 
-      {open && (
-        <div className="fade-in" style={{ borderTop: `1px solid ${C.paperDark}` }}>
-          <div className="px-4 py-3 flex flex-col gap-3">
-            <p style={{ color: C.inkSoft, fontSize: 13, lineHeight: 1.6 }}>{dest.description}</p>
+      {/* Body */}
+      <div style={{ padding: "12px 14px", flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
+        <span style={{ fontFamily: F.mono, fontSize: 9, padding: "2px 8px", borderRadius: 999, background: `${typeColor}18`, color: typeColor, border: `1px solid ${typeColor}33`, alignSelf: "flex-start", letterSpacing: 0.5 }}>
+          {dest.type.toUpperCase()}
+        </span>
+        <div style={{ fontSize: 12, color: C.inkSoft, lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+          {dest.description}
+        </div>
+        <div className="flex flex-wrap gap-1">
+          {dest.highlights.slice(0, 3).map(h => (
+            <span key={h} style={{ fontFamily: F.mono, fontSize: 9, color: C.inkSoft, background: C.paperDark, borderRadius: 4, padding: "2px 6px" }}>{h}</span>
+          ))}
+        </div>
+        <div style={{ fontFamily: F.mono, fontSize: 9, color: C.inkSoft, marginTop: 2 }}>
+          VER ITINERARIO COMPLETO →
+        </div>
+      </div>
+    </div>
+  );
+}
 
-            <div style={{ background: C.paperDark, borderRadius: 6, padding: "10px 14px", fontFamily: F.mono, fontSize: 11, color: C.inkSoft }}>
-              ✈️ Vuelo · 🏨 Alojamiento · 🍽️ Comida · 🎭 Actividades — <strong style={{ color: C.ink }}>todo incluido</strong> en ~{dest.costPerPerson.toLocaleString("es-ES")} €/persona
+function DestModal({ dest, budget, onChoose, onClose }: { dest: DestinationTemplate; budget: number; onChoose: () => void; onClose: () => void }) {
+  const withinBudget = budget === 0 || dest.costPerPerson <= budget;
+  const gradient = TYPE_GRADIENTS[dest.type] ?? TYPE_GRADIENTS.aventura;
+  return (
+    <div className="fade-in" style={{ position: "fixed", inset: 0, zIndex: 200, display: "flex", flexDirection: "column", background: "#000a" }} onClick={onClose}>
+      <div onClick={e => e.stopPropagation()} style={{ marginTop: "auto", background: C.paper, borderRadius: "20px 20px 0 0", maxHeight: "88dvh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+        {/* Modal header */}
+        <div style={{ background: gradient, padding: "20px 20px 16px", position: "relative", flexShrink: 0 }}>
+          <button onClick={onClose} style={{ position: "absolute", top: 14, right: 14, background: "rgba(255,255,255,0.2)", borderRadius: 999, width: 30, height: 30, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <X size={16} color="#fff" />
+          </button>
+          <div style={{ fontSize: 40 }}>{dest.flag}</div>
+          <div style={{ fontFamily: F.display, fontSize: 22, fontWeight: 700, color: "#fff", marginTop: 4 }}>{dest.name}</div>
+          <div style={{ fontFamily: F.mono, fontSize: 10, color: "rgba(255,255,255,0.8)", marginTop: 2 }}>{dest.country} · {dest.durationDays} días</div>
+          <div style={{ marginTop: 10, display: "flex", gap: 8, alignItems: "center" }}>
+            <div style={{ fontFamily: F.display, fontSize: 24, fontWeight: 700, color: "#fff" }}>~{dest.costPerPerson.toLocaleString("es-ES")} €</div>
+            <div style={{ fontFamily: F.mono, fontSize: 10, color: "rgba(255,255,255,0.75)" }}>
+              {withinBudget
+                ? (budget > 0 ? `✓ dentro de tu presupuesto` : "todo incluido · por persona")
+                : `faltan ~${(dest.costPerPerson - budget).toFixed(0)} €`}
             </div>
-
-            <div>
-              <SectionLabel>Itinerario incluido</SectionLabel>
-              <div className="flex flex-col gap-1 mt-2">
-                {dest.itinerary.map((d, i) => (
-                  <div key={i} className="flex gap-2 items-baseline">
-                    <div style={{ fontFamily: F.mono, fontSize: 10, color: C.gold, width: 18, textAlign: "right", flexShrink: 0 }}>{i + 1}</div>
-                    <div style={{ fontSize: 13, color: C.ink }}>{d.title}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <SectionLabel>Lugares en el mapa</SectionLabel>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {dest.mapPlaces.map(p => (
-                  <div key={p.name} className="flex items-center gap-1" style={{ fontFamily: F.mono, fontSize: 11, color: C.inkSoft }}>
-                    <MapPin size={10} color={C.teal} /> {p.name}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="px-4 pb-4">
-            <button onClick={onChoose} style={{
-              width: "100%", background: withinBudget ? C.teal : C.navy, color: "#fff",
-              borderRadius: 6, padding: "12px 16px", fontFamily: F.mono, fontSize: 12, fontWeight: 700, letterSpacing: 0.5,
-            }}>
-              {withinBudget ? "✈ ELEGIR ESTE DESTINO" : "ELEGIR IGUALMENTE →"}
-            </button>
           </div>
         </div>
-      )}
+
+        {/* Scrollable body */}
+        <div className="overflow-y-auto" style={{ flex: 1, padding: "16px 20px", display: "flex", flexDirection: "column", gap: 16 }}>
+          <p style={{ fontSize: 14, color: C.inkSoft, lineHeight: 1.7 }}>{dest.description}</p>
+
+          <div style={{ background: `${TYPE_COLORS[dest.type] ?? C.teal}15`, borderRadius: 8, padding: "10px 14px", fontFamily: F.mono, fontSize: 11, color: C.inkSoft }}>
+            ✈️ Vuelo · 🏨 Alojamiento · 🍽️ Comida · 🎭 Actividades — <strong style={{ color: C.ink }}>TODO INCLUIDO</strong>
+          </div>
+
+          <div>
+            <SectionLabel>Itinerario</SectionLabel>
+            <div className="flex flex-col gap-2 mt-2">
+              {dest.itinerary.map((d, i) => (
+                <div key={i} style={{ background: C.paperDark, borderRadius: 8, padding: "10px 12px" }}>
+                  <div style={{ fontFamily: F.mono, fontSize: 10, color: C.gold, marginBottom: 4 }}>DÍA {i + 1}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: C.ink, marginBottom: 6 }}>{d.title}</div>
+                  <div className="flex flex-col gap-1">
+                    {d.items.slice(0, 3).map((it, j) => (
+                      <div key={j} className="flex gap-2" style={{ fontSize: 12, color: C.inkSoft }}>
+                        <span style={{ fontFamily: F.mono, fontSize: 10, color: C.teal, flexShrink: 0, width: 40 }}>{it.time}</span>
+                        <span>{it.text}</span>
+                      </div>
+                    ))}
+                    {d.items.length > 3 && <div style={{ fontFamily: F.mono, fontSize: 9, color: C.inkSoft }}>+{d.items.length - 3} más…</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <SectionLabel>Lugares del mapa</SectionLabel>
+            <div className="flex flex-col gap-2 mt-2">
+              {dest.mapPlaces.map(p => (
+                <div key={p.name} className="flex gap-2 items-start" style={{ fontSize: 13, color: C.ink }}>
+                  <MapPin size={13} color={TYPE_COLORS[dest.type] ?? C.teal} style={{ flexShrink: 0, marginTop: 2 }} />
+                  <div>
+                    <div style={{ fontWeight: 600 }}>{p.name}</div>
+                    <div style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft }}>{p.note}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ height: 16 }} />
+        </div>
+
+        {/* CTA */}
+        <div style={{ padding: "12px 20px 24px", borderTop: `1px solid ${C.line}`, flexShrink: 0 }}>
+          <button onClick={onChoose} style={{
+            width: "100%", background: withinBudget ? TYPE_COLORS[dest.type] ?? C.teal : C.navy,
+            color: "#fff", borderRadius: 10, padding: "14px 16px",
+            fontFamily: F.mono, fontSize: 13, fontWeight: 700, letterSpacing: 0.5,
+          }}>
+            {withinBudget ? `✈ ELEGIR ${dest.name.toUpperCase()}` : "ELEGIR IGUALMENTE →"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -2505,6 +3141,8 @@ function Destinos({ code, onSelect }: { code: string; onSelect: () => void }) {
   const [savings, setSavings] = useState<SavingsConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("todos");
+  const [search, setSearch] = useState("");
+  const [preview, setPreview] = useState<DestinationTemplate | null>(null);
   const [chosen, setChosen] = useState<DestinationTemplate | null>(null);
   const [confirming, setConfirming] = useState(false);
 
@@ -2533,9 +3171,13 @@ function Destinos({ code, onSelect }: { code: string; onSelect: () => void }) {
     onSelect();
   }
 
-  const visibleDests = useMemo(() =>
-    DESTINATIONS.filter(d => filter === "todos" || d.type === filter),
-    [filter]);
+  const visibleDests = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return DESTINATIONS.filter(d =>
+      (filter === "todos" || d.type === filter) &&
+      (!q || d.name.toLowerCase().includes(q) || d.country.toLowerCase().includes(q) || d.highlights.some(h => h.toLowerCase().includes(q)))
+    );
+  }, [filter, search]);
 
   const withinBudget = useMemo(() =>
     visibleDests.filter(d => budgetPerPerson === 0 || d.costPerPerson <= budgetPerPerson),
@@ -2561,18 +3203,29 @@ function Destinos({ code, onSelect }: { code: string; onSelect: () => void }) {
             Se va a cargar el <strong style={{ color: C.ink }}>itinerario completo</strong> y los <strong style={{ color: C.ink }}>lugares del mapa</strong> de <strong style={{ color: C.ink }}>{chosen.name}</strong> en el viaje. El contenido actual se reemplazará. ¿Continuar?
           </p>
           <div className="flex gap-3 mt-5">
-            <button onClick={() => setConfirming(false)} style={{ flex: 1, background: C.paperDark, color: C.inkSoft, borderRadius: 6, padding: "12px 16px", fontFamily: F.mono, fontSize: 12 }}>CANCELAR</button>
-            <button onClick={() => applyDestination(chosen)} style={{ flex: 1, background: C.teal, color: "#fff", borderRadius: 6, padding: "12px 16px", fontFamily: F.mono, fontSize: 12, fontWeight: 700 }}>SÍ, APLICAR →</button>
+            <button onClick={() => { setConfirming(false); setPreview(chosen); }} style={{ flex: 1, background: C.paperDark, color: C.inkSoft, borderRadius: 8, padding: "12px 16px", fontFamily: F.mono, fontSize: 12 }}>VOLVER</button>
+            <button onClick={() => applyDestination(chosen)} style={{ flex: 1, background: C.teal, color: "#fff", borderRadius: 8, padding: "12px 16px", fontFamily: F.mono, fontSize: 12, fontWeight: 700 }}>SÍ, APLICAR →</button>
           </div>
         </Card>
       </div>
     );
   }
 
+  const DestGrid = ({ dests }: { dests: DestinationTemplate[] }) => (
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 12 }}>
+      {dests.map(dest => (
+        <DestCard key={dest.id} dest={dest} budget={budgetPerPerson}
+          onChoose={() => { setChosen(dest); setConfirming(true); setPreview(null); }}
+          onOpen={() => setPreview(dest)}
+        />
+      ))}
+    </div>
+  );
+
   return (
     <div className="flex flex-col gap-5">
       {/* Budget header */}
-      <div style={{ background: `linear-gradient(135deg, ${C.navy}, ${C.navyMid})`, borderRadius: 12, padding: "20px 20px", color: C.paper, position: "relative", overflow: "hidden" }} className="dot-grid">
+      <div style={{ background: `linear-gradient(135deg, ${C.navy}, ${C.navyMid})`, borderRadius: 14, padding: "20px 20px", color: C.paper, position: "relative", overflow: "hidden" }} className="dot-grid">
         <div className="glow-pulse" style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: 999, background: `radial-gradient(circle, ${C.gold}25, transparent 70%)`, pointerEvents: "none" }} />
         <div style={{ fontFamily: F.mono, fontSize: 10, color: C.gold, letterSpacing: 1.5 }}>PRESUPUESTO POR PERSONA</div>
         <div style={{ fontFamily: F.display, fontSize: "clamp(2rem,8vw,3rem)", fontWeight: 700, color: C.goldLight, lineHeight: 1, marginTop: 4 }}>
@@ -2584,27 +3237,39 @@ function Destinos({ code, onSelect }: { code: string; onSelect: () => void }) {
           </p>
         ) : (
           <p style={{ fontFamily: F.mono, fontSize: 11, color: "#9FAEC4", marginTop: 6 }}>
-            Configura tu plan en la pestaña <strong style={{ color: C.goldLight }}>AHORRO</strong> para ver destinos por presupuesto
+            Configura tu plan en <strong style={{ color: C.goldLight }}>AHORRO</strong> para filtrar por presupuesto
           </p>
         )}
         {budgetPerPerson > 0 && (
-          <div className="mt-3" style={{ fontFamily: F.mono, fontSize: 11, color: C.goldLight }}>
-            {withinBudget.length} destino{withinBudget.length !== 1 ? "s" : ""} alcanzable{withinBudget.length !== 1 ? "s" : ""} con tu presupuesto actual ✓
+          <div className="mt-3 flex gap-3" style={{ fontFamily: F.mono, fontSize: 11 }}>
+            <span style={{ color: C.goldLight }}>✓ {withinBudget.length} alcanzables</span>
+            {overBudget.length > 0 && <span style={{ color: "#9FAEC4" }}>· {overBudget.length} fuera de alcance</span>}
           </div>
         )}
+      </div>
+
+      {/* Search */}
+      <div style={{ position: "relative" }}>
+        <input
+          value={search} onChange={e => setSearch(e.target.value)}
+          placeholder="Buscar destino, país o actividad…"
+          style={{ width: "100%", padding: "10px 16px 10px 38px", borderRadius: 10, border: `1px solid ${C.line}`, background: "#fff", fontFamily: F.mono, fontSize: 13, color: C.ink, boxSizing: "border-box" }}
+        />
+        <Globe size={15} color={C.inkSoft} style={{ position: "absolute", left: 13, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }} />
+        {search && <button onClick={() => setSearch("")} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)" }}><X size={14} color={C.inkSoft} /></button>}
       </div>
 
       {/* Type filter pills */}
       <div className="flex flex-wrap gap-2">
         {DEST_TYPE_FILTERS.map(t => (
           <button key={t.value} onClick={() => setFilter(t.value)} style={{
-            padding: "6px 12px", borderRadius: 999, fontSize: 12, fontFamily: F.mono,
+            padding: "7px 14px", borderRadius: 999, fontSize: 12, fontFamily: F.mono,
             background: filter === t.value ? C.navy : C.paperDark,
             color: filter === t.value ? C.paper : C.inkSoft,
             border: `1px solid ${filter === t.value ? C.navy : C.line}`,
-            transition: "all 0.15s",
+            transition: "all 0.15s", fontWeight: filter === t.value ? 700 : 400,
           }}>
-            {t.emoji} {t.label.toUpperCase()}
+            {t.emoji} {t.label}
           </button>
         ))}
       </div>
@@ -2615,13 +3280,11 @@ function Destinos({ code, onSelect }: { code: string; onSelect: () => void }) {
           {budgetPerPerson > 0 && (
             <div className="flex items-center gap-2">
               <div style={{ height: 1, flex: 1, background: `${C.green}44` }} />
-              <span style={{ fontFamily: F.mono, fontSize: 10, color: C.green, letterSpacing: 1 }}>✓ PUEDES PERMITÍRTELO</span>
+              <span style={{ fontFamily: F.mono, fontSize: 10, color: C.green, letterSpacing: 1 }}>✓ CON TU PRESUPUESTO</span>
               <div style={{ height: 1, flex: 1, background: `${C.green}44` }} />
             </div>
           )}
-          {withinBudget.map(dest => (
-            <DestCard key={dest.id} dest={dest} budget={budgetPerPerson} onChoose={() => { setChosen(dest); setConfirming(true); }} />
-          ))}
+          <DestGrid dests={withinBudget} />
         </div>
       )}
 
@@ -2633,17 +3296,22 @@ function Destinos({ code, onSelect }: { code: string; onSelect: () => void }) {
             <span style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft, letterSpacing: 1 }}>NECESITAS AHORRAR MÁS</span>
             <div style={{ height: 1, flex: 1, background: C.line }} />
           </div>
-          {overBudget.map(dest => (
-            <DestCard key={dest.id} dest={dest} budget={budgetPerPerson} onChoose={() => { setChosen(dest); setConfirming(true); }} />
-          ))}
+          <DestGrid dests={overBudget} />
         </div>
       )}
 
-      {budgetPerPerson === 0 && visibleDests.map(dest => (
-        <DestCard key={dest.id} dest={dest} budget={0} onChoose={() => { setChosen(dest); setConfirming(true); }} />
-      ))}
+      {budgetPerPerson === 0 && <DestGrid dests={visibleDests} />}
 
       {visibleDests.length === 0 && <EmptyState icon={<Globe size={28} color={C.line} />} text="Sin destinos con ese filtro." />}
+
+      {preview && (
+        <DestModal
+          dest={preview}
+          budget={budgetPerPerson}
+          onChoose={() => { setChosen(preview!); setConfirming(true); setPreview(null); }}
+          onClose={() => setPreview(null)}
+        />
+      )}
     </div>
   );
 }
