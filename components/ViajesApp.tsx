@@ -6,7 +6,7 @@ import {
   Copy, Check, Plus, Trash2, X, ArrowLeft,
   Euro, AlertCircle, ChevronDown, ThumbsUp, ThumbsDown,
   Luggage, Lightbulb, Wallet, Sunrise, ExternalLink,
-  CheckCircle2, Circle, PiggyBank, Target, Edit2,
+  CheckCircle2, Circle, PiggyBank, Target, Edit2, Globe,
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -40,6 +40,14 @@ interface SavingsPhase {
 interface SavingsConfig {
   targetBudget: number; phases: SavingsPhase[]; numPersonas?: number;
 }
+interface DestinationTemplate {
+  id: string; name: string; country: string; flag: string;
+  costPerPerson: number; durationDays: number;
+  type: "playa" | "ciudad" | "cultura" | "naturaleza" | "aventura";
+  description: string; highlights: string[];
+  itinerary: { date: string; title: string; items: { time: string; text: string }[] }[];
+  mapPlaces: { name: string; lat: number; lon: number; note: string }[];
+}
 
 // ─── Design tokens ───────────────────────────────────────────────────────────
 
@@ -61,6 +69,338 @@ const F = {
 
 const EXPENSE_CATEGORIES = ["✈️ Transporte", "🏨 Alojamiento", "🍽️ Comida", "🎭 Actividades", "🛍️ Compras", "💊 Salud", "📦 Otros"];
 const PACKING_CATEGORIES = ["📄 Documentos", "👕 Ropa", "🔌 Electrónica", "🧴 Higiene", "💊 Medicamentos", "🎒 Otros"];
+
+const DEST_TYPE_FILTERS = [
+  { value: "todos",      label: "Todos",      emoji: "🌍" },
+  { value: "playa",      label: "Playa",      emoji: "🏖️" },
+  { value: "ciudad",     label: "Ciudad",     emoji: "🏙️" },
+  { value: "cultura",    label: "Cultura",    emoji: "🏛️" },
+  { value: "naturaleza", label: "Naturaleza", emoji: "🌿" },
+  { value: "aventura",   label: "Aventura",   emoji: "🧗" },
+];
+
+const DESTINATIONS: DestinationTemplate[] = [
+  {
+    id: "tenerife", name: "Tenerife", country: "España", flag: "🇪🇸",
+    costPerPerson: 320, durationDays: 5, type: "playa",
+    description: "Playa, volcán y eterna primavera a pocas horas de vuelo. El Teide, las playas negras y Los Gigantes en una isla que lo tiene todo.",
+    highlights: ["Teide", "Playa de las Américas", "Los Gigantes", "Loro Parque"],
+    itinerary: [
+      { date: "", title: "Día 1 — Llegada y Playa de las Américas", items: [{ time: "12:00", text: "Vuelo a Tenerife Sur (TFS)" }, { time: "15:00", text: "Check-in y primer chapuzón en Playa de las Américas" }, { time: "20:30", text: "Cena en el paseo marítimo" }] },
+      { date: "", title: "Día 2 — El Teide", items: [{ time: "08:00", text: "Ruta hacia el Parque Nacional del Teide" }, { time: "10:30", text: "Teleférico hasta los 3.500 m" }, { time: "14:00", text: "Bajada y visita al pueblo de La Orotava" }, { time: "20:00", text: "Cena en Puerto de la Cruz" }] },
+      { date: "", title: "Día 3 — Norte salvaje", items: [{ time: "09:30", text: "Los Gigantes — acantilados de 800 m" }, { time: "11:00", text: "Excursión en barco: delfines y ballenas" }, { time: "16:30", text: "Playa de la Arena (arena negra volcánica)" }] },
+      { date: "", title: "Día 4 — Loro Parque y Santa Cruz", items: [{ time: "10:00", text: "Loro Parque en Puerto de la Cruz" }, { time: "18:00", text: "Sunset en Punta del Hidalgo" }, { time: "21:00", text: "Cena de despedida en Santa Cruz" }] },
+      { date: "", title: "Día 5 — Regreso", items: [{ time: "09:00", text: "Último baño en la playa" }, { time: "13:00", text: "Traslado al aeropuerto y vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Teide", lat: 28.27, lon: -16.64, note: "Pico más alto de España (3.718 m)" },
+      { name: "Playa de las Américas", lat: 28.05, lon: -16.72, note: "Playa principal, animada" },
+      { name: "Los Gigantes", lat: 28.24, lon: -16.84, note: "Acantilados espectaculares" },
+      { name: "Loro Parque", lat: 28.41, lon: -16.55, note: "Parque zoológico y de naturaleza" },
+      { name: "La Orotava", lat: 28.39, lon: -16.52, note: "Pueblo histórico colonial" },
+    ],
+  },
+  {
+    id: "oporto", name: "Oporto", country: "Portugal", flag: "🇵🇹",
+    costPerPerson: 340, durationDays: 3, type: "ciudad",
+    description: "Vino de Oporto, azulejos azules y el río Duero entre bodegas históricas. Un fin de semana perfecto.",
+    highlights: ["Livraria Lello", "Bodegas de Gaia", "Puente Luis I", "Ribeira"],
+    itinerary: [
+      { date: "", title: "Día 1 — Ribeira y el Duero", items: [{ time: "12:00", text: "Llegada al aeropuerto Francisco Sá Carneiro" }, { time: "16:00", text: "Barrio de la Ribeira y Cais da Ribeira" }, { time: "17:30", text: "Crucero por el río Duero" }, { time: "20:00", text: "Cena de bacalhau a brás en la Ribeira" }] },
+      { date: "", title: "Día 2 — Centro histórico y vino", items: [{ time: "09:30", text: "Livraria Lello (la librería más bonita del mundo)" }, { time: "11:00", text: "Torre dos Clérigos — vistas de la ciudad" }, { time: "13:00", text: "Almuerzo en el Mercado do Bom Sucesso" }, { time: "15:00", text: "Cruzar el Puente Luis I a Vila Nova de Gaia" }, { time: "17:00", text: "Cata de vino de Oporto en las bodegas de Taylor's" }, { time: "20:30", text: "Cena en la Baixa" }] },
+      { date: "", title: "Día 3 — Azulejos y regreso", items: [{ time: "09:30", text: "Estación de São Bento (azulejos históricos)" }, { time: "11:00", text: "Iglesia de San Francisco (interior dorado)" }, { time: "13:00", text: "Francesinha — el sándwich más famoso de Oporto" }, { time: "15:30", text: "Traslado al aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Ribeira", lat: 41.14, lon: -8.61, note: "Barrio ribereño histórico, Patrimonio UNESCO" },
+      { name: "Livraria Lello", lat: 41.15, lon: -8.61, note: "Librería Art Nouveau inspiradora de HP" },
+      { name: "Puente Luis I", lat: 41.14, lon: -8.61, note: "Vista icónica sobre el Duero" },
+      { name: "Bodegas Taylor's (Gaia)", lat: 41.13, lon: -8.61, note: "Cata de vino de Oporto" },
+      { name: "Estación de São Bento", lat: 41.14, lon: -8.61, note: "Azulejos históricos espectaculares" },
+    ],
+  },
+  {
+    id: "lisboa", name: "Lisboa", country: "Portugal", flag: "🇵🇹",
+    costPerPerson: 420, durationDays: 4, type: "ciudad",
+    description: "Fado, pastéis de nata y tranvías históricos por colinas con vistas al Tejo. La capital más acogedora de Europa.",
+    highlights: ["Alfama", "Torre de Belém", "Castillo de San Jorge", "Sintra"],
+    itinerary: [
+      { date: "", title: "Día 1 — Llegada y Baixa", items: [{ time: "12:00", text: "Llegada al aeropuerto de Lisboa" }, { time: "16:00", text: "Rúa Augusta y Praça do Comércio" }, { time: "19:00", text: "Sunset en el mirador de Santa Catarina" }, { time: "21:00", text: "Cena con fado en Alfama" }] },
+      { date: "", title: "Día 2 — Alfama y el Castillo", items: [{ time: "09:30", text: "Castillo de San Jorge" }, { time: "11:30", text: "Barrio de Alfama a pie" }, { time: "15:00", text: "Tranvía 28E cruzando la ciudad" }, { time: "18:00", text: "Mirador de Graça — mejores vistas" }] },
+      { date: "", title: "Día 3 — Belém y Sintra", items: [{ time: "09:00", text: "Torre de Belém y Monasterio de los Jerónimos" }, { time: "11:30", text: "Pastel de Belém original (obligatorio)" }, { time: "14:00", text: "Tren a Sintra (30 min)" }, { time: "15:30", text: "Palacio da Pena y Quinta da Regaleira" }, { time: "20:00", text: "Regreso y cena en Príncipe Real" }] },
+      { date: "", title: "Día 4 — LX Factory y regreso", items: [{ time: "10:00", text: "LX Factory — mercado creativo y brunch" }, { time: "13:00", text: "Barrio de Mouraria" }, { time: "16:00", text: "Traslado al aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Alfama", lat: 38.71, lon: -9.13, note: "Barrio histórico, corazón del fado" },
+      { name: "Torre de Belém", lat: 38.69, lon: -9.22, note: "Monumento del siglo XVI, Patrimonio UNESCO" },
+      { name: "Castillo de San Jorge", lat: 38.71, lon: -9.13, note: "Fortaleza con vistas panorámicas" },
+      { name: "Sintra", lat: 38.80, lon: -9.39, note: "Palacio da Pena y jardines románticos" },
+      { name: "LX Factory", lat: 38.70, lon: -9.18, note: "Mercado creativo en fábrica rehabilitada" },
+    ],
+  },
+  {
+    id: "marrakech", name: "Marrakech", country: "Marruecos", flag: "🇲🇦",
+    costPerPerson: 500, durationDays: 5, type: "cultura",
+    description: "La ciudad roja: medinas laberínticas, riads y la Djemaa el-Fna. Solo a 3 horas de vuelo de España.",
+    highlights: ["Djemaa el-Fna", "Zocos", "Jardines Majorelle", "Palacio Bahía"],
+    itinerary: [
+      { date: "", title: "Día 1 — Llegada a la Ciudad Roja", items: [{ time: "14:00", text: "Llegada al aeropuerto Ménara" }, { time: "16:00", text: "Check-in en riad en la medina" }, { time: "18:00", text: "Primera visita a Djemaa el-Fna al atardecer" }, { time: "20:30", text: "Cena en terraza con vistas a la plaza" }] },
+      { date: "", title: "Día 2 — Medina y Zocos", items: [{ time: "09:00", text: "Palacio Bahía" }, { time: "11:00", text: "Laberinto de los zocos" }, { time: "14:00", text: "Almuerzo en restaurante tradicional" }, { time: "16:00", text: "Tintorería (curtiembre de cuero)" }, { time: "18:30", text: "Hammam tradicional" }] },
+      { date: "", title: "Día 3 — Jardines y cultura", items: [{ time: "09:00", text: "Jardines Majorelle (de Yves Saint Laurent)" }, { time: "12:00", text: "Museo Yves Saint Laurent" }, { time: "16:00", text: "Tumbas Saidianas" }, { time: "19:00", text: "Sunset desde el Café de France" }] },
+      { date: "", title: "Día 4 — Excursión al Atlas", items: [{ time: "08:00", text: "Excursión a las montañas del Atlas o Essaouira" }, { time: "18:00", text: "Regreso a Marrakech" }, { time: "20:30", text: "Cena de despedida: cuscús y tajín" }] },
+      { date: "", title: "Día 5 — Compras y vuelta", items: [{ time: "09:00", text: "Última vuelta por el zoco (especias, babuchas)" }, { time: "12:00", text: "Check-out y traslado al aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Djemaa el-Fna", lat: 31.63, lon: -7.99, note: "Plaza principal, Patrimonio Cultural UNESCO" },
+      { name: "Jardines Majorelle", lat: 31.64, lon: -8.00, note: "Jardín de Yves Saint Laurent" },
+      { name: "Palacio Bahía", lat: 31.62, lon: -7.99, note: "Palacio del siglo XIX, arte islámico" },
+      { name: "Medina (Zocos)", lat: 31.64, lon: -7.99, note: "Mercados tradicionales laberínticos" },
+      { name: "Tumbas Saidianas", lat: 31.62, lon: -7.99, note: "Mausoleo real del siglo XVI" },
+    ],
+  },
+  {
+    id: "praga", name: "Praga", country: "Rep. Checa", flag: "🇨🇿",
+    costPerPerson: 600, durationDays: 4, type: "ciudad",
+    description: "La ciudad de las cien torres: casco medieval intacto, cerveza artesanal y el río Moldava. La joya de Europa del Este.",
+    highlights: ["Castillo de Praga", "Puente Carlos", "Barrio Judío", "Reloj Astronómico"],
+    itinerary: [
+      { date: "", title: "Día 1 — Ciudad Vieja", items: [{ time: "13:00", text: "Llegada a Václav Havel Airport" }, { time: "16:00", text: "Plaza de la Ciudad Vieja y Reloj Astronómico (da las horas)" }, { time: "18:00", text: "Puente Carlos al atardecer" }, { time: "20:00", text: "Cena en taberna checa con cerveza Pilsner Urquell" }] },
+      { date: "", title: "Día 2 — Castillo de Praga", items: [{ time: "09:00", text: "Castillo de Praga — el más grande del mundo" }, { time: "11:00", text: "Catedral de San Vito" }, { time: "12:30", text: "Callejón del Oro" }, { time: "15:00", text: "Malá Strana (ciudad pequeña)" }, { time: "17:00", text: "Colina de Petřín — vistas panorámicas" }] },
+      { date: "", title: "Día 3 — Josefov y cerveza", items: [{ time: "09:30", text: "Barrio Judío Josefov y sinagoga Pinkas" }, { time: "13:00", text: "Almuerzo de svíčková con knedlíky" }, { time: "15:30", text: "Paseo por Wenceslao" }, { time: "18:00", text: "Tour de bares y cervezas artesanales de Praga" }] },
+      { date: "", title: "Día 4 — Mercado y regreso", items: [{ time: "09:00", text: "Mercado de Náplavka a orillas del Moldava" }, { time: "12:00", text: "Último trdelník (dulce local)" }, { time: "15:00", text: "Traslado al aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Castillo de Praga", lat: 50.09, lon: 14.40, note: "El complejo castillo más grande del mundo" },
+      { name: "Puente Carlos", lat: 50.09, lon: 14.41, note: "Puente medieval con 30 estatuas barrocas" },
+      { name: "Plaza de la Ciudad Vieja", lat: 50.09, lon: 14.42, note: "Reloj Astronómico medieval del s. XV" },
+      { name: "Josefov", lat: 50.09, lon: 14.42, note: "El barrio judío mejor conservado de Europa" },
+      { name: "Colina de Petřín", lat: 50.08, lon: 14.40, note: "Torre-mirador, la Torre Eiffel checa" },
+    ],
+  },
+  {
+    id: "estambul", name: "Estambul", country: "Turquía", flag: "🇹🇷",
+    costPerPerson: 750, durationDays: 6, type: "cultura",
+    description: "Donde Europa se encuentra con Asia: mezquitas, el Gran Bazar y el Bósforo. Una ciudad de contrastes absolutos.",
+    highlights: ["Hagia Sofía", "Mezquita Azul", "Gran Bazar", "Bósforo"],
+    itinerary: [
+      { date: "", title: "Día 1 — Llegada a la Ciudad Imperial", items: [{ time: "14:00", text: "Llegada a Estambul Aeropuerto" }, { time: "17:00", text: "Check-in en Sultanahmet" }, { time: "19:00", text: "Primera vista de Hagia Sofía iluminada" }, { time: "21:00", text: "Cena con vistas al Bósforo en Karaköy" }] },
+      { date: "", title: "Día 2 — Sultanahmet histórico", items: [{ time: "09:00", text: "Hagia Sofía (catedral, mezquita, museo — hoy mezquita)" }, { time: "11:00", text: "Mezquita Azul (Sultan Ahmet Camii)" }, { time: "13:00", text: "Cisterna Basílica subterránea" }, { time: "15:00", text: "Palacio de Topkapi y Harem" }] },
+      { date: "", title: "Día 3 — Gran Bazar y Beyoğlu", items: [{ time: "09:30", text: "Gran Bazar (más de 4.000 tiendas)" }, { time: "12:00", text: "Bazar de las Especias" }, { time: "16:00", text: "Istiklal Caddesi hasta la plaza Taksim" }, { time: "21:00", text: "Música en vivo en Beyoğlu" }] },
+      { date: "", title: "Día 4 — El Bósforo", items: [{ time: "09:30", text: "Crucero por el Bósforo (2 continentes)" }, { time: "13:00", text: "Almuerzo en la orilla asiática (Kadıköy)" }, { time: "16:00", text: "Mercado de Kadıköy" }, { time: "18:00", text: "Regreso en ferry — skyline al atardecer" }] },
+      { date: "", title: "Día 5 — Balat y Fener", items: [{ time: "10:00", text: "Barrio de Balat (casas de colores y cafés)" }, { time: "12:00", text: "Fener y la Iglesia de San Esteban de los Búlgaros" }, { time: "16:00", text: "Bebek y el Bósforo europeo" }] },
+      { date: "", title: "Día 6 — Regreso", items: [{ time: "09:00", text: "Último Turkish breakfast con simit" }, { time: "11:00", text: "Compras: lokum, frutos secos y especias" }, { time: "14:00", text: "Traslado al aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Hagia Sofía", lat: 41.01, lon: 28.98, note: "Maravilla arquitectónica del año 537 d.C." },
+      { name: "Gran Bazar", lat: 41.01, lon: 28.97, note: "El bazar cubierto más grande del mundo" },
+      { name: "Palacio Topkapi", lat: 41.01, lon: 28.98, note: "Residencia de los sultanes otomanos 400 años" },
+      { name: "Bósforo", lat: 41.09, lon: 29.06, note: "El estrecho que separa Europa de Asia" },
+      { name: "Balat", lat: 41.03, lon: 28.95, note: "Barrio histórico multiétnico con arte callejero" },
+    ],
+  },
+  {
+    id: "roma", name: "Roma", country: "Italia", flag: "🇮🇹",
+    costPerPerson: 850, durationDays: 5, type: "cultura",
+    description: "La Ciudad Eterna: 2.500 años de historia en cada esquina. Coliseo, Vaticano, pasta y dolce vita.",
+    highlights: ["Coliseo", "Vaticano", "Fontana di Trevi", "Trastevere"],
+    itinerary: [
+      { date: "", title: "Día 1 — El Coliseo y el Foro Romano", items: [{ time: "10:00", text: "Llegada a Fiumicino" }, { time: "14:00", text: "Coliseo y Arco de Constantino (reserva previa)" }, { time: "16:30", text: "Foro Romano y Palatino" }, { time: "20:00", text: "Cena en Trastevere con carbonara auténtica" }] },
+      { date: "", title: "Día 2 — El Vaticano", items: [{ time: "08:30", text: "Museos Vaticanos y Capilla Sixtina (entrada reservada)" }, { time: "12:00", text: "Basílica de San Pedro y cúpula" }, { time: "15:00", text: "Castel Sant'Angelo" }, { time: "20:00", text: "Aperitivo en el barrio Prati" }] },
+      { date: "", title: "Día 3 — Centro histórico", items: [{ time: "09:30", text: "Fontana di Trevi — echar la moneda" }, { time: "10:30", text: "Panteón (2.000 años sin grietas)" }, { time: "12:00", text: "Plaza Navona" }, { time: "15:30", text: "Campo de' Fiori" }, { time: "19:30", text: "Aperitivo romano con Campari Spritz" }] },
+      { date: "", title: "Día 4 — Borghese y el Aventino", items: [{ time: "09:00", text: "Galería Borghese (reserva obligatoria)" }, { time: "12:00", text: "Jardines de Villa Borghese" }, { time: "16:00", text: "Barrio de Trastevere a pie" }, { time: "20:00", text: "Cena con pizza romana en Trastevere" }] },
+      { date: "", title: "Día 5 — Gelato final", items: [{ time: "09:00", text: "Barrio Testaccio (el más auténtico)" }, { time: "12:00", text: "Última pasta all'amatriciana" }, { time: "14:00", text: "Gelato de Giolitti" }, { time: "16:30", text: "Traslado al aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Coliseo", lat: 41.89, lon: 12.49, note: "Anfiteatro romano del año 80 d.C." },
+      { name: "Vaticano", lat: 41.90, lon: 12.45, note: "El Estado más pequeño del mundo, Capilla Sixtina" },
+      { name: "Fontana di Trevi", lat: 41.90, lon: 12.48, note: "La fuente más famosa del mundo" },
+      { name: "Panteón", lat: 41.90, lon: 12.48, note: "Templo romano del año 125 d.C., cúpula sin grietas" },
+      { name: "Trastevere", lat: 41.89, lon: 12.47, note: "El barrio más auténtico y bohemio de Roma" },
+    ],
+  },
+  {
+    id: "amsterdam", name: "Ámsterdam", country: "Países Bajos", flag: "🇳🇱",
+    costPerPerson: 800, durationDays: 4, type: "ciudad",
+    description: "Canales, bicicletas y los mejores museos de Europa. La ciudad más liberal y acogedora del norte.",
+    highlights: ["Rijksmuseum", "Casa de Ana Frank", "Vondelpark", "Molinos Zaanse Schans"],
+    itinerary: [
+      { date: "", title: "Día 1 — Llegada y canales", items: [{ time: "13:00", text: "Llegada a Schiphol" }, { time: "16:00", text: "Alquiler de bicicleta" }, { time: "17:00", text: "Primer recorrido por los canales del Jordaan" }, { time: "20:00", text: "Cena con erwtensoep (sopa de guisantes)" }] },
+      { date: "", title: "Día 2 — Museos y Jordaan", items: [{ time: "09:00", text: "Rijksmuseum (Rembrandt, Vermeer)" }, { time: "12:00", text: "Museumplein" }, { time: "14:00", text: "Casa de Ana Frank (reserva previa obligatoria)" }, { time: "17:00", text: "Vondelpark al atardecer" }, { time: "20:00", text: "Cena en Leidseplein" }] },
+      { date: "", title: "Día 3 — Excursión a Zaanse Schans", items: [{ time: "09:00", text: "Zaanse Schans: molinos de viento, queso y zuecos" }, { time: "13:00", text: "Almuerzo con queso gouda" }, { time: "16:00", text: "Regreso y Mercado del Waterlooplein" }, { time: "19:00", text: "Heineken Experience o Jenever en un proeflokaaltje" }] },
+      { date: "", title: "Día 4 — Flores y regreso", items: [{ time: "09:30", text: "Mercado de Albert Cuyp" }, { time: "11:00", text: "Bloemenmarkt (el único mercado de flores en barco)" }, { time: "13:30", text: "Almuerzo de haring (arenque) con cebolla" }, { time: "16:00", text: "Traslado al aeropuerto Schiphol" }] },
+    ],
+    mapPlaces: [
+      { name: "Rijksmuseum", lat: 52.36, lon: 4.89, note: "Museo nacional neerlandés, Rembrandt y Vermeer" },
+      { name: "Casa de Ana Frank", lat: 52.37, lon: 4.88, note: "Memorial histórico, reserva con mucha antelación" },
+      { name: "Vondelpark", lat: 52.36, lon: 4.87, note: "El pulmón verde de Ámsterdam" },
+      { name: "Jordaan", lat: 52.37, lon: 4.88, note: "El barrio más bohemio con canales y galerías" },
+      { name: "Zaanse Schans", lat: 52.47, lon: 4.82, note: "Molinos de viento históricos, 20 min en tren" },
+    ],
+  },
+  {
+    id: "paris", name: "París", country: "Francia", flag: "🇫🇷",
+    costPerPerson: 950, durationDays: 5, type: "ciudad",
+    description: "La Ciudad de la Luz: Torre Eiffel, Louvre, croissants y el Sena. El viaje que todo el mundo tiene que hacer.",
+    highlights: ["Torre Eiffel", "Louvre", "Montmartre", "Versalles"],
+    itinerary: [
+      { date: "", title: "Día 1 — La Torre Eiffel", items: [{ time: "12:00", text: "Llegada a CDG u Orly" }, { time: "16:00", text: "Torre Eiffel (sube al segundo piso, reserva previa)" }, { time: "18:30", text: "Crucero por el Sena" }, { time: "21:00", text: "Cena en Saint-Germain-des-Prés" }] },
+      { date: "", title: "Día 2 — El Louvre", items: [{ time: "09:00", text: "Louvre (Mona Lisa, Venus de Milo — 3h mínimo)" }, { time: "13:00", text: "Almuerzo en Les Halles" }, { time: "15:00", text: "Jardin des Tuileries → Arco del Triunfo" }, { time: "18:00", text: "Champs-Élysées" }, { time: "22:00", text: "La Torre Eiffel iluminada desde el Trocadero" }] },
+      { date: "", title: "Día 3 — Montmartre y el Marais", items: [{ time: "09:30", text: "Montmartre y Sacré-Cœur" }, { time: "12:00", text: "Place du Tertre (artistas callejeros)" }, { time: "14:30", text: "Le Marais — barrio histórico" }, { time: "16:30", text: "Centre Pompidou" }, { time: "20:00", text: "Cena en Oberkampf" }] },
+      { date: "", title: "Día 4 — Versalles", items: [{ time: "09:00", text: "Tren RER C a Versalles (30 min)" }, { time: "10:00", text: "Palacio de Versalles y jardines" }, { time: "14:00", text: "Picnic en los jardines de Le Nôtre" }, { time: "17:00", text: "Regreso y aperitivo en Pigalle" }] },
+      { date: "", title: "Día 5 — Último croissant", items: [{ time: "09:00", text: "Desayuno en una boulangerie de barrio" }, { time: "11:00", text: "Ópera Garnier" }, { time: "14:00", text: "Última crêpe de Nutella" }, { time: "17:00", text: "Traslado al aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Torre Eiffel", lat: 48.86, lon: 2.29, note: "El símbolo de Francia, 330 m" },
+      { name: "Louvre", lat: 48.86, lon: 2.33, note: "El museo más visitado del mundo" },
+      { name: "Montmartre", lat: 48.89, lon: 2.34, note: "Barrio bohemio con artistas y el Sacré-Cœur" },
+      { name: "Versalles", lat: 48.80, lon: 2.12, note: "Palacio real del Rey Sol, a 30 min" },
+      { name: "Notre-Dame", lat: 48.85, lon: 2.35, note: "Catedral gótica en reconstrucción" },
+    ],
+  },
+  {
+    id: "santorini", name: "Santorini", country: "Grecia", flag: "🇬🇷",
+    costPerPerson: 1300, durationDays: 6, type: "playa",
+    description: "Casas blancas, cúpulas azules y el atardecer más fotografiado del Mediterráneo. El lujo griego accesible.",
+    highlights: ["Oía", "Caldera", "Playa Roja", "Volcán Nea Kameni"],
+    itinerary: [
+      { date: "", title: "Día 1 — Bienvenido a la caldera", items: [{ time: "15:00", text: "Vuelo a Santorini (JTR) vía Atenas" }, { time: "18:00", text: "Check-in en hotel en Imerovigli" }, { time: "20:00", text: "Cena con vistas al volcán y el sol hundiéndose" }] },
+      { date: "", title: "Día 2 — Oía y el atardecer", items: [{ time: "09:00", text: "Ruta a pie de Fira a Oía (10 km, 3h)" }, { time: "13:00", text: "Almuerzo en Imerovigli" }, { time: "16:00", text: "Oía: casas blancas y callejones azules" }, { time: "19:30", text: "El atardecer de Oía (llegar 1h antes por el gentío)" }] },
+      { date: "", title: "Día 3 — Playas volcánicas", items: [{ time: "10:00", text: "Playa Roja (Kokkini Paralia) — arena roja volcánica" }, { time: "13:00", text: "Playa Negra de Perissa" }, { time: "14:30", text: "Almuerzo con pulpo a la brasa" }, { time: "17:00", text: "Playa de Kamari" }] },
+      { date: "", title: "Día 4 — Volcán y aguas termales", items: [{ time: "09:00", text: "Barco al volcán de Nea Kameni" }, { time: "11:00", text: "Baño en las aguas termales naturales" }, { time: "13:30", text: "Parada en la isla de Thirassia" }, { time: "16:00", text: "Regreso a Fira" }] },
+      { date: "", title: "Día 5 — Akrotiri y vino", items: [{ time: "09:30", text: "Ruinas de Akrotiri (la Pompeya griega, 1.600 a.C.)" }, { time: "12:00", text: "Cata de vinos de la isla en bodega volcánica" }, { time: "16:00", text: "Playa de Vlychada" }] },
+      { date: "", title: "Día 6 — Regreso", items: [{ time: "09:00", text: "Desayuno griego: yogur, miel y feta" }, { time: "11:00", text: "Últimas fotos y compras" }, { time: "14:00", text: "Traslado al aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Oía", lat: 36.46, lon: 25.37, note: "El atardecer más famoso del Mediterráneo" },
+      { name: "Fira", lat: 36.43, lon: 25.43, note: "Capital de Santorini, al borde del cráter" },
+      { name: "Playa Roja", lat: 36.35, lon: 25.40, note: "Arena volcánica roja, única en Europa" },
+      { name: "Akrotiri", lat: 36.35, lon: 25.40, note: "Ruinas minoicas de 3.600 años, perfectamente conservadas" },
+      { name: "Volcán Nea Kameni", lat: 36.40, lon: 25.40, note: "Volcán activo en el centro de la caldera" },
+    ],
+  },
+  {
+    id: "estambul-dubai", name: "Dubái", country: "EAU", flag: "🇦🇪",
+    costPerPerson: 1500, durationDays: 5, type: "ciudad",
+    description: "El futuro hecho realidad: el rascacielos más alto del mundo, desierto dorado y malls de lujo.",
+    highlights: ["Burj Khalifa", "Desert Safari", "Palm Jumeirah", "Dubai Frame"],
+    itinerary: [
+      { date: "", title: "Día 1 — Bienvenido al futuro", items: [{ time: "08:00", text: "Llegada a DXB" }, { time: "15:00", text: "Dubai Mall y fuentes coreografiadas del Burj Khalifa" }, { time: "19:30", text: "Subida al Burj Khalifa (At the Top, piso 124)" }, { time: "21:00", text: "Cena en Downtown Dubai" }] },
+      { date: "", title: "Día 2 — Old Dubai y el Creek", items: [{ time: "09:30", text: "Barrio histórico de Al Fahidi" }, { time: "11:00", text: "Cruce en abra (barca de madera) por el Creek" }, { time: "12:00", text: "Zoco del Oro y Zoco de las Especias" }, { time: "15:30", text: "Dubai Frame: mitad antigua y mitad moderna" }] },
+      { date: "", title: "Día 3 — Safari en el desierto", items: [{ time: "14:00", text: "Recogida en el hotel" }, { time: "15:30", text: "Dune bashing en 4x4 por las dunas rojas" }, { time: "17:00", text: "Sandboard y foto al atardecer" }, { time: "18:30", text: "Campamento beduino: cena, danza del vientre y shisha" }] },
+      { date: "", title: "Día 4 — Palm y playas", items: [{ time: "09:00", text: "Palm Jumeirah en monorraíl" }, { time: "11:00", text: "Atlantis: Aquaventure Waterpark" }, { time: "16:00", text: "Playa de Jumeirah" }, { time: "20:00", text: "Cena en Dubai Marina" }] },
+      { date: "", title: "Día 5 — Compras y regreso", items: [{ time: "10:00", text: "Últimas compras en Dubai Mall" }, { time: "13:00", text: "Shawarma final en la ciudad" }, { time: "16:00", text: "Traslado al aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Burj Khalifa", lat: 25.20, lon: 55.27, note: "El edificio más alto del mundo (828 m)" },
+      { name: "Palm Jumeirah", lat: 25.11, lon: 55.14, note: "Isla artificial en forma de palmera" },
+      { name: "Al Fahidi (Old Dubai)", lat: 25.26, lon: 55.30, note: "Barrio histórico del Dubai original" },
+      { name: "Desierto de Dubái", lat: 24.91, lon: 55.49, note: "Safari: dunas de arena roja" },
+      { name: "Dubai Marina", lat: 25.08, lon: 55.14, note: "Canal artificial con rascacielos y vida nocturna" },
+    ],
+  },
+  {
+    id: "bangkok", name: "Bangkok + Islas", country: "Tailandia", flag: "🇹🇭",
+    costPerPerson: 1400, durationDays: 10, type: "cultura",
+    description: "Templos dorados, tuk-tuks, street food increíble y las playas más paradisíacas de Asia.",
+    highlights: ["Gran Palacio", "Wat Pho", "Islas Phi Phi", "Street food"],
+    itinerary: [
+      { date: "", title: "Día 1 — Llegada a Bangkok", items: [{ time: "07:00", text: "Llegada a Suvarnabhumi Airport" }, { time: "14:00", text: "Primer street food: pad thai y mango sticky rice" }, { time: "19:00", text: "Rooftop bar con vistas a la ciudad" }] },
+      { date: "", title: "Día 2 — Templos del río", items: [{ time: "07:30", text: "Wat Phra Kaew (Templo del Buda Esmeralda)" }, { time: "09:30", text: "Gran Palacio Real" }, { time: "12:00", text: "Wat Pho (Buda Reclinado de 46 m)" }, { time: "15:00", text: "Barco por el río Chao Phraya" }, { time: "17:00", text: "Wat Arun al atardecer" }] },
+      { date: "", title: "Día 3 — Chatuchak y ocio", items: [{ time: "09:00", text: "Mercado de Chatuchak (el mayor del mundo en fin de semana)" }, { time: "14:00", text: "Almuerzo de tom kha gai" }, { time: "17:00", text: "Masaje thai de 2 horas" }, { time: "21:00", text: "Noche en Khaosan Road" }] },
+      { date: "", title: "Días 4-5 — Excursiones", items: [{ time: "07:00", text: "Mercado flotante de Damnoen Saduak (día 4)" }, { time: "09:00", text: "Templos del camino de regreso" }, { time: "Día 5", text: "Tren a Ayutthaya — antigua capital del reino (1h30)" }, { time: "11:00", text: "Ruinas de templos entre elefantes" }] },
+      { date: "", title: "Días 6-8 — Islas (Koh Samui o Phuket)", items: [{ time: "08:00", text: "Vuelo a la isla elegida" }, { time: "12:00", text: "Llegada y primera playa paradisíaca" }, { time: "Día 7", text: "Excursión a las Islas Phi Phi en barco" }, { time: "Día 8", text: "Playa, snorkel y relax total" }] },
+      { date: "", title: "Días 9-10 — Vuelta a Bangkok y regreso", items: [{ time: "08:00", text: "Regreso a Bangkok" }, { time: "15:00", text: "Últimas compras en Siam" }, { time: "Día 10", text: "Traslado al aeropuerto para el vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Gran Palacio (Bangkok)", lat: 13.75, lon: 100.49, note: "Complejo palaciego del siglo XVIII" },
+      { name: "Wat Pho", lat: 13.75, lon: 100.49, note: "Templo del Buda Reclinado de 46 m" },
+      { name: "Ayutthaya", lat: 14.36, lon: 100.57, note: "Antigua capital del reino de Siam" },
+      { name: "Phuket / Phi Phi", lat: 7.88, lon: 98.39, note: "Islas paradisíacas del sur" },
+      { name: "Koh Samui", lat: 9.53, lon: 100.06, note: "Isla de playas y cocoteros" },
+    ],
+  },
+  {
+    id: "islandia", name: "Islandia", country: "Islandia", flag: "🇮🇸",
+    costPerPerson: 2000, durationDays: 7, type: "naturaleza",
+    description: "El país de fuego y hielo: auroras boreales, géiseres, cascadas imposibles y ballenas. Naturaleza en estado puro.",
+    highlights: ["Aurora boreal", "Geysir", "Gullfoss", "Jökulsárlón"],
+    itinerary: [
+      { date: "", title: "Día 1 — Reikiavik y Blue Lagoon", items: [{ time: "07:00", text: "Llegada a Keflavík" }, { time: "10:00", text: "Reikiavik: Hallgrímskirkja y Laugavegur" }, { time: "16:00", text: "Blue Lagoon (reserva previa imprescindible)" }, { time: "21:00", text: "Cena de cordero islandés en Reikiavik" }] },
+      { date: "", title: "Día 2 — Golden Circle", items: [{ time: "08:00", text: "Þingvellir: caminar entre 2 placas tectónicas" }, { time: "11:00", text: "Geysir Strokkur (erupciona cada 5-7 min)" }, { time: "13:00", text: "Cascada de Gullfoss — la más famosa de Islandia" }, { time: "22:00", text: "Caza de auroras boreales (sept-marzo)" }] },
+      { date: "", title: "Día 3 — Costa Sur", items: [{ time: "08:00", text: "Seljalandsfoss (puedes rodear la cascada)" }, { time: "10:00", text: "Skógafoss — cascada de 60 m" }, { time: "13:00", text: "Glaciar Eyjafjallajökull" }, { time: "15:00", text: "Playa negra de Reynisfjara (columnas de basalto)" }, { time: "18:00", text: "Alojamiento en Vík" }] },
+      { date: "", title: "Día 4 — Glaciares", items: [{ time: "09:00", text: "Laguna glaciar de Jökulsárlón (icebergs azules)" }, { time: "11:30", text: "Diamond Beach (icebergs en arena negra)" }, { time: "14:00", text: "Senderismo en el glaciar Vatnajökull" }] },
+      { date: "", title: "Días 5-6 — Snæfellsnes", items: [{ time: "08:00", text: "Península de Snæfellsnes — de película de ciencia ficción" }, { time: "11:00", text: "Parque Nacional Snæfellsjökull" }, { time: "14:00", text: "Acantilados de Arnarstapi" }, { time: "Día 6", text: "Cascada de Hraunfossar y Barnafoss" }] },
+      { date: "", title: "Día 7 — Última aurora y regreso", items: [{ time: "10:00", text: "Última mañana en Reikiavik" }, { time: "22:00", text: "Intento final de aurora boreal" }, { time: "Madrugada", text: "Traslado al aeropuerto de Keflavík" }] },
+    ],
+    mapPlaces: [
+      { name: "Reikiavik", lat: 64.14, lon: -21.94, note: "Capital, la más septentrional del mundo" },
+      { name: "Geysir", lat: 64.31, lon: -20.30, note: "Géiser Strokkur erupciona cada 5 min" },
+      { name: "Gullfoss", lat: 64.33, lon: -20.12, note: "La cascada más famosa de Islandia" },
+      { name: "Jökulsárlón", lat: 64.08, lon: -16.23, note: "Laguna glaciar con icebergs azules" },
+      { name: "Playa Negra Reynisfjara", lat: 63.41, lon: -19.04, note: "Arena negra y columnas de basalto" },
+    ],
+  },
+  {
+    id: "japon", name: "Tokio + Kioto", country: "Japón", flag: "🇯🇵",
+    costPerPerson: 2500, durationDays: 10, type: "cultura",
+    description: "El país del sol naciente: entre rascacielos futuristas y templos de 1.000 años. Sushi, sándwiches y el Monte Fuji.",
+    highlights: ["Shibuya", "Fushimi Inari", "Monte Fuji", "Shinkansen"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Tokio: neón y tradición", items: [{ time: "09:00", text: "Llegada a Narita o Haneda" }, { time: "Tarde", text: "Shibuya Crossing y Harajuku" }, { time: "Noche", text: "Cena en Shinjuku: ramen en máquina expendedora" }, { time: "Día 2 mañana", text: "Templo Senso-ji en Asakusa" }, { time: "Tarde", text: "Akihabara: electrónica y cultura otaku" }] },
+      { date: "", title: "Días 3-4 — Tokio profundo", items: [{ time: "09:00", text: "Sushi en Tsukiji Outer Market" }, { time: "11:00", text: "Shinjuku Gyoen (jardines imperiales)" }, { time: "15:00", text: "Odaiba y teamLab Planets (imprescindible)" }, { time: "Día 4", text: "Ikebukuro o Shimokitazawa (barrios alternativos)" }] },
+      { date: "", title: "Día 5 — Monte Fuji y Hakone", items: [{ time: "07:00", text: "Shinkansen a Mishima (50 min)" }, { time: "10:00", text: "Hakone: vista del Monte Fuji" }, { time: "14:00", text: "Ryokan: onsen (baño termal japonés)" }] },
+      { date: "", title: "Días 6-7 — Shinkansen a Kioto", items: [{ time: "09:00", text: "Bala de tren Tokio-Kioto (2h15m)" }, { time: "13:00", text: "Fushimi Inari: 10.000 toriis rojos" }, { time: "17:00", text: "Barrio de Gion — si hay suerte, geishas" }, { time: "Día 7 mañana", text: "Kinkaku-ji (Pabellón Dorado)" }, { time: "Tarde", text: "Arashiyama: bosque de bambú" }] },
+      { date: "", title: "Días 8-9 — Nara y Osaka", items: [{ time: "09:00", text: "Nara: ciervos sagrados sueltos por la ciudad" }, { time: "11:00", text: "Tōdai-ji (el mayor edificio de madera del mundo)" }, { time: "Tarde", text: "Osaka: Dotonbori, takoyaki y okonomiyaki" }, { time: "Noche", text: "Vida nocturna de Osaka" }] },
+      { date: "", title: "Día 10 — Regreso", items: [{ time: "09:00", text: "Últimas compras en Don Quijote" }, { time: "14:00", text: "Traslado al aeropuerto de Osaka (KIX)" }] },
+    ],
+    mapPlaces: [
+      { name: "Shibuya (Tokio)", lat: 35.66, lon: 139.70, note: "El cruce peatonal más concurrido del mundo" },
+      { name: "Templo Senso-ji", lat: 35.71, lon: 139.80, note: "El templo budista más antiguo de Tokio" },
+      { name: "Fushimi Inari (Kioto)", lat: 34.97, lon: 135.77, note: "10.000 puertas torii rojas en la montaña" },
+      { name: "Monte Fuji", lat: 35.36, lon: 138.73, note: "El volcán sagrado de Japón (3.776 m)" },
+      { name: "Dotonbori (Osaka)", lat: 34.67, lon: 135.50, note: "Epicentro gastronómico de Osaka" },
+    ],
+  },
+  {
+    id: "nueva-york", name: "Nueva York", country: "Estados Unidos", flag: "🇺🇸",
+    costPerPerson: 2700, durationDays: 7, type: "ciudad",
+    description: "La ciudad que nunca duerme: Central Park, Brooklyn Bridge, Broadway y la skyline más icónica del mundo.",
+    highlights: ["Empire State", "Central Park", "Brooklyn Bridge", "Times Square"],
+    itinerary: [
+      { date: "", title: "Día 1 — Bienvenido a Manhattan", items: [{ time: "11:00", text: "Llegada a JFK o Newark" }, { time: "16:00", text: "Times Square — sobrecogerse, no fotografiar" }, { time: "19:00", text: "Cena en Hell's Kitchen" }, { time: "21:00", text: "The High Line al anochecer" }] },
+      { date: "", title: "Día 2 — Downtown", items: [{ time: "09:00", text: "Staten Island Ferry (GRATIS, vistas de la Estatua)" }, { time: "11:00", text: "9/11 Memorial & Museum" }, { time: "15:00", text: "One World Observatory (piso 100)" }, { time: "19:00", text: "Cena en Little Italy o Chinatown" }] },
+      { date: "", title: "Día 3 — Museos y Central Park", items: [{ time: "09:00", text: "Central Park con bagel del carrito" }, { time: "11:00", text: "Metropolitan Museum of Art (colección de 5.000 años)" }, { time: "15:00", text: "Guggenheim" }, { time: "20:00", text: "Jazz en Harlem" }] },
+      { date: "", title: "Día 4 — Brooklyn", items: [{ time: "09:30", text: "Puente de Brooklyn a pie (30 min)" }, { time: "11:30", text: "Brooklyn Heights Promenade — mejores vistas de Manhattan" }, { time: "13:00", text: "Smorgasburg Food Market" }, { time: "16:00", text: "Williamsburg: arte callejero y cerveza artesanal" }, { time: "19:00", text: "Empire State al atardecer" }] },
+      { date: "", title: "Día 5 — Cultura y Broadway", items: [{ time: "10:00", text: "MoMA (Picasso, Warhol, Pollock)" }, { time: "14:00", text: "5ª Avenida y el Rockefeller Center" }, { time: "18:00", text: "Chelsea Market" }, { time: "20:00", text: "Musical de Broadway (reserva previa)" }] },
+      { date: "", title: "Días 6-7 — Barrios y regreso", items: [{ time: "10:00", text: "Astoria (Queens): barrio griego y gastronomía" }, { time: "13:00", text: "Flushing: el Chinatown más grande fuera de China" }, { time: "17:00", text: "Último paseo por el Hudson River Park" }, { time: "Día 7", text: "Traslado al aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Times Square", lat: 40.76, lon: -73.99, note: "El cruce más famoso del mundo" },
+      { name: "Central Park", lat: 40.78, lon: -73.97, note: "341 hectáreas en el corazón de Manhattan" },
+      { name: "Estatua de la Libertad", lat: 40.69, lon: -74.04, note: "Símbolo de libertad desde 1886" },
+      { name: "Brooklyn Bridge", lat: 40.71, lon: -73.99, note: "Puente icónico del s. XIX entre barrios" },
+      { name: "Empire State Building", lat: 40.75, lon: -73.99, note: "La vista más icónica de Nueva York" },
+    ],
+  },
+  {
+    id: "maldivas", name: "Maldivas", country: "Maldivas", flag: "🇲🇻",
+    costPerPerson: 3800, durationDays: 7, type: "playa",
+    description: "El paraíso en la tierra: bungalows sobre el agua, arrecifes de coral, rayas manta y aguas turquesas cristalinas.",
+    highlights: ["Overwater bungalows", "Snorkel con mantas", "Sunset cruise", "Aguas turquesas"],
+    itinerary: [
+      { date: "", title: "Día 1 — Paraíso, bienvenido", items: [{ time: "12:00", text: "Conexión en Colombo o Dubai" }, { time: "16:00", text: "Llegada a Malé" }, { time: "17:00", text: "Hidroavión o speedboat al resort (30-60 min)" }, { time: "19:00", text: "Cena romántica en el pier sobre el océano" }] },
+      { date: "", title: "Días 2-3 — Playa y snorkel", items: [{ time: "09:00", text: "Snorkel en el arrecife de coral del resort" }, { time: "12:00", text: "Almuerzo de langosta y marisco fresco" }, { time: "15:00", text: "Kayak y paddleboard entre peces de colores" }, { time: "18:30", text: "Sunset cruise en dhoni tradicional" }] },
+      { date: "", title: "Día 4 — Mantas y tiburones", items: [{ time: "07:30", text: "Excursión de snorkel con mantas en Hanifaru Bay" }, { time: "12:00", text: "Picnic en banco de arena desierto" }, { time: "16:00", text: "Avistamiento de delfines al atardecer" }] },
+      { date: "", title: "Días 5-6 — Relax y Malé", items: [{ time: "09:00", text: "Spa de cuerpo entero en el resort" }, { time: "15:00", text: "Excursión a la isla local (aldea maldiviana)" }, { time: "Día 6", text: "Visita a Malé ciudad y mercado de pescado" }] },
+      { date: "", title: "Día 7 — Regreso al mundo real", items: [{ time: "08:00", text: "Último baño matinal en el Índico" }, { time: "11:00", text: "Check-out con el corazón roto" }, { time: "14:00", text: "Hidroavión a Malé y vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Malé", lat: 4.18, lon: 73.51, note: "Capital de Maldivas" },
+      { name: "Atolón Baa", lat: 5.08, lon: 73.07, note: "Reserva de la Biosfera UNESCO con mantas" },
+      { name: "Hanifaru Bay", lat: 5.19, lon: 73.00, note: "Punto de encuentro de rayas manta" },
+      { name: "Atolón South Malé", lat: 4.04, lon: 73.49, note: "Islas resort de lujo" },
+    ],
+  },
+];
 
 // ─── Utilities ───────────────────────────────────────────────────────────────
 
@@ -257,8 +597,8 @@ function EntryScreen({ onEnter, externalError }: { onEnter: (code: string, name:
               {/* Feature pills */}
               <div className="flex flex-wrap gap-2 mt-6 justify-center md:justify-start">
                 {[
-                  ["✈️", "Itinerario"], ["🗺️", "Mapa"], ["📸", "Fotos"],
-                  ["💶", "Gastos"], ["🧳", "Equipaje"], ["💡", "Ideas"],
+                  ["🌍", "Destinos"], ["✈️", "Itinerario"], ["🗺️", "Mapa"],
+                  ["🧳", "Equipaje"], ["💶", "Gastos"], ["💡", "Ideas"], ["📸", "Fotos"],
                 ].map(([icon, label]) => (
                   <span key={label} style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", color: "#B9C3D6", fontSize: 12, fontFamily: F.mono, borderRadius: 999, padding: "4px 10px" }}>
                     {icon} {label}
@@ -346,7 +686,7 @@ function EntryScreen({ onEnter, externalError }: { onEnter: (code: string, name:
 
 // ─── Main App ─────────────────────────────────────────────────────────────────
 
-type TabId = "resumen" | "itinerario" | "mapa" | "fotos" | "checklist" | "gastos" | "equipaje" | "ideas" | "ahorro";
+type TabId = "resumen" | "itinerario" | "mapa" | "fotos" | "checklist" | "gastos" | "equipaje" | "ideas" | "ahorro" | "destinos";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -406,6 +746,7 @@ export default function App() {
     { id: "checklist",  label: "Checklist",   Icon: ListChecks },
     { id: "ideas",      label: "Ideas",       Icon: Lightbulb },
     { id: "ahorro",     label: "Ahorro",      Icon: PiggyBank },
+    { id: "destinos",   label: "Destinos",    Icon: Globe },
   ];
 
   return (
@@ -485,6 +826,7 @@ export default function App() {
         {tab === "equipaje"   && <Equipaje code={session.code} session={session} />}
         {tab === "ideas"      && <Ideas code={session.code} session={session} />}
         {tab === "ahorro"     && <Ahorro code={session.code} members={trip.members} />}
+        {tab === "destinos"   && <Destinos code={session.code} onSelect={() => setTab("itinerario")} />}
       </main>
     </div>
   );
@@ -1612,6 +1954,246 @@ function Ahorro({ code, members }: { code: string; members: string[] }) {
           </p>
         </div>
       )}
+    </div>
+  );
+}
+
+// ─── Destinos ─────────────────────────────────────────────────────────────────
+
+const TYPE_COLORS: Record<string, string> = {
+  playa: "#4A90B8", ciudad: "#3F7A78", cultura: "#B8893F",
+  naturaleza: "#2A7A4B", aventura: "#D4614A",
+};
+
+function DestCard({ dest, budget, onChoose }: { dest: DestinationTemplate; budget: number; onChoose: () => void }) {
+  const [open, setOpen] = useState(false);
+  const withinBudget = budget === 0 || dest.costPerPerson <= budget;
+  const missing = budget > 0 ? dest.costPerPerson - budget : 0;
+  const typeColor = TYPE_COLORS[dest.type] ?? C.inkSoft;
+
+  return (
+    <div className="card-lift" style={{ background: "#fff", border: `1px solid ${withinBudget ? C.line : C.paperDark}`, borderRadius: 10, overflow: "hidden", opacity: withinBudget ? 1 : 0.72 }}>
+      <div className="flex items-start gap-3 p-4" style={{ cursor: "pointer" }} onClick={() => setOpen(v => !v)}>
+        <div style={{ fontSize: 30, lineHeight: 1, flexShrink: 0, marginTop: 2 }}>{dest.flag}</div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2 flex-wrap">
+            <div>
+              <div style={{ fontFamily: F.display, fontSize: 17, fontWeight: 700, color: C.ink }}>{dest.name}</div>
+              <div style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft }}>{dest.country} · {dest.durationDays} días</div>
+            </div>
+            <div style={{ textAlign: "right", flexShrink: 0 }}>
+              <div style={{ fontFamily: F.display, fontSize: 18, fontWeight: 700, color: withinBudget ? C.green : C.red }}>
+                ~{dest.costPerPerson.toLocaleString("es-ES")} €
+              </div>
+              <div style={{ fontFamily: F.mono, fontSize: 9, color: withinBudget ? C.green : C.red }}>
+                {withinBudget
+                  ? (budget > 0 ? `SOBRAN ~${(budget - dest.costPerPerson).toFixed(0)} €` : "TODO INCLUIDO · POR PERSONA")
+                  : `FALTAN ~${missing.toFixed(0)} €`}
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 mt-2 flex-wrap">
+            <span style={{ fontFamily: F.mono, fontSize: 10, padding: "2px 8px", borderRadius: 999, background: `${typeColor}22`, color: typeColor, border: `1px solid ${typeColor}44` }}>
+              {dest.type.toUpperCase()}
+            </span>
+            {dest.highlights.slice(0, 3).map(h => (
+              <span key={h} style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft }}>{h}</span>
+            ))}
+          </div>
+        </div>
+        <ChevronDown size={15} color={C.inkSoft} style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 0.2s", flexShrink: 0, marginTop: 3 }} />
+      </div>
+
+      {open && (
+        <div className="fade-in" style={{ borderTop: `1px solid ${C.paperDark}` }}>
+          <div className="px-4 py-3 flex flex-col gap-3">
+            <p style={{ color: C.inkSoft, fontSize: 13, lineHeight: 1.6 }}>{dest.description}</p>
+
+            <div style={{ background: C.paperDark, borderRadius: 6, padding: "10px 14px", fontFamily: F.mono, fontSize: 11, color: C.inkSoft }}>
+              ✈️ Vuelo · 🏨 Alojamiento · 🍽️ Comida · 🎭 Actividades — <strong style={{ color: C.ink }}>todo incluido</strong> en ~{dest.costPerPerson.toLocaleString("es-ES")} €/persona
+            </div>
+
+            <div>
+              <SectionLabel>Itinerario incluido</SectionLabel>
+              <div className="flex flex-col gap-1 mt-2">
+                {dest.itinerary.map((d, i) => (
+                  <div key={i} className="flex gap-2 items-baseline">
+                    <div style={{ fontFamily: F.mono, fontSize: 10, color: C.gold, width: 18, textAlign: "right", flexShrink: 0 }}>{i + 1}</div>
+                    <div style={{ fontSize: 13, color: C.ink }}>{d.title}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <SectionLabel>Lugares en el mapa</SectionLabel>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {dest.mapPlaces.map(p => (
+                  <div key={p.name} className="flex items-center gap-1" style={{ fontFamily: F.mono, fontSize: 11, color: C.inkSoft }}>
+                    <MapPin size={10} color={C.teal} /> {p.name}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="px-4 pb-4">
+            <button onClick={onChoose} style={{
+              width: "100%", background: withinBudget ? C.teal : C.navy, color: "#fff",
+              borderRadius: 6, padding: "12px 16px", fontFamily: F.mono, fontSize: 12, fontWeight: 700, letterSpacing: 0.5,
+            }}>
+              {withinBudget ? "✈ ELEGIR ESTE DESTINO" : "ELEGIR IGUALMENTE →"}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Destinos({ code, onSelect }: { code: string; onSelect: () => void }) {
+  const [savings, setSavings] = useState<SavingsConfig | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("todos");
+  const [chosen, setChosen] = useState<DestinationTemplate | null>(null);
+  const [confirming, setConfirming] = useState(false);
+
+  useEffect(() => {
+    loadShared<SavingsConfig>(`ahorro:${code}`, { targetBudget: 0, phases: [] }).then(c => {
+      setSavings(c);
+      setLoading(false);
+    });
+  }, [code]);
+
+  const budgetPerPerson = useMemo(() => {
+    if (!savings) return 0;
+    return savings.phases.reduce((sum, p) => {
+      const months = monthsBetween(p.startDate, p.endDate);
+      return sum + p.amountPerPerson * months;
+    }, 0);
+  }, [savings]);
+
+  async function applyDestination(dest: DestinationTemplate) {
+    const itinDays: ItineraryDay[] = dest.itinerary.map(d => ({
+      ...d, id: uid(), items: d.items.map(it => ({ ...it, id: uid() })),
+    }));
+    await saveShared(`itin:${code}`, itinDays);
+    const mapPlaces: MapPlace[] = dest.mapPlaces.map(p => ({ ...p, id: uid() }));
+    await saveShared(`mapa:${code}`, mapPlaces);
+    onSelect();
+  }
+
+  const visibleDests = useMemo(() =>
+    DESTINATIONS.filter(d => filter === "todos" || d.type === filter),
+    [filter]);
+
+  const withinBudget = useMemo(() =>
+    visibleDests.filter(d => budgetPerPerson === 0 || d.costPerPerson <= budgetPerPerson),
+    [visibleDests, budgetPerPerson]);
+
+  const overBudget = useMemo(() =>
+    visibleDests.filter(d => budgetPerPerson > 0 && d.costPerPerson > budgetPerPerson),
+    [visibleDests, budgetPerPerson]);
+
+  if (loading) return <SkeletonCards />;
+
+  if (confirming && chosen) {
+    return (
+      <div className="flex flex-col gap-4 fade-in">
+        <Card style={{ textAlign: "center", padding: "28px 20px" }}>
+          <div style={{ fontSize: 52 }}>{chosen.flag}</div>
+          <div style={{ fontFamily: F.display, fontSize: 24, fontWeight: 700, color: C.ink, marginTop: 8 }}>{chosen.name}</div>
+          <div style={{ color: C.inkSoft, fontSize: 13, marginTop: 4, fontFamily: F.mono }}>
+            {chosen.country} · {chosen.durationDays} días · todo incluido ~{chosen.costPerPerson.toLocaleString("es-ES")} €/persona
+          </div>
+          <Perf />
+          <p style={{ color: C.inkSoft, fontSize: 14, lineHeight: 1.7 }}>
+            Se va a cargar el <strong style={{ color: C.ink }}>itinerario completo</strong> y los <strong style={{ color: C.ink }}>lugares del mapa</strong> de <strong style={{ color: C.ink }}>{chosen.name}</strong> en el viaje. El contenido actual se reemplazará. ¿Continuar?
+          </p>
+          <div className="flex gap-3 mt-5">
+            <button onClick={() => setConfirming(false)} style={{ flex: 1, background: C.paperDark, color: C.inkSoft, borderRadius: 6, padding: "12px 16px", fontFamily: F.mono, fontSize: 12 }}>CANCELAR</button>
+            <button onClick={() => applyDestination(chosen)} style={{ flex: 1, background: C.teal, color: "#fff", borderRadius: 6, padding: "12px 16px", fontFamily: F.mono, fontSize: 12, fontWeight: 700 }}>SÍ, APLICAR →</button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-5">
+      {/* Budget header */}
+      <div style={{ background: `linear-gradient(135deg, ${C.navy}, ${C.navyMid})`, borderRadius: 12, padding: "20px 20px", color: C.paper, position: "relative", overflow: "hidden" }} className="dot-grid">
+        <div className="glow-pulse" style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: 999, background: `radial-gradient(circle, ${C.gold}25, transparent 70%)`, pointerEvents: "none" }} />
+        <div style={{ fontFamily: F.mono, fontSize: 10, color: C.gold, letterSpacing: 1.5 }}>PRESUPUESTO POR PERSONA</div>
+        <div style={{ fontFamily: F.display, fontSize: "clamp(2rem,8vw,3rem)", fontWeight: 700, color: C.goldLight, lineHeight: 1, marginTop: 4 }}>
+          {budgetPerPerson > 0 ? `${budgetPerPerson.toFixed(0)} €` : "—"}
+        </div>
+        {budgetPerPerson > 0 ? (
+          <p style={{ fontFamily: F.mono, fontSize: 11, color: "#9FAEC4", marginTop: 6 }}>
+            Según tu plan de ahorro · vuelo + hotel + comida + actividades incluidos
+          </p>
+        ) : (
+          <p style={{ fontFamily: F.mono, fontSize: 11, color: "#9FAEC4", marginTop: 6 }}>
+            Configura tu plan en la pestaña <strong style={{ color: C.goldLight }}>AHORRO</strong> para ver destinos por presupuesto
+          </p>
+        )}
+        {budgetPerPerson > 0 && (
+          <div className="mt-3" style={{ fontFamily: F.mono, fontSize: 11, color: C.goldLight }}>
+            {withinBudget.length} destino{withinBudget.length !== 1 ? "s" : ""} alcanzable{withinBudget.length !== 1 ? "s" : ""} con tu presupuesto actual ✓
+          </div>
+        )}
+      </div>
+
+      {/* Type filter pills */}
+      <div className="flex flex-wrap gap-2">
+        {DEST_TYPE_FILTERS.map(t => (
+          <button key={t.value} onClick={() => setFilter(t.value)} style={{
+            padding: "6px 12px", borderRadius: 999, fontSize: 12, fontFamily: F.mono,
+            background: filter === t.value ? C.navy : C.paperDark,
+            color: filter === t.value ? C.paper : C.inkSoft,
+            border: `1px solid ${filter === t.value ? C.navy : C.line}`,
+            transition: "all 0.15s",
+          }}>
+            {t.emoji} {t.label.toUpperCase()}
+          </button>
+        ))}
+      </div>
+
+      {/* Within budget */}
+      {withinBudget.length > 0 && (
+        <div className="flex flex-col gap-3">
+          {budgetPerPerson > 0 && (
+            <div className="flex items-center gap-2">
+              <div style={{ height: 1, flex: 1, background: `${C.green}44` }} />
+              <span style={{ fontFamily: F.mono, fontSize: 10, color: C.green, letterSpacing: 1 }}>✓ PUEDES PERMITÍRTELO</span>
+              <div style={{ height: 1, flex: 1, background: `${C.green}44` }} />
+            </div>
+          )}
+          {withinBudget.map(dest => (
+            <DestCard key={dest.id} dest={dest} budget={budgetPerPerson} onChoose={() => { setChosen(dest); setConfirming(true); }} />
+          ))}
+        </div>
+      )}
+
+      {/* Over budget */}
+      {budgetPerPerson > 0 && overBudget.length > 0 && (
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2 mt-2">
+            <div style={{ height: 1, flex: 1, background: C.line }} />
+            <span style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft, letterSpacing: 1 }}>NECESITAS AHORRAR MÁS</span>
+            <div style={{ height: 1, flex: 1, background: C.line }} />
+          </div>
+          {overBudget.map(dest => (
+            <DestCard key={dest.id} dest={dest} budget={budgetPerPerson} onChoose={() => { setChosen(dest); setConfirming(true); }} />
+          ))}
+        </div>
+      )}
+
+      {budgetPerPerson === 0 && visibleDests.map(dest => (
+        <DestCard key={dest.id} dest={dest} budget={0} onChoose={() => { setChosen(dest); setConfirming(true); }} />
+      ))}
+
+      {visibleDests.length === 0 && <EmptyState icon={<Globe size={28} color={C.line} />} text="Sin destinos con ese filtro." />}
     </div>
   );
 }
