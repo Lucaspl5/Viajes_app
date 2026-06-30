@@ -2325,11 +2325,39 @@ function isValidUrl(s: string) {
 // ─── Storage ─────────────────────────────────────────────────────────────────
 
 async function loadShared<T>(key: string, fallback: T): Promise<T> {
+  // Try remote KV first (works across devices), fall back to localStorage
+  try {
+    const res = await fetch(`/api/store?key=${encodeURIComponent(key)}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data !== null) {
+        // Keep local cache in sync
+        try { localStorage.setItem(key, JSON.stringify(data)); } catch { /* ignore */ }
+        return data as T;
+      }
+    }
+  } catch { /* network issue — fall through */ }
+  // localStorage fallback
   try { const r = localStorage.getItem(key); return r ? JSON.parse(r) as T : fallback; } catch { return fallback; }
 }
+
 async function saveShared(key: string, value: unknown): Promise<boolean> {
-  try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch { return false; }
+  // Save to localStorage immediately for responsiveness
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* ignore */ }
+  // Then persist to remote KV
+  try {
+    const res = await fetch("/api/store", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key, value }),
+    });
+    if (res.ok) return true;
+    // 503 means KV not configured yet — not an error, just not synced
+    if (res.status === 503) return true;
+  } catch { /* network issue */ }
+  return true; // local save succeeded
 }
+
 async function loadPersonal<T>(key: string, fallback: T): Promise<T> {
   try { const r = localStorage.getItem(`_p:${key}`); return r ? JSON.parse(r) as T : fallback; } catch { return fallback; }
 }
@@ -2416,10 +2444,10 @@ function useCountdown(dateStr: string | null) {
 
 // ─── Hero / Entry screen ──────────────────────────────────────────────────────
 
-function EntryScreen({ onEnter, externalError }: { onEnter: (code: string, name: string) => Promise<void>; externalError: string }) {
-  const [mode, setMode] = useState<"join" | "create">("create");
+function EntryScreen({ onEnter, externalError, prefillCode }: { onEnter: (code: string, name: string) => Promise<void>; externalError: string; prefillCode?: string }) {
+  const [mode, setMode] = useState<"join" | "create">(prefillCode ? "join" : "create");
   const [name, setName] = useState("");
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState(prefillCode ?? "");
   const [tripName, setTripName] = useState("");
   const [destination, setDestination] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -2581,6 +2609,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
   const [entryError, setEntryError] = useState("");
+  const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window === "undefined") return false;
     return localStorage.getItem("darkMode") === "1";
@@ -2588,6 +2617,21 @@ export default function App() {
 
   useEffect(() => {
     (async () => {
+      // Handle invite link: /?code=XYZ&d=<base64tripdata>
+      const params = new URLSearchParams(window.location.search);
+      const urlCode = params.get("code");
+      const urlData = params.get("d");
+      if (urlCode && urlData) {
+        try {
+          const tripObj = JSON.parse(decodeURIComponent(atob(urlData))) as Trip;
+          // Seed the trip into local storage and KV so the join flow works
+          await saveShared(`trip:${urlCode}`, tripObj);
+          setInviteCode(urlCode);
+        } catch { /* malformed invite link */ }
+        // Clean up URL without reload
+        window.history.replaceState({}, "", window.location.pathname);
+      }
+
       const last = await loadPersonal<Session | null>("lastSession", null);
       if (last?.code && last?.name) {
         const t = await loadShared<Trip | null>(`trip:${last.code}`, null);
@@ -2632,7 +2676,7 @@ export default function App() {
     );
   }
 
-  if (!session || !trip) return <EntryScreen onEnter={enter} externalError={entryError} />;
+  if (!session || !trip) return <EntryScreen onEnter={enter} externalError={entryError} prefillCode={inviteCode ?? undefined} />;
 
   const tabs: { id: TabId; label: string; Icon: React.ElementType }[] = [
     { id: "resumen",    label: "Inicio",     Icon: Sunrise },
@@ -2841,16 +2885,52 @@ function Resumen({ trip, session, days, darkMode }: { trip: Trip; session: Sessi
         </div>
       </Card>
 
-      {/* Tip + Print */}
-      <div style={{ border: `1px dashed ${darkMode ? "#30363D" : C.line}`, borderRadius: 8, padding: "14px 16px" }} className="flex flex-col gap-3">
-        <p style={{ color: softColor, fontSize: 13, lineHeight: 1.7 }}>
-          Comparte el código <strong style={{ color: textColor, fontFamily: F.mono }}>{session.code}</strong> con tu grupo.
-          Usa las pestañas para planificar el <strong style={{ color: textColor }}>itinerario</strong>, dividir los <strong style={{ color: textColor }}>gastos</strong>, preparar el <strong style={{ color: textColor }}>equipaje</strong> y votar <strong style={{ color: textColor }}>ideas</strong>.
-        </p>
-        <button onClick={() => window.print()} style={{ display: "flex", alignItems: "center", gap: 6, color: softColor, fontFamily: F.mono, fontSize: 11, border: `1px solid ${darkMode ? "#30363D" : C.line}`, borderRadius: 6, padding: "6px 12px", alignSelf: "flex-start" }}>
-          <Printer size={12} /> IMPRIMIR / EXPORTAR PDF
+      {/* Invite + Print */}
+      <InvitePanel code={session.code} trip={trip} darkMode={darkMode} />
+    </div>
+  );
+}
+
+function InvitePanel({ code, trip, darkMode }: { code: string; trip: Trip; darkMode: boolean }) {
+  const [copied, setCopied] = useState(false);
+  const [codeCopied, setCodeCopied] = useState(false);
+  const softColor = darkMode ? "#8B949E" : C.inkSoft;
+  const textColor = darkMode ? "#E6EDF3" : C.ink;
+  const borderColor = darkMode ? "#30363D" : C.line;
+
+  function copyCode() {
+    navigator.clipboard.writeText(code).catch(() => {});
+    setCodeCopied(true);
+    setTimeout(() => setCodeCopied(false), 2000);
+  }
+
+  function copyInviteLink() {
+    const tripData = btoa(encodeURIComponent(JSON.stringify(trip)));
+    const url = `${window.location.origin}/?code=${code}&d=${tripData}`;
+    navigator.clipboard.writeText(url).catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  }
+
+  return (
+    <div style={{ border: `1px dashed ${borderColor}`, borderRadius: 8, padding: "14px 16px" }} className="flex flex-col gap-3">
+      <p style={{ color: softColor, fontSize: 13, lineHeight: 1.7 }}>
+        Comparte el código <button onClick={copyCode} style={{ color: textColor, fontFamily: F.mono, fontWeight: 700, background: darkMode ? "#21262D" : C.paperDark, borderRadius: 4, padding: "1px 6px", fontSize: 13, display: "inline-flex", alignItems: "center", gap: 4, cursor: "pointer" }}>
+          {code} {codeCopied ? <Check size={11} color={C.teal} /> : <Copy size={10} />}
+        </button> con tu grupo, o usa el enlace de invitación.
+      </p>
+      <div className="flex flex-wrap gap-2">
+        <button onClick={copyInviteLink} style={{ display: "flex", alignItems: "center", gap: 6, background: copied ? C.teal : C.navy, color: "#fff", fontFamily: F.mono, fontSize: 11, borderRadius: 6, padding: "7px 14px" }}>
+          {copied ? <Check size={12} /> : <Copy size={12} />}
+          {copied ? "¡ENLACE COPIADO!" : "COPIAR ENLACE DE INVITACIÓN"}
+        </button>
+        <button onClick={() => window.print()} style={{ display: "flex", alignItems: "center", gap: 6, color: softColor, fontFamily: F.mono, fontSize: 11, border: `1px solid ${borderColor}`, borderRadius: 6, padding: "7px 12px" }}>
+          <Printer size={12} /> EXPORTAR PDF
         </button>
       </div>
+      <p style={{ color: softColor, fontSize: 11, fontFamily: F.mono }}>
+        El enlace lleva los datos del viaje, así tu grupo puede unirse directamente.
+      </p>
     </div>
   );
 }
