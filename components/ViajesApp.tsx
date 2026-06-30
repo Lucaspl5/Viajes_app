@@ -1429,7 +1429,279 @@ const DESTINATIONS: DestinationTemplate[] = [
       { name: "Cedros del Líbano", lat: 34.25, lon: 36.06, note: "Los cedros originales mencionados en la Biblia" },
     ],
   },
+  // ── Alternativas budget ───────────────────────────────────────────────────
+  {
+    id: "japon-tokio", name: "Japón: Solo Tokio", country: "Japón", flag: "🇯🇵",
+    costPerPerson: 1550, durationDays: 7, type: "cultura",
+    description: "Tokio sin diluciones: la megaciudad que vive en el futuro. 7 días inmerso en la capital japonesa, de los barrios electrónicos de Akihabara a los templos milenarios de Asakusa, con escapada al mítico Monte Fuji. El viaje a Japón más accesible.",
+    highlights: ["Shibuya Crossing", "Templo Senso-ji", "Akihabara", "Monte Fuji", "Comida callejera"],
+    itinerary: [
+      { date: "", title: "Día 1 — Shinjuku & Harajuku", items: [{ time: "13:00", text: "Llegada a Haneda/Narita, hotel en Shinjuku" }, { time: "16:00", text: "Shinjuku: el barrio de neón más denso de Tokio" }, { time: "20:00", text: "Harajuku: Takeshita Street, moda alternativa" }] },
+      { date: "", title: "Día 2 — Shibuya & Asakusa", items: [{ time: "09:00", text: "Shibuya Crossing al mediodía desde el mirador" }, { time: "14:00", text: "Senso-ji, el templo budista más antiguo de Tokio" }, { time: "18:00", text: "Nakamise-dori: calle de souvenirs tradicionales" }] },
+      { date: "", title: "Día 3 — Akihabara & Ueno", items: [{ time: "10:00", text: "Akihabara: la meca de la electrónica y el manga" }, { time: "14:00", text: "Ueno Park y sus 5 museos" }, { time: "19:00", text: "Izakaya en Yurakucho (bajo las vías del tren)" }] },
+      { date: "", title: "Días 4-5 — Monte Fuji & Hakone", items: [{ time: "07:00", text: "Bus desde Shinjuku a la 5ª estación del Fuji" }, { time: "10:00", text: "Lago Kawaguchiko: el reflejo perfecto del Fuji" }, { time: "Día 5", text: "Hakone: onsen con vistas al Fuji y ryokan tradicional" }] },
+      { date: "", title: "Días 6-7 — Ginza & Vuelo", items: [{ time: "10:00", text: "Ginza: el barrio de lujo y arte contemporáneo" }, { time: "14:00", text: "teamLab Borderless: arte digital inmersivo" }, { time: "Día 7", text: "Compras de última hora en Don Quijote, vuelo" }] },
+    ],
+    mapPlaces: [
+      { name: "Shibuya Crossing", lat: 35.66, lon: 139.70, note: "El cruce peatonal más concurrido del mundo" },
+      { name: "Templo Senso-ji (Asakusa)", lat: 35.71, lon: 139.80, note: "El templo budista más antiguo de Tokio" },
+      { name: "Akihabara", lat: 35.70, lon: 139.77, note: "La meca mundial de la electrónica y el manga" },
+      { name: "Monte Fuji (5ª Estación)", lat: 35.36, lon: 138.73, note: "A 2.305m, el volcán sagrado de Japón" },
+      { name: "Shinjuku", lat: 35.69, lon: 139.70, note: "El epicentro del Tokio nocturno" },
+    ],
+  },
+  {
+    id: "islandia-express", name: "Islandia Express", country: "Islandia", flag: "🇮🇸",
+    costPerPerson: 1350, durationDays: 5, type: "naturaleza",
+    description: "El Círculo Dorado y la costa sur islandesa en 5 días compactos: el géiser que erupciona cada 5 minutos, la cascada doble de Gullfoss, la laguna de icebergs azules de Jökulsárlón y la playa de arena negra volcánica. Islandia esencial sin quitar dos semanas.",
+    highlights: ["Strokkur (géiser cada 5 min)", "Gullfoss", "Jökulsárlón", "Playa negra Reynisfjara", "Aurora boreal"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Reikiavik & Círculo Dorado", items: [{ time: "Día 1", text: "Llegada, Hallgrímskirkja, Harpa Concert Hall" }, { time: "Día 2", text: "Þingvellir (placas tectónicas), Strokkur, Gullfoss" }] },
+      { date: "", title: "Días 3-4 — Costa Sur", items: [{ time: "Día 3", text: "Seljalandsfoss (cascada que puedes rodear), Skógafoss" }, { time: "Día 4", text: "Reynisfjara: playa negra con columnas de basalto" }] },
+      { date: "", title: "Día 5 — Jökulsárlón & Vuelo", items: [{ time: "06:00", text: "Jökulsárlón: la laguna de icebergs en azul eléctrico" }, { time: "10:00", text: "Diamond Beach: icebergs sobre arena negra" }, { time: "Tarde", text: "Vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Strokkur (Geysir)", lat: 64.31, lon: -20.30, note: "Erupciona cada 5 minutos a 30m de altura" },
+      { name: "Gullfoss", lat: 64.33, lon: -20.12, note: "La mayor cascada de Islandia en dos saltos" },
+      { name: "Jökulsárlón", lat: 64.08, lon: -16.23, note: "Laguna glaciar con icebergs azul eléctrico" },
+      { name: "Playa Negra Reynisfjara", lat: 63.41, lon: -19.04, note: "Arena negra volcánica con columnas de basalto" },
+      { name: "Þingvellir NP", lat: 64.26, lon: -21.13, note: "Donde las placas tectónicas se separan 2cm al año" },
+    ],
+  },
+  // ── Aventura ──────────────────────────────────────────────────────────────
+  {
+    id: "dolomitas", name: "Dolomitas", country: "Italia", flag: "🇮🇹",
+    costPerPerson: 750, durationDays: 6, type: "aventura",
+    description: "Las montañas más espectaculares de Europa: agujas de roca que se tiñen de naranja al amanecer (el Enrosadira), lagos esmeralda de postal perfecta y vías ferratas sobre precipicios. A solo 2h de Venecia, sin necesitar ser alpinista.",
+    highlights: ["Tre Cime di Lavaredo", "Lago di Braies", "Cortina d'Ampezzo", "Via ferrata", "Alpe di Siusi"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Val Gardena", items: [{ time: "10:00", text: "Llegada desde Venecia, Ortisei" }, { time: "14:00", text: "Cable car a Seceda: las vistas más icónicas de los Dolomitas" }, { time: "Día 2", text: "Alpe di Siusi: la meseta alpina más grande de Europa" }] },
+      { date: "", title: "Día 3 — Tre Cime", items: [{ time: "06:00", text: "Salida al amanecer para ver las Tres Cimas en rosa" }, { time: "09:00", text: "Circuito clásico de las Tre Cime (10km, 3h)" }] },
+      { date: "", title: "Día 4 — Lago di Braies", items: [{ time: "07:00", text: "Lago di Braies al amanecer (antes de que llegue la gente)" }, { time: "10:00", text: "Paseo en barca de madera por el lago" }] },
+      { date: "", title: "Días 5-6 — Cortina & Vuelo", items: [{ time: "09:00", text: "Cortina d'Ampezzo: la reina de los Dolomitas" }, { time: "12:00", text: "Via ferrata Ivano Dibona (nivel medio)" }, { time: "Día 6", text: "Vuelta a Venecia, vuelo" }] },
+    ],
+    mapPlaces: [
+      { name: "Tre Cime di Lavaredo", lat: 46.62, lon: 12.30, note: "Las tres agujas más fotografiadas de los Alpes" },
+      { name: "Lago di Braies", lat: 46.70, lon: 12.08, note: "El lago de postal más bonito de Italia" },
+      { name: "Seceda (Val Gardena)", lat: 46.58, lon: 11.71, note: "Las vistas más icónicas de los Dolomitas" },
+      { name: "Cortina d'Ampezzo", lat: 46.54, lon: 12.14, note: "La joya de los Dolomitas" },
+      { name: "Alpe di Siusi", lat: 46.54, lon: 11.63, note: "La meseta alpina más grande de Europa" },
+    ],
+  },
+  {
+    id: "escocia-highlands", name: "Escocia: Highlands", country: "Escocia (UK)", flag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+    costPerPerson: 980, durationDays: 6, type: "aventura",
+    description: "El paisaje más dramático de Europa: páramos infinitos de brezo violeta, castillos en ruinas sobre lagos brumosos y la mítica Isla de Skye. La NC500 es el road trip más épico de Europa, comparable a la Route 1 de Alaska.",
+    highlights: ["Isla de Skye (Fairy Pools)", "Glencoe", "Ben Nevis", "NC500", "Whisky en Speyside"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Inverness & Loch Ness", items: [{ time: "Día 1", text: "Vuelo a Inverness, alquiler de coche" }, { time: "15:00", text: "Loch Ness: Castillo Urquhart y el mítico lago negro" }, { time: "Día 2", text: "Black Isle, cascada Rogie Falls, campo de batalla Culloden" }] },
+      { date: "", title: "Día 3 — Glencoe & Ben Nevis", items: [{ time: "09:00", text: "Glencoe: el valle más dramático de Escocia" }, { time: "13:00", text: "Ben Nevis: el pico más alto de Gran Bretaña (1.345m)" }] },
+      { date: "", title: "Días 4-5 — Isla de Skye", items: [{ time: "09:00", text: "Fairy Pools: pozas de agua cristalina bajo cascadas" }, { time: "12:00", text: "Old Man of Storr: el icono fotográfico de Skye" }, { time: "Día 5", text: "Quiraing y Neist Point: los mejores paisajes de la isla" }] },
+      { date: "", title: "Día 6 — Whisky & Vuelo", items: [{ time: "09:00", text: "Speyside: Glenfiddich o The Macallan con cata" }, { time: "Tarde", text: "Vuelo de Inverness de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Isla de Skye (Fairy Pools)", lat: 57.25, lon: -6.35, note: "Pozas cristalinas en plena naturaleza" },
+      { name: "Glencoe", lat: 56.68, lon: -4.89, note: "El valle más dramático de Escocia" },
+      { name: "Ben Nevis", lat: 56.80, lon: -5.00, note: "El pico más alto de Gran Bretaña (1.345m)" },
+      { name: "Loch Ness", lat: 57.32, lon: -4.44, note: "El lago más famoso del mundo" },
+      { name: "Old Man of Storr (Skye)", lat: 57.50, lon: -6.18, note: "El icono fotográfico de Skye" },
+    ],
+  },
+  {
+    id: "borneo", name: "Borneo: Selva & Orangutanes", country: "Malasia/Indonesia", flag: "🇲🇾",
+    costPerPerson: 1750, durationDays: 10, type: "aventura",
+    description: "La selva tropical más antigua de la Tierra (140 millones de años) y los únicos orangutanes salvajes de Asia. Buceo de primer nivel mundial en Sipadan, cuevas colosales en Mulu y río arriba hacia las tribus dayak. Una de las aventuras más completas del planeta.",
+    highlights: ["Orangutanes de Sepilok", "Sipadan (top 3 buceo)", "Gunung Mulu (cuevas)", "Río Kinabatangan", "Monte Kinabalu"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Monte Kinabalu", items: [{ time: "Día 1", text: "Llegada a Kota Kinabalu" }, { time: "Día 2", text: "Ascenso al Monte Kinabalu (4.095m, el más alto del SE asiático)" }] },
+      { date: "", title: "Días 3-5 — Orangutanes & Kinabatangan", items: [{ time: "Día 3", text: "Sandakan: Centro Sepilok (orangutanes en semilibertad)" }, { time: "Días 4-5", text: "Río Kinabatangan: probóscides, pigmeos y cocodrilos desde el barco" }] },
+      { date: "", title: "Días 6-7 — Sipadan", items: [{ time: "Días 6-7", text: "Sipadan Island: tortugas, tiburones de punta negra, bancadas de barracuda" }] },
+      { date: "", title: "Días 8-10 — Gunung Mulu", items: [{ time: "Día 8", text: "Vuelo a Mulu, Parque Nacional UNESCO" }, { time: "Días 9-10", text: "Sarawak Chamber (la cueva más grande del mundo), Deer Cave (2M murciélagos)" }] },
+    ],
+    mapPlaces: [
+      { name: "Sepilok Orangutan Centre", lat: 5.87, lon: 117.93, note: "Orangutanes en semilibertad" },
+      { name: "Río Kinabatangan", lat: 5.41, lon: 118.02, note: "El mejor avistamiento de fauna de Borneo" },
+      { name: "Sipadan Island", lat: 4.11, lon: 118.63, note: "Top 3 destinos de buceo del mundo" },
+      { name: "Parque Gunung Mulu", lat: 4.05, lon: 114.81, note: "Las cuevas más grandes del mundo, UNESCO" },
+      { name: "Monte Kinabalu", lat: 6.07, lon: 116.56, note: "El pico más alto del Sudeste Asiático" },
+    ],
+  },
+  {
+    id: "kazajistan", name: "Kazajistán", country: "Kazajistán", flag: "🇰🇿",
+    costPerPerson: 1050, durationDays: 8, type: "aventura",
+    description: "El destino más subestimado de Asia Central: el Cañón Charyn parece Marte, el Gran Lago Almaty es verde esmeralda puro a 2.500m, las dunas de Altyn Emel emiten un sonido propio al viento y Nur-Sultan tiene una arquitectura tan futurista que parece sacada de Blade Runner.",
+    highlights: ["Cañón Charyn (el Grand Canyon de Asia)", "Gran Lago Almaty", "Dunas cantarinas Altyn Emel", "Nur-Sultan (Astana)", "Tian Shan kazajo"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Almaty", items: [{ time: "Día 1", text: "Llegada a Almaty, Kok-Tobe por teleférico, skyline kazajo" }, { time: "Día 2", text: "Gran Lago Almaty (2.511m) — esmeralda en la montaña" }] },
+      { date: "", title: "Días 3-4 — Cañón Charyn", items: [{ time: "Días 3-4", text: "Cañón Charyn: el 'Grand Canyon de Asia Central' (Valle de los Castillos)" }] },
+      { date: "", title: "Días 5-6 — Altyn Emel", items: [{ time: "Días 5-6", text: "Altyn Emel: dunas cantarinas (suenan como un órgano) y bosque de saxaul" }] },
+      { date: "", title: "Días 7-8 — Nur-Sultan", items: [{ time: "Día 7", text: "Vuelo a Nur-Sultan: Bayterek Tower, Khan Shatyr (la mayor carpa del mundo)" }, { time: "Día 8", text: "Palacio de la Paz y Reconciliación, vuelo de salida" }] },
+    ],
+    mapPlaces: [
+      { name: "Cañón Charyn", lat: 43.36, lon: 79.07, note: "El Grand Canyon de Asia Central" },
+      { name: "Gran Lago Almaty", lat: 43.05, lon: 76.98, note: "Lago esmeralda a 2.511m de altitud" },
+      { name: "Altyn Emel NP (Dunas)", lat: 43.78, lon: 79.23, note: "Dunas que emiten sonido propio" },
+      { name: "Almaty", lat: 43.23, lon: 76.94, note: "La mayor ciudad del país, con el Tian Shan de fondo" },
+      { name: "Nur-Sultan (Astana)", lat: 51.18, lon: 71.45, note: "La capital futurista del siglo XXI" },
+    ],
+  },
+  {
+    id: "alaska", name: "Alaska", country: "Estados Unidos", flag: "🇺🇸",
+    costPerPerson: 3500, durationDays: 10, type: "aventura",
+    description: "La última frontera americana: osos grizzly pescando salmón, auroras boreales tiñendo el cielo de verde y violeta, glaciares que se derrumban en el mar y el Denali, el pico más alto de América del Norte a 6.190m. La naturaleza más indómita del hemisferio norte.",
+    highlights: ["Parque Denali", "Kenai Fjords (kayak glaciares)", "Auroras en Fairbanks", "Brooks Falls (osos grizzly)", "Glaciar Mendenhall"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Anchorage & Kenai Fjords", items: [{ time: "Día 1", text: "Llegada a Anchorage, vuelo charter a Seward" }, { time: "Día 2", text: "Kenai Fjords: kayak entre icebergs y glaciares que caen al mar" }] },
+      { date: "", title: "Días 3-5 — Parque Denali", items: [{ time: "Días 3-5", text: "Denali NP: autobús de fauna al Glaciar Eielson, grizzly, alces y caribús" }] },
+      { date: "", title: "Días 6-7 — Fairbanks & Auroras", items: [{ time: "Días 6-7", text: "Fairbanks: la mejor ciudad del mundo para ver auroras boreales (ago-abril)" }] },
+      { date: "", title: "Días 8-10 — Juneau & Glaciares", items: [{ time: "Día 8", text: "Vuelo a Juneau, Glaciar Mendenhall (a pie desde la ciudad)" }, { time: "Días 9-10", text: "Kayak en Tracy Arm Fjord, vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Parque Nacional Denali", lat: 63.73, lon: -150.49, note: "El pico más alto de América del Norte (6.190m)" },
+      { name: "Kenai Fjords NP", lat: 59.78, lon: -149.65, note: "Glaciares que caen al mar, nutrias y orcas" },
+      { name: "Fairbanks", lat: 64.84, lon: -147.72, note: "El mejor lugar del mundo para ver auroras boreales" },
+      { name: "Glaciar Mendenhall (Juneau)", lat: 58.43, lon: -134.55, note: "El glaciar al que llegas caminando desde la ciudad" },
+      { name: "Katmai NP (Brooks Falls)", lat: 58.56, lon: -154.95, note: "Los osos grizzly pescando salmón en la catarata" },
+    ],
+  },
+  {
+    id: "peru-trek", name: "Perú: Camino Inca", country: "Perú", flag: "🇵🇪",
+    costPerPerson: 1800, durationDays: 9, type: "aventura",
+    description: "El trek más épico de América: 43km caminando la ruta original inca a 4.215m de altitud, atravesando orquídeas, niebla y ruinas perdidas en la selva andina para llegar al amanecer a Machu Picchu por la Puerta del Sol. Una experiencia que te transforma.",
+    highlights: ["Camino Inca (4 días)", "Machu Picchu: Puerta del Sol", "Wiñay Wayna", "Cusco colonial", "Paso Warmiwañusca (4.215m)"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Lima & Cusco", items: [{ time: "Día 1", text: "Lima: Miraflores y la mejor gastronomía de América Latina" }, { time: "Día 2", text: "Cusco (3.399m): aclimatación, Plaza de Armas, té de coca" }] },
+      { date: "", title: "Días 3-6 — Camino Inca", items: [{ time: "Día 3 (KM82)", text: "Inicio del Camino: Llactapata, primera vista del Urubamba" }, { time: "Día 4", text: "Paso Warmiwañusca (4.215m): el punto más alto" }, { time: "Día 5", text: "Phuyupatamarca y Wiñay Wayna: ruinas entre orquídeas" }, { time: "Día 6 · 04:00", text: "Puerta del Sol: Machu Picchu al amanecer, sin nadie más" }] },
+      { date: "", title: "Días 7-9 — Machu Picchu & Regreso", items: [{ time: "Día 7", text: "Machu Picchu: circuito completo, Huayna Picchu (opcional)" }, { time: "Día 8", text: "Aguas Calientes: baños termales, tren a Cusco" }, { time: "Día 9", text: "Mercado San Pedro, vuelo Lima" }] },
+    ],
+    mapPlaces: [
+      { name: "KM82 (Inicio del Camino)", lat: -13.54, lon: -72.25, note: "El punto de salida del Camino Inca" },
+      { name: "Paso Warmiwañusca", lat: -13.37, lon: -72.11, note: "El punto más alto del trek a 4.215m" },
+      { name: "Wiñay Wayna", lat: -13.19, lon: -72.53, note: "Las ruinas incas más espectaculares del camino" },
+      { name: "Puerta del Sol (Inti Punku)", lat: -13.16, lon: -72.54, note: "La entrada original a Machu Picchu al amanecer" },
+      { name: "Cusco (Plaza de Armas)", lat: -13.52, lon: -71.98, note: "La capital del Imperio Inca a 3.399m" },
+    ],
+  },
+  {
+    id: "noruega-fjords", name: "Noruega: Fiordos", country: "Noruega", flag: "🇳🇴",
+    costPerPerson: 1650, durationDays: 7, type: "naturaleza",
+    description: "Los fiordos más espectaculares del planeta, esculpidos por glaciares de 2km de espesor. El recorrido Bergen-Flåm-Geirangerfjord es uno de los viajes más cinematográficos de Europa: trenes de montaña, ferris entre cascadas y pueblos de cuento pintados de colores.",
+    highlights: ["Geirangerfjord (UNESCO)", "Trolltunga (1.100m sobre el fiordo)", "Bergen (Bryggen)", "Ferrocarril de Flåm", "Auroras boreales"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Bergen", items: [{ time: "Día 1", text: "Llegada a Bergen, Bryggen Hanseatic Wharf (UNESCO)" }, { time: "Día 2", text: "Funicular Fløibanen, pescaderías del muelle, Gamle Bergen" }] },
+      { date: "", title: "Día 3 — Ferrocarril de Flåm", items: [{ time: "09:00", text: "El tren de montaña más bonito del mundo: 20km, 866m de desnivel" }, { time: "12:00", text: "Flåm: kayak en el Aurlandsfjord" }] },
+      { date: "", title: "Días 4-5 — Geirangerfjord", items: [{ time: "Días 4-5", text: "Geirangerfjord: las 7 Hermanas (cascada de 7 saltos), Eagle Road" }] },
+      { date: "", title: "Días 6-7 — Trolltunga & Oslo", items: [{ time: "Día 6", text: "Trolltunga: la roca que sobresale 700m sobre el Hardangerfjord (10h)" }, { time: "Día 7", text: "Oslo: Vigelandsparken, museo vikingo, vuelo" }] },
+    ],
+    mapPlaces: [
+      { name: "Geirangerfjord", lat: 62.10, lon: 7.21, note: "Patrimonio UNESCO — el fiordo más famoso del mundo" },
+      { name: "Bergen (Bryggen)", lat: 60.40, lon: 5.32, note: "Ciudad hanseática Patrimonio UNESCO" },
+      { name: "Trolltunga", lat: 60.12, lon: 6.74, note: "Roca a 1.100m sobre el Hardangerfjord" },
+      { name: "Flåm (Ferrocarril)", lat: 60.86, lon: 7.11, note: "El tren de montaña más bonito del mundo" },
+      { name: "Ålesund", lat: 62.47, lon: 6.15, note: "La ciudad art nouveau sobre el Atlántico" },
+    ],
+  },
+  {
+    id: "nueva-zelanda", name: "Nueva Zelanda", country: "Nueva Zelanda", flag: "🇳🇿",
+    costPerPerson: 3100, durationDays: 12, type: "aventura",
+    description: "El país más aventurero del planeta: glaciares que caen al Pacífico, fiordos en el fin del mundo, bungee de 134km/h sobre Queenstown y el paisaje que hizo posible La Tierra Media. La naturaleza más extrema y variada del mundo en dos islas perfectamente organizadas.",
+    highlights: ["Milford Sound", "Queenstown (aventura extrema)", "Glaciar Franz Josef", "Hobbiton (Shire de Tolkien)", "Abel Tasman"],
+    itinerary: [
+      { date: "", title: "Días 1-3 — Auckland & Rotorua", items: [{ time: "Día 1", text: "Llegada a Auckland, Sky Tower, vinos de Waiheke Island" }, { time: "Días 2-3", text: "Hobbiton (Matamata) + Rotorua: géiseres, cultura maorí, lodo volcánico" }] },
+      { date: "", title: "Días 4-6 — Wellington & Kaikōura", items: [{ time: "Día 4", text: "Wellington: Te Papa Museum, ferry al Sur" }, { time: "Días 5-6", text: "Kaikōura: ballenas y lobos marinos, Christchurch" }] },
+      { date: "", title: "Días 7-9 — Franz Josef & Wanaka", items: [{ time: "Días 7-8", text: "Franz Josef Glacier: helicóptero sobre el glaciar y cueva de hielo" }, { time: "Día 9", text: "Wanaka: el lago más fotogénico de Nueva Zelanda" }] },
+      { date: "", title: "Días 10-12 — Queenstown & Milford", items: [{ time: "Día 10", text: "Queenstown: bungee AJ Hackett, Skyline Gondola" }, { time: "Día 11", text: "Milford Sound: el fiordo más bello del mundo" }, { time: "Día 12", text: "Vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Milford Sound", lat: -44.67, lon: 167.93, note: "El fiordo más bello del mundo, UNESCO" },
+      { name: "Queenstown", lat: -45.03, lon: 168.66, note: "La capital mundial del turismo de aventura" },
+      { name: "Glaciar Franz Josef", lat: -43.39, lon: 170.18, note: "Uno de los pocos glaciares que llega casi al nivel del mar" },
+      { name: "Hobbiton (Matamata)", lat: -37.87, lon: 175.68, note: "El set original del Shire de Tolkien" },
+      { name: "Rotorua (Géiseres)", lat: -38.14, lon: 176.25, note: "La ciudad de los géiseres y la cultura maorí" },
+    ],
+  },
+  // ── Naturaleza adicional & Playas ──────────────────────────────────────────
+  {
+    id: "mauricio", name: "Isla Mauricio", country: "Mauricio", flag: "🇲🇺",
+    costPerPerson: 1950, durationDays: 8, type: "playa",
+    description: "La perla del Índico: lagunas de agua turquesa tan calmadas que parecen piscinas, la cascada submarina (espectacular efecto óptico desde el aire), arrecifes de coral primigenios y una gastronomía que mezcla sabores de África, India, China y Francia en la misma mesa.",
+    highlights: ["Laguna azul norte", "Cascada submarina (vista aérea)", "Blue Bay Marine Park", "Chamarel (7 colores de tierra)", "Gastronomía criolla"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Norte (Grand Baie)", items: [{ time: "Día 1", text: "Llegada, Grand Baie, laguna norte (snorkel con delfines)" }, { time: "Día 2", text: "Tour en barco: Île aux Cerfs, vuelo charter sobre la cascada submarina" }] },
+      { date: "", title: "Días 3-4 — Oeste (Black River)", items: [{ time: "Día 3", text: "Black River Gorges: senderismo en la selva nativa" }, { time: "Día 4", text: "Chamarel: tierra de 7 colores, cascada, tortuga gigante" }] },
+      { date: "", title: "Días 5-6 — Sur (Blue Bay)", items: [{ time: "Días 5-6", text: "Blue Bay Marine Park: snorkel en el mejor arrecife del Índico occidental" }] },
+      { date: "", title: "Días 7-8 — Relax & Vuelo", items: [{ time: "Días 7-8", text: "Flic en Flac (playa más larga), spa, vuelo nocturno" }] },
+    ],
+    mapPlaces: [
+      { name: "Grand Baie (Laguna Norte)", lat: -20.01, lon: 57.58, note: "La laguna de agua más clara de Mauricio" },
+      { name: "Blue Bay Marine Park", lat: -20.45, lon: 57.71, note: "El mejor snorkel del Índico occidental" },
+      { name: "Chamarel (7 Colores)", lat: -20.44, lon: 57.37, note: "Tierra volcánica que cambia de color" },
+      { name: "Black River Gorges NP", lat: -20.39, lon: 57.38, note: "La única selva nativa de Mauricio" },
+      { name: "Île aux Cerfs", lat: -20.27, lon: 57.79, note: "La isla más bonita de Mauricio" },
+    ],
+  },
+  {
+    id: "kenya", name: "Kenya: Safari", country: "Kenya", flag: "🇰🇪",
+    costPerPerson: 2850, durationDays: 9, type: "naturaleza",
+    description: "El safari definitivo: el Masái Mara en julio-octubre alberga la Gran Migración donde 1,5 millones de ñus cruzan el río Mara entre cocodrilos. Con el Kilimanjaro nevado en el horizonte desde Amboseli y las playas de Diani como remate de lujo.",
+    highlights: ["Masái Mara (Gran Migración)", "Amboseli (Kilimanjaro)", "Lago Nakuru (flamencos)", "Diani Beach", "Comunidades masái"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Nairobi", items: [{ time: "Día 1", text: "Llegada, Parque Nacional de Nairobi (jirafas con rascacielos de fondo)" }, { time: "Día 2", text: "David Sheldrick (elefantes huérfanos), Giraffe Centre" }] },
+      { date: "", title: "Días 3-6 — Masái Mara", items: [{ time: "Días 3-6", text: "Safari en el Masái Mara: 3 días completos con game drives, cruce del río Mara" }] },
+      { date: "", title: "Días 7-8 — Amboseli", items: [{ time: "Días 7-8", text: "Amboseli NP: elefantes con el Kilimanjaro nevado de fondo (la foto más icónica de África)" }] },
+      { date: "", title: "Día 9 — Diani Beach & Vuelo", items: [{ time: "Día 9", text: "Vuelo a Mombasa, Diani Beach, vuelo nocturno de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Masái Mara NR", lat: -1.50, lon: 35.15, note: "La Gran Migración: 1,5 millones de ñus" },
+      { name: "Amboseli NP", lat: -2.65, lon: 37.26, note: "Elefantes con el Kilimanjaro nevado de fondo" },
+      { name: "Lago Nakuru NP", lat: -0.35, lon: 36.08, note: "El lago rosa de los flamencos" },
+      { name: "Nairobi NP", lat: -1.37, lon: 36.85, note: "Safari con rascacielos de fondo — único en el mundo" },
+      { name: "Diani Beach", lat: -4.28, lon: 39.57, note: "La mejor playa de África Oriental" },
+    ],
+  },
+  // ── Cultura adicional ──────────────────────────────────────────────────────
+  {
+    id: "india", name: "India: Rajastán & Delhi", country: "India", flag: "🇮🇳",
+    costPerPerson: 1250, durationDays: 10, type: "cultura",
+    description: "La India que siempre has imaginado: palacios de maharajás, el Taj Mahal al amanecer en niebla rosa, bazares que asaltan todos los sentidos y el Ganges sagrado en Varanasi al atardecer. Rajastán es el estado más colorido y fotogénico del mundo.",
+    highlights: ["Taj Mahal (amanecer)", "Jaipur Ciudad Rosa", "Jodhpur Ciudad Azul", "Varanasi (Ganges)", "Fuerte Amber"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Delhi", items: [{ time: "Día 1", text: "Llegada a Delhi, Lodi Garden, barrio de Hauz Khas" }, { time: "Día 2", text: "Chandni Chowk (el bazar más caótico del mundo), Red Fort, Humayun's Tomb" }] },
+      { date: "", title: "Días 3-4 — Agra & Taj Mahal", items: [{ time: "05:00", text: "Amanecer en el Taj Mahal (luz rosa, sin multitudes)" }, { time: "09:00", text: "Fuerte de Agra: mármol rojo y vista al Taj desde arriba" }, { time: "Día 4", text: "Fatehpur Sikri: ciudad mogola abandonada en el desierto" }] },
+      { date: "", title: "Días 5-6 — Jaipur (Ciudad Rosa)", items: [{ time: "Día 5", text: "Fuerte Amber: elefantes, espejos y vistas" }, { time: "Día 6", text: "Palacio de los Vientos (Hawa Mahal), Jantar Mantar, City Palace" }] },
+      { date: "", title: "Días 7-8 — Jodhpur & Pushkar", items: [{ time: "Día 7", text: "Jodhpur (Ciudad Azul): Fuerte de Mehrangarh desde el cielo" }, { time: "Día 8", text: "Pushkar: el único templo de Brahma del mundo, lago sagrado" }] },
+      { date: "", title: "Días 9-10 — Varanasi", items: [{ time: "Día 9", text: "Vuelo a Varanasi, ghats del Ganges al atardecer (Ganga Aarti)" }, { time: "Día 10", text: "Amanecer en barca por el Ganges, vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Taj Mahal (Agra)", lat: 27.17, lon: 78.04, note: "Una de las 7 Maravillas del Mundo Moderno" },
+      { name: "Jaipur (Fuerte Amber)", lat: 26.99, lon: 75.85, note: "Palacio con espejos de los maharajás" },
+      { name: "Jodhpur (Fuerte Mehrangarh)", lat: 26.30, lon: 73.02, note: "La Ciudad Azul desde la fortaleza más imponente" },
+      { name: "Varanasi (Ghats del Ganges)", lat: 25.31, lon: 83.01, note: "La ciudad sagrada más antigua del mundo" },
+      { name: "Delhi (Red Fort)", lat: 28.65, lon: 77.24, note: "La fortaleza mogola del siglo XVII" },
+    ],
+  },
 ];
+
+// ─── Destination alternatives map ────────────────────────────────────────────
+const DESTINATION_ALTERNATIVES: Record<string, string[]> = {
+  "japon":          ["japon-tokio", "bangkok", "vietnam"],
+  "maldivas":       ["seychelles", "mauricio", "sri-lanka"],
+  "seychelles":     ["mauricio", "cabo-verde", "filipinas"],
+  "hawaii":         ["tenerife", "fuerteventura", "mallorca"],
+  "tanzania":       ["kenya", "sudafrica", "rwanda"],
+  "nueva-york":     ["paris", "amsterdam", "roma"],
+  "islandia":       ["islandia-express", "noruega-fjords", "islas-feroe"],
+  "argentina":      ["chile", "colombia", "peru"],
+  "alaska":         ["noruega-fjords", "islandia", "svalbard"],
+  "nueva-zelanda":  ["argentina", "chile", "islandia"],
+  "kenya":          ["tanzania", "sudafrica", "namibia"],
+  "sudafrica":      ["kenya", "namibia", "rwanda"],
+  "svalbard":       ["islandia-express", "noruega-fjords", "islas-feroe"],
+  "groenlandia":    ["islandia-express", "svalbard", "islas-feroe"],
+  "borneo":         ["indonesia-bali", "filipinas", "vietnam"],
+  "peru-trek":      ["peru", "bolivia", "chile"],
+  "india":          ["sri-lanka", "cambodia", "marruecos-norte"],
+};
 
 // ─── Utilities ───────────────────────────────────────────────────────────────
 
@@ -3051,7 +3323,10 @@ function DestCard({ dest, budget, onChoose, onOpen }: { dest: DestinationTemplat
   );
 }
 
-function DestModal({ dest, budget, onChoose, onClose }: { dest: DestinationTemplate; budget: number; onChoose: () => void; onClose: () => void }) {
+function DestModal({ dest, budget, onChoose, onClose, alternatives, onOpenAlt }: {
+  dest: DestinationTemplate; budget: number; onChoose: () => void; onClose: () => void;
+  alternatives?: DestinationTemplate[]; onOpenAlt?: (d: DestinationTemplate) => void;
+}) {
   const withinBudget = budget === 0 || dest.costPerPerson <= budget;
   const gradient = TYPE_GRADIENTS[dest.type] ?? TYPE_GRADIENTS.aventura;
   return (
@@ -3082,6 +3357,42 @@ function DestModal({ dest, budget, onChoose, onClose }: { dest: DestinationTempl
           <div style={{ background: `${TYPE_COLORS[dest.type] ?? C.teal}15`, borderRadius: 8, padding: "10px 14px", fontFamily: F.mono, fontSize: 11, color: C.inkSoft }}>
             ✈️ Vuelo · 🏨 Alojamiento · 🍽️ Comida · 🎭 Actividades — <strong style={{ color: C.ink }}>TODO INCLUIDO</strong>
           </div>
+
+          {!withinBudget && alternatives && alternatives.length > 0 && (
+            <div style={{ background: "#FFF5F0", borderRadius: 10, padding: "12px 14px", border: "1px solid #FDDCCC" }}>
+              <div style={{ fontFamily: F.mono, fontSize: 10, color: C.coral, fontWeight: 700, marginBottom: 8, letterSpacing: 1 }}>
+                ¿FUERA DE PRESUPUESTO? PRUEBA ESTO:
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {alternatives.map(alt => {
+                  const altWithin = budget === 0 || alt.costPerPerson <= budget;
+                  return (
+                    <button key={alt.id} onClick={() => onOpenAlt?.(alt)} style={{
+                      display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
+                      background: "#fff", borderRadius: 8, border: `1px solid ${altWithin ? "#C8EDCC" : "#FDDCCC"}`,
+                      textAlign: "left", cursor: "pointer", width: "100%",
+                    }}>
+                      <span style={{ fontSize: 26, flexShrink: 0 }}>{alt.flag}</span>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontFamily: F.display, fontSize: 14, fontWeight: 700, color: C.ink, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{alt.name}</div>
+                        <div style={{ fontFamily: F.mono, fontSize: 9, color: C.inkSoft }}>{alt.durationDays} días · {alt.country}</div>
+                      </div>
+                      <div style={{ textAlign: "right", flexShrink: 0 }}>
+                        <div style={{ fontFamily: F.display, fontSize: 15, fontWeight: 700, color: altWithin ? C.green : C.inkSoft }}>
+                          ~{alt.costPerPerson.toLocaleString("es-ES")} €
+                        </div>
+                        {budget > 0 && (
+                          <div style={{ fontFamily: F.mono, fontSize: 8, color: altWithin ? C.green : C.inkSoft }}>
+                            {altWithin ? `✓ te alcanza` : `faltan ${(alt.costPerPerson - budget).toFixed(0)} €`}
+                          </div>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           <div>
             <SectionLabel>Itinerario</SectionLabel>
@@ -3310,6 +3621,8 @@ function Destinos({ code, onSelect }: { code: string; onSelect: () => void }) {
           budget={budgetPerPerson}
           onChoose={() => { setChosen(preview!); setConfirming(true); setPreview(null); }}
           onClose={() => setPreview(null)}
+          alternatives={(DESTINATION_ALTERNATIVES[preview.id] ?? []).map(id => DESTINATIONS.find(d => d.id === id)).filter(Boolean) as DestinationTemplate[]}
+          onOpenAlt={d => setPreview(d)}
         />
       )}
     </div>
