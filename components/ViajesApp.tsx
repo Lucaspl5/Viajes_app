@@ -10,7 +10,7 @@ import {
   CheckCircle2, Circle, PiggyBank, Target, Edit2, Globe,
   Heart, BookOpen, CreditCard, Moon, Sun, Printer,
   Filter, BookMarked, Ticket, StickyNote, RefreshCw,
-  Sparkles, Send, Download,
+  Sparkles, Send, Download, MoreHorizontal,
 } from "lucide-react";
 import { animate, stagger, spring } from "animejs";
 
@@ -3227,6 +3227,7 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [tab, session]);
 
+  const [showMore, setShowMore] = useState(false);
   const [syncToast, setSyncToast] = useState(false);
   const tripRef = useRef<Trip | null>(null);
   useEffect(() => { tripRef.current = trip; }, [trip]);
@@ -3274,21 +3275,24 @@ export default function App() {
 
   if (!session || !trip) return <EntryScreen onEnter={enter} externalError={entryError} prefillCode={inviteCode ?? undefined} />;
 
-  const tabs: { id: TabId; label: string; Icon: React.ElementType }[] = [
-    { id: "resumen",    label: "Inicio",     Icon: Sunrise },
-    { id: "asistente",  label: "IA",         Icon: Sparkles },
-    { id: "reservas",   label: "Reservas",   Icon: Ticket },
-    { id: "itinerario", label: "Plan",        Icon: Plane },
-    { id: "mapa",       label: "Mapa",        Icon: MapPin },
-    { id: "fotos",      label: "Fotos",       Icon: Camera },
-    { id: "diario",     label: "Diario",      Icon: BookOpen },
-    { id: "gastos",     label: "Gastos",      Icon: Wallet },
-    { id: "equipaje",   label: "Equipaje",    Icon: Luggage },
-    { id: "checklist",  label: "Checklist",   Icon: ListChecks },
-    { id: "ideas",      label: "Ideas",       Icon: Lightbulb },
-    { id: "ahorro",     label: "Ahorro",      Icon: PiggyBank },
-    { id: "destinos",   label: "Destinos",    Icon: Globe },
+  const primaryTabs: { id: TabId; label: string; Icon: React.ElementType }[] = [
+    { id: "resumen",    label: "Inicio",  Icon: Sunrise },
+    { id: "itinerario", label: "Plan",    Icon: Plane },
+    { id: "mapa",       label: "Mapa",    Icon: MapPin },
+    { id: "gastos",     label: "Gastos",  Icon: Wallet },
   ];
+  const moreTabs: { id: TabId; label: string; Icon: React.ElementType }[] = [
+    { id: "asistente",  label: "IA",        Icon: Sparkles },
+    { id: "reservas",   label: "Reservas",  Icon: Ticket },
+    { id: "fotos",      label: "Fotos",     Icon: Camera },
+    { id: "diario",     label: "Diario",    Icon: BookOpen },
+    { id: "equipaje",   label: "Equipaje",  Icon: Luggage },
+    { id: "checklist",  label: "Checklist", Icon: ListChecks },
+    { id: "ideas",      label: "Ideas",     Icon: Lightbulb },
+    { id: "ahorro",     label: "Ahorro",    Icon: PiggyBank },
+    { id: "destinos",   label: "Destinos",  Icon: Globe },
+  ];
+  const isMoreActive = moreTabs.some(t => t.id === tab);
 
   const dk = darkMode ? {
     bg: "#0D1117", bgCard: "#161B22", bgHeader: "linear-gradient(135deg,#0D1117 0%,#161B22 100%)",
@@ -3349,28 +3353,11 @@ export default function App() {
             </div>
           </div>
 
-          {/* Tab bar */}
-          <nav className="flex no-scrollbar" style={{ borderTop: "1px dashed #2D3E5A", overflowX: "auto" }}>
-            {tabs.map(({ id, label, Icon }) => (
-              <button key={id} onClick={() => setTab(id)}
-                className="flex items-center gap-1.5 whitespace-nowrap"
-                style={{
-                  padding: "10px 12px", fontFamily: F.mono, fontSize: 10, letterSpacing: 0.4,
-                  color: tab === id ? C.paper : "#5C6D85",
-                  borderBottom: tab === id ? `2px solid ${C.goldLight}` : "2px solid transparent",
-                  transition: "color 0.15s",
-                }}
-                aria-current={tab === id ? "page" : undefined}
-              >
-                <Icon size={12} />{label.toUpperCase()}
-              </button>
-            ))}
-          </nav>
         </div>
       </header>
 
       {/* Content */}
-      <main ref={contentRef as React.RefObject<HTMLElement>} className="max-w-4xl mx-auto px-4 py-6" style={{ opacity: 0 }}>
+      <main ref={contentRef as React.RefObject<HTMLElement>} className="max-w-4xl mx-auto px-4 py-6" style={{ opacity: 0, paddingBottom: "calc(1.5rem + 64px)" }}>
         {tab === "resumen"    && <Resumen trip={trip} session={session} days={days} darkMode={darkMode} />}
         {tab === "reservas"   && <Reservas code={session.code} session={session} darkMode={darkMode} />}
         {tab === "itinerario" && <Itinerario code={session.code} />}
@@ -3385,13 +3372,61 @@ export default function App() {
         {tab === "destinos"   && <Destinos code={session.code} onSelect={() => setTab("itinerario")} />}
         {tab === "asistente"  && <AsistenteIA code={session.code} trip={trip} session={session} onImportItinerary={async (days) => { await saveShared(`itin:${session.code}`, days); setTab("itinerario"); }} />}
       </main>
+
+      {/* Fixed bottom navigation */}
+      <nav className="no-print" style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: dk ? "#0D1117" : "#fff", borderTop: `1px solid ${dk ? "#21262D" : C.line}`, zIndex: 100, paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
+        <div className="max-w-4xl mx-auto flex">
+          {primaryTabs.map(({ id, label, Icon }) => {
+            const active = tab === id;
+            return (
+              <button key={id} onClick={() => { setTab(id); setShowMore(false); }}
+                style={{ flex: 1, padding: "10px 0 11px", display: "flex", flexDirection: "column", alignItems: "center", gap: 3, transition: "opacity 0.15s", position: "relative" }}>
+                <Icon size={21} color={active ? C.teal : dk ? "#4A5568" : "#94A3B8"} strokeWidth={active ? 2.5 : 1.8} />
+                <span style={{ fontFamily: F.mono, fontSize: 9, letterSpacing: 0.4, color: active ? C.teal : dk ? "#4A5568" : "#94A3B8" }}>{label.toUpperCase()}</span>
+                {active && <div style={{ position: "absolute", top: 0, width: 28, height: 2, background: C.teal, borderRadius: "0 0 2px 2px" }} />}
+              </button>
+            );
+          })}
+          <button onClick={() => setShowMore(v => !v)}
+            style={{ flex: 1, padding: "10px 0 11px", display: "flex", flexDirection: "column", alignItems: "center", gap: 3, position: "relative" }}>
+            <MoreHorizontal size={21} color={(showMore || isMoreActive) ? C.teal : dk ? "#4A5568" : "#94A3B8"} strokeWidth={(showMore || isMoreActive) ? 2.5 : 1.8} />
+            <span style={{ fontFamily: F.mono, fontSize: 9, letterSpacing: 0.4, color: (showMore || isMoreActive) ? C.teal : dk ? "#4A5568" : "#94A3B8" }}>MÁS</span>
+            {(showMore || isMoreActive) && <div style={{ position: "absolute", top: 0, width: 28, height: 2, background: C.teal, borderRadius: "0 0 2px 2px" }} />}
+          </button>
+        </div>
+      </nav>
+
+      {/* "Más" bottom drawer */}
+      {showMore && (
+        <>
+          <div onClick={() => setShowMore(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 200 }} className="fade-in" />
+          <div className="fade-in" style={{ position: "fixed", bottom: 64, left: 0, right: 0, background: dk ? "#161B22" : "#fff", borderRadius: "20px 20px 0 0", padding: "16px 20px 20px", zIndex: 201, boxShadow: "0 -8px 40px rgba(0,0,0,0.22)" }}>
+            <div style={{ width: 40, height: 4, background: dk ? "#30363D" : C.line, borderRadius: 2, margin: "0 auto 16px" }} />
+            <p style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft, letterSpacing: 1.5, marginBottom: 14 }}>SECCIONES</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
+              {moreTabs.map(({ id, label, Icon }) => {
+                const active = tab === id;
+                return (
+                  <button key={id} onClick={() => { setTab(id); setShowMore(false); }}
+                    className="btn-press"
+                    style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 7, padding: "14px 8px", borderRadius: 14, background: active ? `${C.teal}18` : dk ? "#21262D" : C.paperDark, border: `1px solid ${active ? C.teal + "50" : "transparent"}`, transition: "background 0.15s" }}>
+                    <Icon size={22} color={active ? C.teal : dk ? "#6E7681" : C.inkSoft} strokeWidth={active ? 2.5 : 1.8} />
+                    <span style={{ fontFamily: F.mono, fontSize: 10, color: active ? C.teal : dk ? "#8B949E" : C.ink, letterSpacing: 0.3 }}>{label.toUpperCase()}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </>
+      )}
+
       {syncToast && (
-        <div style={{ position: "fixed", bottom: 20, right: 20, background: C.teal, color: "#fff", borderRadius: 20, padding: "8px 16px", fontSize: 12, fontFamily: "var(--font-mono)", zIndex: 9999, boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }} className="fade-in">
+        <div style={{ position: "fixed", bottom: 80, right: 16, background: C.teal, color: "#fff", borderRadius: 20, padding: "8px 16px", fontSize: 12, fontFamily: "var(--font-mono)", zIndex: 9999, boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }} className="fade-in">
           ✓ SINCRONIZADO
         </div>
       )}
       {pwaPrompt && !pwaDismissed && (
-        <div className="fade-in" style={{ position: "fixed", bottom: 72, left: 12, right: 12, background: C.navy, borderRadius: 14, padding: "14px 16px", zIndex: 9998, display: "flex", alignItems: "center", gap: 12, boxShadow: "0 8px 32px rgba(0,0,0,0.3)" }}>
+        <div className="fade-in" style={{ position: "fixed", bottom: 80, left: 12, right: 12, background: C.navy, borderRadius: 14, padding: "14px 16px", zIndex: 9998, display: "flex", alignItems: "center", gap: 12, boxShadow: "0 8px 32px rgba(0,0,0,0.3)" }}>
           <div style={{ flex: 1 }}>
             <p style={{ fontFamily: F.mono, fontSize: 11, color: C.goldLight, letterSpacing: 1, margin: 0 }}>INSTALAR APP</p>
             <p style={{ fontSize: 13, color: "#8BAFD4", marginTop: 2, margin: 0 }}>Añadir Bitácora a tu pantalla de inicio</p>
