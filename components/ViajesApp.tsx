@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import dynamic from "next/dynamic";
 import {
   Plane, MapPin, Camera, ListChecks,
   Copy, Check, Plus, Trash2, X, ArrowLeft,
@@ -9,8 +10,11 @@ import {
   CheckCircle2, Circle, PiggyBank, Target, Edit2, Globe,
   Heart, BookOpen, CreditCard, Moon, Sun, Printer,
   Filter, BookMarked, Ticket, StickyNote, RefreshCw,
+  Sparkles, Send, Download,
 } from "lucide-react";
 import { animate, stagger, spring } from "animejs";
+
+const LeafletMap = dynamic(() => import("./LeafletMap"), { ssr: false });
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -2489,13 +2493,6 @@ function genTripCode() {
   return c;
 }
 
-function project(lon: number, lat: number) {
-  return {
-    x: Math.max(0, Math.min(100, ((lon + 180) / 360) * 100)),
-    y: Math.max(0, Math.min(70,  ((90 - lat)  / 180) * 70)),
-  };
-}
-
 function formatDate(d: string) {
   return new Date(d + "T12:00:00").toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" });
 }
@@ -2825,9 +2822,227 @@ function EntryScreen({ onEnter, externalError, prefillCode }: { onEnter: (code: 
   );
 }
 
+// ─── Asistente IA ─────────────────────────────────────────────────────────────
+
+interface ChatMsg { role: "user" | "assistant"; content: string; }
+
+function AsistenteIA({ code: _code, trip, session: _session, onImportItinerary }: {
+  code: string; trip: Trip; session: Session;
+  onImportItinerary: (days: ItineraryDay[]) => void;
+}) {
+  const [msgs, setMsgs] = useState<ChatMsg[]>([]);
+  const [input, setInput] = useState("");
+  const [streaming, setStreaming] = useState(false);
+  const [noKey, setNoKey] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const systemPrompt = `Eres un asistente experto en planificación de viajes integrado en Bitácora de Viaje, una app colaborativa en español.
+
+Datos del viaje actual:
+- Nombre: ${trip.name}
+- Destino: ${trip.destination || "no especificado"}
+- Fechas: ${trip.startDate ? `${trip.startDate} → ${trip.endDate || "?"}` : "no fijadas"}
+- Viajeros: ${trip.members.join(", ")} (${trip.members.length} persona${trip.members.length !== 1 ? "s" : ""})
+
+Cuando el usuario pida crear un itinerario o plan de viaje, responde con tu explicación y AL FINAL incluye el itinerario en este formato JSON exacto, delimitado por \`\`\`json y \`\`\`:
+{
+  "itinerary": [
+    {
+      "title": "Día 1 — Nombre descriptivo",
+      "items": [
+        { "time": "09:00", "text": "Descripción de la actividad" }
+      ]
+    }
+  ]
+}
+
+Responde siempre en español. Sé concreto, práctico y entusiasta.`;
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [msgs, streaming]);
+
+  function extractItinerary(text: string): { title: string; items: { time: string; text: string }[] }[] | null {
+    const match = text.match(/```json\s*([\s\S]*?)```/);
+    if (!match) return null;
+    try {
+      const parsed = JSON.parse(match[1]);
+      return parsed.itinerary ?? null;
+    } catch { return null; }
+  }
+
+  async function send() {
+    const text = input.trim();
+    if (!text || streaming) return;
+    setInput("");
+    const newMsgs: ChatMsg[] = [...msgs, { role: "user", content: text }];
+    setMsgs(newMsgs);
+    setStreaming(true);
+    setNoKey(false);
+
+    try {
+      const res = await fetch("/api/ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          system: systemPrompt,
+          messages: newMsgs.map(m => ({ role: m.role, content: m.content })),
+        }),
+      });
+
+      if (res.status === 503) {
+        setNoKey(true);
+        setMsgs(m => [...m, { role: "assistant", content: "⚠️ No hay clave ANTHROPIC_API_KEY configurada en Vercel. Añádela en Settings → Environment Variables." }]);
+        setStreaming(false);
+        return;
+      }
+
+      if (!res.ok || !res.body) {
+        setMsgs(m => [...m, { role: "assistant", content: "Error al conectar con la IA. Inténtalo de nuevo." }]);
+        setStreaming(false);
+        return;
+      }
+
+      // Parse SSE stream
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let fullText = "";
+      setMsgs(m => [...m, { role: "assistant", content: "" }]);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        const lines = chunk.split("\n");
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          const data = line.slice(6);
+          if (data === "[DONE]") continue;
+          try {
+            const parsed = JSON.parse(data);
+            // Anthropic SSE: event type content_block_delta
+            if (parsed.type === "content_block_delta" && parsed.delta?.type === "text_delta") {
+              fullText += parsed.delta.text;
+              setMsgs(m => [...m.slice(0, -1), { role: "assistant", content: fullText }]);
+            }
+          } catch { /* skip malformed events */ }
+        }
+      }
+    } catch {
+      setMsgs(m => [...m, { role: "assistant", content: "Error de red. Comprueba tu conexión." }]);
+    }
+    setStreaming(false);
+    setTimeout(() => inputRef.current?.focus(), 100);
+  }
+
+  const lastAssistantMsg = [...msgs].reverse().find(m => m.role === "assistant");
+  const itinerary = lastAssistantMsg ? extractItinerary(lastAssistantMsg.content) : null;
+
+  function renderMsgContent(content: string) {
+    // Strip the json block for display, show clean text
+    return content.replace(/```json[\s\S]*?```/g, "").trim();
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      <Card>
+        <div className="flex items-center gap-2 mb-1">
+          <Sparkles size={16} color={C.purple} />
+          <SectionLabel>Asistente de Planificación</SectionLabel>
+        </div>
+        <p style={{ color: C.inkSoft, fontSize: 13 }}>
+          Pídeme un itinerario, consejos, presupuesto estimado o cualquier cosa sobre {trip.destination || "tu destino"}.
+        </p>
+      </Card>
+
+      {/* Chat messages */}
+      <div className="flex flex-col gap-3" style={{ minHeight: 200 }}>
+        {msgs.length === 0 && (
+          <div className="flex flex-col gap-2">
+            {[
+              `Crea un itinerario de ${trip.destination || "mi viaje"} para ${trip.members.length} personas`,
+              "¿Qué presupuesto diario necesito?",
+              "¿Qué documentación necesito para este viaje?",
+              "Dame 5 restaurantes imprescindibles",
+            ].map(s => (
+              <button key={s} onClick={() => { setInput(s); inputRef.current?.focus(); }}
+                style={{ textAlign: "left", background: C.paperDark, border: `1px solid ${C.line}`, borderRadius: 8, padding: "10px 14px", fontSize: 13, color: C.ink, cursor: "pointer", transition: "background 0.15s" }}
+                onMouseOver={e => (e.currentTarget.style.background = C.line)}
+                onMouseOut={e => (e.currentTarget.style.background = C.paperDark)}>
+                ✦ {s}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {msgs.map((m, i) => (
+          <div key={i} style={{ display: "flex", justifyContent: m.role === "user" ? "flex-end" : "flex-start" }}>
+            <div style={{
+              maxWidth: "85%",
+              background: m.role === "user" ? C.navy : "#fff",
+              color: m.role === "user" ? "#fff" : C.ink,
+              border: m.role === "assistant" ? `1px solid ${C.line}` : "none",
+              borderRadius: m.role === "user" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
+              padding: "10px 14px",
+              fontSize: 14,
+              lineHeight: 1.6,
+              whiteSpace: "pre-wrap",
+              wordBreak: "break-word",
+            }}>
+              {m.role === "assistant" ? renderMsgContent(m.content) : m.content}
+              {m.role === "assistant" && streaming && i === msgs.length - 1 && (
+                <span style={{ display: "inline-block", width: 8, height: 14, background: C.inkSoft, borderRadius: 2, marginLeft: 2, animation: "fadeIn 0.5s ease infinite alternate" }} />
+              )}
+            </div>
+          </div>
+        ))}
+        <div ref={bottomRef} />
+      </div>
+
+      {/* Import itinerary button */}
+      {itinerary && !streaming && (
+        <Card style={{ background: `${C.teal}10`, border: `1px solid ${C.teal}40` }}>
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div>
+              <p style={{ fontWeight: 600, fontSize: 14 }}>Itinerario generado — {itinerary.length} días</p>
+              <p style={{ color: C.inkSoft, fontSize: 12 }}>Importar reemplazará el itinerario actual</p>
+            </div>
+            <button onClick={() => {
+              const importDays: ItineraryDay[] = itinerary.map(d => ({
+                id: uid(), date: "", title: d.title,
+                items: d.items.map(it => ({ id: uid(), time: it.time, text: it.text })),
+              }));
+              onImportItinerary(importDays);
+            }} style={{ display: "flex", alignItems: "center", gap: 6, background: C.teal, color: "#fff", borderRadius: 6, padding: "9px 16px", fontFamily: F.mono, fontSize: 12 }}>
+              <Download size={13} /> IMPORTAR AL PLAN
+            </button>
+          </div>
+        </Card>
+      )}
+
+      {/* Input */}
+      <div className="flex gap-2">
+        <input ref={inputRef} value={input} onChange={e => setInput(e.target.value)}
+          onKeyDown={e => e.key === "Enter" && !e.shiftKey && send()}
+          placeholder={streaming ? "La IA está respondiendo…" : "Escribe tu pregunta…"}
+          disabled={streaming}
+          style={{ ...inputStyle, flex: 1, fontSize: 14 }} />
+        <button onClick={send} disabled={streaming || !input.trim()}
+          style={{ background: (streaming || !input.trim()) ? C.inkSoft : C.purple, color: "#fff", borderRadius: 6, padding: "0 16px", display: "flex", alignItems: "center", gap: 6, fontFamily: F.mono, fontSize: 12, transition: "background 0.15s", minWidth: 56 }}>
+          {streaming ? <RefreshCw size={14} className="animate-spin" /> : <Send size={14} />}
+        </button>
+      </div>
+      {noKey && (
+        <Banner type="error" msg='Añade ANTHROPIC_API_KEY en Vercel → Settings → Environment Variables → Redeploy' />
+      )}
+    </div>
+  );
+}
+
 // ─── Main App ─────────────────────────────────────────────────────────────────
 
-type TabId = "resumen" | "itinerario" | "mapa" | "fotos" | "checklist" | "gastos" | "equipaje" | "ideas" | "ahorro" | "destinos" | "reservas" | "diario";
+type TabId = "resumen" | "itinerario" | "mapa" | "fotos" | "checklist" | "gastos" | "equipaje" | "ideas" | "ahorro" | "destinos" | "reservas" | "diario" | "asistente";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -2911,6 +3126,29 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [tab, session]);
 
+  const [syncToast, setSyncToast] = useState(false);
+  const tripRef = useRef<Trip | null>(null);
+  useEffect(() => { tripRef.current = trip; }, [trip]);
+
+  useEffect(() => {
+    if (!session) return;
+    const poll = async () => {
+      try {
+        const res = await fetch(`/api/store?key=${encodeURIComponent(`trip:${session.code}`)}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!data) return;
+        if (JSON.stringify(data) !== JSON.stringify(tripRef.current)) {
+          setTrip(data as Trip);
+          setSyncToast(true);
+          setTimeout(() => setSyncToast(false), 3000);
+        }
+      } catch { /* silent */ }
+    };
+    const id = setInterval(poll, 30000);
+    return () => clearInterval(id);
+  }, [session]);
+
   if (loading) {
     return (
       <div style={{ background: C.paper, minHeight: "100dvh", fontFamily: F.body }} className="flex items-center justify-center">
@@ -2926,6 +3164,7 @@ export default function App() {
 
   const tabs: { id: TabId; label: string; Icon: React.ElementType }[] = [
     { id: "resumen",    label: "Inicio",     Icon: Sunrise },
+    { id: "asistente",  label: "IA",         Icon: Sparkles },
     { id: "reservas",   label: "Reservas",   Icon: Ticket },
     { id: "itinerario", label: "Plan",        Icon: Plane },
     { id: "mapa",       label: "Mapa",        Icon: MapPin },
@@ -3032,7 +3271,13 @@ export default function App() {
         {tab === "ideas"      && <Ideas code={session.code} session={session} />}
         {tab === "ahorro"     && <Ahorro code={session.code} members={trip.members} />}
         {tab === "destinos"   && <Destinos code={session.code} onSelect={() => setTab("itinerario")} />}
+        {tab === "asistente"  && <AsistenteIA code={session.code} trip={trip} session={session} onImportItinerary={async (days) => { await saveShared(`itin:${session.code}`, days); setTab("itinerario"); }} />}
       </main>
+      {syncToast && (
+        <div style={{ position: "fixed", bottom: 20, right: 20, background: C.teal, color: "#fff", borderRadius: 20, padding: "8px 16px", fontSize: 12, fontFamily: "var(--font-mono)", zIndex: 9999, boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }} className="fade-in">
+          ✓ SINCRONIZADO
+        </div>
+      )}
     </div>
   );
 }
@@ -3308,92 +3553,78 @@ function Itinerario({ code }: { code: string }) {
 
 // ─── Mapa ─────────────────────────────────────────────────────────────────────
 
-const BLOBS = [
-  "M 8,20 Q 14,14 22,16 Q 30,20 28,30 Q 24,38 16,36 Q 8,30 8,20 Z",
-  "M 20,42 Q 27,38 30,48 Q 28,58 24,56 Q 18,50 20,42 Z",
-  "M 44,18 Q 54,14 58,22 Q 56,30 50,28 Q 44,26 44,18 Z",
-  "M 46,34 Q 56,30 58,46 Q 54,56 48,52 Q 42,44 46,34 Z",
-  "M 60,16 Q 78,12 84,24 Q 80,36 68,34 Q 58,26 60,16 Z",
-  "M 78,48 Q 88,46 88,54 Q 84,60 80,58 Q 76,52 78,48 Z",
-];
-
 function Mapa({ code }: { code: string }) {
   const [places, setPlaces] = useState<MapPlace[]>([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({ name: "", lat: "", lon: "", note: "" });
-  const [active, setActive] = useState<string | null>(null);
+  const [pendingLatLon, setPendingLatLon] = useState<{ lat: number; lon: number } | null>(null);
+  const [form, setForm] = useState({ name: "", note: "" });
   const [err, setErr] = useState("");
   const key = `mapa:${code}`;
   useEffect(() => { loadShared<MapPlace[]>(key, []).then(p => { setPlaces(p); setLoading(false); }); }, [key]);
   const persist = useCallback(async (next: MapPlace[]) => { setPlaces(next); await saveShared(key, next); }, [key]);
 
+  function handleMapClick(lat: number, lon: number) {
+    setPendingLatLon({ lat, lon });
+    setErr("");
+  }
+
   function addPlace() {
     setErr("");
-    if (!form.name.trim()) { setErr("Escribe un nombre."); return; }
-    const lat = parseFloat(form.lat), lon = parseFloat(form.lon);
-    if (isNaN(lat) || lat < -90 || lat > 90) { setErr("Latitud inválida (−90 a 90)."); return; }
-    if (isNaN(lon) || lon < -180 || lon > 180) { setErr("Longitud inválida (−180 a 180)."); return; }
-    persist([...places, { id: uid(), name: form.name.trim(), lat, lon, note: form.note.trim() }]);
-    setForm({ name: "", lat: "", lon: "", note: "" });
+    if (!form.name.trim()) { setErr("Escribe un nombre para el lugar."); return; }
+    if (!pendingLatLon) { setErr("Haz clic en el mapa para marcar la ubicación."); return; }
+    persist([...places, { id: uid(), name: form.name.trim(), lat: pendingLatLon.lat, lon: pendingLatLon.lon, note: form.note.trim() }]);
+    setForm({ name: "", note: "" });
+    setPendingLatLon(null);
   }
 
   if (loading) return <SkeletonCards />;
-  const activePlace = places.find(p => p.id === active);
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Map first */}
+      <Card style={{ padding: 8 }}>
+        <LeafletMap places={places} onMapClick={handleMapClick} pendingLatLon={pendingLatLon} height="380px" />
+        {pendingLatLon ? (
+          <p style={{ color: C.teal, fontSize: 12, fontFamily: F.mono, marginTop: 6, textAlign: "center" }}>
+            📍 {pendingLatLon.lat.toFixed(4)}, {pendingLatLon.lon.toFixed(4)} — Añade el nombre abajo
+          </p>
+        ) : (
+          <p style={{ color: C.inkSoft, fontSize: 12, fontFamily: F.mono, marginTop: 6, textAlign: "center" }}>
+            Haz clic en el mapa para añadir un lugar · Clic en un pin para ver detalles
+          </p>
+        )}
+      </Card>
+
+      {/* Add place form */}
       <Card>
-        <SectionLabel>Añadir destino</SectionLabel>
-        <p style={{ color: C.inkSoft, fontSize: 12, marginTop: 4 }}>Busca &ldquo;lat long [ciudad]&rdquo; en Google. Ej: Atenas → 37.97, 23.72</p>
+        <SectionLabel>Añadir lugar</SectionLabel>
         <div className="flex flex-wrap gap-2 mt-3">
-          <input placeholder="Nombre" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} style={{ ...inputStyle, flex: "2 1 140px" }} />
-          <input placeholder="Lat" value={form.lat} onChange={e => setForm({ ...form, lat: e.target.value })} style={{ ...inputStyle, width: 80, fontFamily: F.mono, fontSize: 12 }} />
-          <input placeholder="Lon" value={form.lon} onChange={e => setForm({ ...form, lon: e.target.value })} style={{ ...inputStyle, width: 80, fontFamily: F.mono, fontSize: 12 }} />
-          <input placeholder="Nota (opcional)" value={form.note} onChange={e => setForm({ ...form, note: e.target.value })} onKeyDown={e => e.key === "Enter" && addPlace()} style={{ ...inputStyle, flex: "2 1 140px" }} />
-          <button onClick={addPlace} style={{ background: C.navy, color: C.paper, borderRadius: 5, padding: "0 18px", fontFamily: F.mono, fontSize: 12, height: 39 }}>AÑADIR</button>
+          <input placeholder="Nombre del lugar" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
+            style={{ ...inputStyle, flex: "2 1 180px" }} />
+          <input placeholder="Nota (opcional)" value={form.note} onChange={e => setForm({ ...form, note: e.target.value })}
+            onKeyDown={e => e.key === "Enter" && addPlace()}
+            style={{ ...inputStyle, flex: "2 1 180px" }} />
+          <button onClick={addPlace} style={{ background: pendingLatLon ? C.navy : C.inkSoft, color: C.paper, borderRadius: 5, padding: "0 18px", fontFamily: F.mono, fontSize: 12, height: 39, transition: "background 0.2s" }}>
+            AÑADIR
+          </button>
         </div>
         {err && <Banner type="error" msg={err} />}
       </Card>
 
-      <Card style={{ padding: 12 }}>
-        <div style={{ position: "relative", width: "100%", paddingBottom: "50%", background: "#D0E4E2", borderRadius: 6, overflow: "hidden" }}>
-          <svg viewBox="0 0 100 70" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
-            {BLOBS.map((d, i) => <path key={i} d={d} fill={C.teal} opacity={0.22} />)}
-            {places.map(p => {
-              const { x, y } = project(p.lon, p.lat);
-              const isA = active === p.id;
-              return (
-                <g key={p.id} onClick={() => setActive(isA ? null : p.id)} style={{ cursor: "pointer" }}>
-                  <circle cx={x} cy={y} r={isA ? 3 : 2} fill={isA ? C.gold : C.red} stroke="#fff" strokeWidth={0.5} />
-                  {isA && <text x={x + 3.5} y={y + 1.2} fontSize={3.5} fill={C.navy} fontFamily={F.mono}>{p.name.slice(0, 16)}</text>}
-                </g>
-              );
-            })}
-          </svg>
-        </div>
-        {activePlace && (
-          <div className="mt-2 px-2 py-1.5 rounded" style={{ background: C.paperDark, fontSize: 13 }}>
-            <strong>{activePlace.name}</strong>{activePlace.note && <span style={{ color: C.inkSoft }}> — {activePlace.note}</span>}
-            <span style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft, marginLeft: 8 }}>{activePlace.lat.toFixed(2)}, {activePlace.lon.toFixed(2)}</span>
-          </div>
-        )}
-        <p style={{ color: C.inkSoft, fontSize: 11, marginTop: 6 }}>Mapa esquemático · clic en pin para detalle</p>
-      </Card>
-
+      {/* Places list */}
       <div className="flex flex-col gap-2">
         {places.map(p => (
-          <div key={p.id} onClick={() => setActive(p.id === active ? null : p.id)}
-            className="flex items-center justify-between px-3 py-2 card-lift"
-            style={{ background: active === p.id ? C.paperDark : "#fff", border: `1px solid ${C.line}`, borderRadius: 6, cursor: "pointer" }}>
+          <div key={p.id} className="flex items-center justify-between px-3 py-2 card-lift"
+            style={{ background: "#fff", border: `1px solid ${C.line}`, borderRadius: 6 }}>
             <div>
               <span style={{ fontWeight: 600, fontSize: 14 }}>{p.name}</span>
               {p.note && <span style={{ color: C.inkSoft, fontSize: 13 }}> — {p.note}</span>}
-              <span style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft, marginLeft: 8 }}>{p.lat.toFixed(2)}, {p.lon.toFixed(2)}</span>
+              <span style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft, marginLeft: 8 }}>{p.lat.toFixed(4)}, {p.lon.toFixed(4)}</span>
             </div>
-            <button onClick={e => { e.stopPropagation(); persist(places.filter(x => x.id !== p.id)); if (active === p.id) setActive(null); }} style={{ color: C.inkSoft, padding: 4 }}><Trash2 size={14} /></button>
+            <button onClick={() => persist(places.filter(x => x.id !== p.id))} style={{ color: C.inkSoft, padding: 4 }}><Trash2 size={14} /></button>
           </div>
         ))}
-        {places.length === 0 && <EmptyState icon={<MapPin size={28} color={C.line} />} text="Añade el primer destino arriba." />}
+        {places.length === 0 && <EmptyState icon={<MapPin size={28} color={C.line} />} text="Haz clic en el mapa para añadir el primer lugar." />}
       </div>
     </div>
   );
