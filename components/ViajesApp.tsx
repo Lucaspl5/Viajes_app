@@ -2326,6 +2326,133 @@ const DESTINATIONS: DestinationTemplate[] = [
       { name: "Monte Albán", lat: 17.04, lon: -96.77, note: "Ciudad zapoteca sobre una colina aplanada (500 a.C.)" },
     ],
   },
+  {
+    id: "puerto-rico", name: "Puerto Rico", country: "Puerto Rico (EE.UU.)", flag: "🇵🇷",
+    costPerPerson: 1100, durationDays: 7, type: "playa",
+    description: "La Isla del Encanto: el colorido Viejo San Juan colonial, El Yunque el único bosque tropical lluvioso de EE.UU., playas de ensueño y la cultura boricua más vibrante del Caribe.",
+    highlights: ["Viejo San Juan", "El Yunque", "Playa Flamenco (Culebra)", "Bioluminiscencia (Vieques)"],
+    itinerary: [
+      { date: "", title: "Día 1 — Viejo San Juan", items: [{ time: "12:00", text: "Llegada al Aeropuerto Luis Muñoz Marín" }, { time: "15:00", text: "Viejo San Juan: calles adoquinadas de azul cobalto" }, { time: "16:30", text: "Castillo San Felipe del Morro — atardecer épico" }, { time: "20:00", text: "Cena de mofongo con camarones en La Perla" }] },
+      { date: "", title: "Día 2 — Fuertes y casco histórico", items: [{ time: "09:00", text: "Castillo San Cristóbal (el más grande del Caribe)" }, { time: "11:30", text: "Catedral de San Juan Bautista (1521)" }, { time: "14:00", text: "Paseo de la Princesa y la bahía" }, { time: "17:00", text: "Barrio La Placita en Santurce: cultura y música" }] },
+      { date: "", title: "Día 3 — El Yunque", items: [{ time: "08:00", text: "El Yunque: único bosque tropical lluvioso de EE.UU." }, { time: "10:00", text: "Cascada La Mina — nadar en agua dulce de selva" }, { time: "13:00", text: "Playa Luquillo: la playa más popular de la isla" }, { time: "19:00", text: "Kioskos de Luquillo: alcapurrias, bacalaítos y piñas coladas" }] },
+      { date: "", title: "Día 4 — Culebra (la mejor playa)", items: [{ time: "07:30", text: "Ferry a Culebra (1h) o vuelo en avioneta (10 min)" }, { time: "10:00", text: "Playa Flamenco: top 3 mejores playas del mundo" }, { time: "14:00", text: "Snorkel en Playa Carlos Rosario" }, { time: "18:00", text: "Regreso y cena de arroz con gandules" }] },
+      { date: "", title: "Día 5 — Vieques y bioluminiscencia", items: [{ time: "08:00", text: "Ferry a Vieques (1h) — la isla más tranquila" }, { time: "11:00", text: "Playa Sun Bay: 1 km de arena dorada sin aglomeraciones" }, { time: "14:00", text: "Refugio Nacional de Vida Silvestre" }, { time: "21:00", text: "Kayak nocturno en Mosquito Bay: bioluminiscencia más brillante del mundo" }] },
+      { date: "", title: "Días 6-7 — Ponce y regreso", items: [{ time: "09:00", text: "Ponce: la segunda ciudad de Puerto Rico" }, { time: "11:00", text: "Museo de Arte de Ponce (Leighton, Rubens)" }, { time: "14:00", text: "Parque de Bombas: cuartel más fotogénico del mundo" }, { time: "Día 7", text: "Última mañana en Condado: compras y regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Castillo San Felipe del Morro", lat: 18.47, lon: -66.12, note: "Fortaleza del s. XVI con vistas al Atlántico" },
+      { name: "El Yunque", lat: 18.32, lon: -65.77, note: "El único bosque tropical lluvioso de EE.UU." },
+      { name: "Playa Flamenco (Culebra)", lat: 18.33, lon: -65.31, note: "Una de las 10 mejores playas del mundo" },
+      { name: "Mosquito Bay (Vieques)", lat: 18.07, lon: -65.43, note: "La bahía bioluminiscente más brillante del planeta" },
+      { name: "Viejo San Juan", lat: 18.47, lon: -66.12, note: "Centro histórico colonial Patrimonio UNESCO" },
+    ],
+  },
+  {
+    id: "jamaica", name: "Jamaica", country: "Jamaica", flag: "🇯🇲",
+    costPerPerson: 1050, durationDays: 7, type: "playa",
+    description: "La isla del reggae y Bob Marley: Montego Bay, el río Negro, Dunn's River Falls, la filosofía rastafari y el mejor ron del Caribe.",
+    highlights: ["Dunn's River Falls", "Bob Marley Museum", "Blue Mountains", "Seven Mile Beach"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Montego Bay", items: [{ time: "12:00", text: "Llegada a Sangster International (Montego Bay)" }, { time: "15:00", text: "Hip Strip: animación, bares y playa Doctor's Cave" }, { time: "Día 2", text: "Rafting en el Río Grande entre selva tropical" }] },
+      { date: "", title: "Días 3-4 — Ocho Ríos", items: [{ time: "09:00", text: "Dunn's River Falls: subir la cascada de 180m en cadena humana" }, { time: "13:00", text: "Bob Marley Museum (Nine Mile, su lugar de nacimiento)" }, { time: "Día 4", text: "Mystic Mountain: tirolina y bobsleigh entre la selva" }] },
+      { date: "", title: "Días 5-6 — Negril", items: [{ time: "10:00", text: "Seven Mile Beach: la playa más larga de Jamaica" }, { time: "17:00", text: "Rick's Café: atardecer + salto en el acantilado" }, { time: "Noche", text: "Reggae en vivo toda la noche" }, { time: "Día 6", text: "Snorkel en arrecife y clase de cocina jamaicana" }] },
+      { date: "", title: "Día 7 — Kingston y regreso", items: [{ time: "09:00", text: "Kingston: mercado y gastronomía local" }, { time: "13:00", text: "Último jerk chicken con festival bread" }, { time: "16:00", text: "Vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Dunn's River Falls", lat: 18.43, lon: -77.01, note: "Cascada escalonada de 180m para subir" },
+      { name: "Seven Mile Beach (Negril)", lat: 18.27, lon: -78.36, note: "La playa de arena más larga de Jamaica" },
+      { name: "Bob Marley Museum (Kingston)", lat: 17.99, lon: -76.79, note: "La casa donde vivió y grabó Bob Marley" },
+      { name: "Blue Mountains", lat: 18.04, lon: -76.63, note: "El café más famoso del mundo a 2.256m" },
+    ],
+  },
+  {
+    id: "miami", name: "Miami & Florida", country: "Estados Unidos", flag: "🇺🇸",
+    costPerPerson: 1600, durationDays: 7, type: "ciudad",
+    description: "La ciudad más latina de EE.UU.: Art Deco en South Beach, Little Havana, los Everglades con cocodrilos, Key West en el extremo sur y la mejor fiesta nocturna de América.",
+    highlights: ["South Beach (Art Deco)", "Little Havana", "Everglades", "Key West"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — South Beach", items: [{ time: "12:00", text: "Llegada a MIA" }, { time: "15:00", text: "South Beach: Ocean Drive y edificios Art Deco" }, { time: "18:00", text: "Paseo por Lincoln Road" }, { time: "Día 2", text: "Wynwood Walls: el barrio del arte urbano más famoso del mundo" }] },
+      { date: "", title: "Día 3 — Little Havana y Coconut Grove", items: [{ time: "10:00", text: "Little Havana: café cubano y dominó en Calle Ocho" }, { time: "13:00", text: "Versailles Restaurant: el almuerzo más cubano fuera de Cuba" }, { time: "16:00", text: "Coconut Grove: bares con vista a la bahía Biscayne" }] },
+      { date: "", title: "Día 4 — Everglades", items: [{ time: "08:00", text: "Parque Nacional Everglades: el río de hierba" }, { time: "10:00", text: "Airboat entre cocodrilos y manatíes" }, { time: "14:00", text: "Almuerzo de gator (caimán) en el parque" }, { time: "17:00", text: "Regreso y sunset en la playa" }] },
+      { date: "", title: "Días 5-6 — Keys & Key West", items: [{ time: "09:00", text: "Overseas Highway: 42 puentes sobre el Atlántico y el Golfo" }, { time: "13:00", text: "Bahía Honda: snorkel en aguas cristalinas" }, { time: "16:00", text: "Key West: la ciudad más al sur de EE.UU. continental" }, { time: "18:00", text: "Mallory Square: el festival del atardecer" }, { time: "Día 6", text: "Casa de Hemingway y bares del Old Town" }] },
+      { date: "", title: "Día 7 — Regreso", items: [{ time: "10:00", text: "Último baño en South Beach" }, { time: "14:00", text: "Vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "South Beach", lat: 25.78, lon: -80.13, note: "La playa más famosa de EE.UU. con Art Deco" },
+      { name: "Everglades", lat: 25.29, lon: -80.90, note: "Pantanos únicos con cocodrilos y manatíes" },
+      { name: "Key West", lat: 24.56, lon: -81.78, note: "El extremo sur continental de EE.UU." },
+      { name: "Wynwood Walls", lat: 25.80, lon: -80.20, note: "El barrio de arte urbano más famoso del mundo" },
+    ],
+  },
+  {
+    id: "nueva-orleans", name: "Nueva Orleans", country: "Estados Unidos", flag: "🇺🇸",
+    costPerPerson: 1200, durationDays: 5, type: "cultura",
+    description: "La ciudad más musical del mundo: jazz en cada esquina del French Quarter, carnavales Mardi Gras, vudú, cocina criolla y los cementerios más pintorescos de América.",
+    highlights: ["French Quarter", "Jazz en Frenchmen Street", "Gastronomía criolla", "Garden District"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — French Quarter", items: [{ time: "12:00", text: "Llegada a MSY" }, { time: "15:00", text: "Bourbon Street y Royal Street" }, { time: "18:00", text: "Preservación Hall: jazz auténtico desde 1961" }, { time: "Día 2", text: "Jackson Square, Catedral de San Luis y Mercado Francés" }] },
+      { date: "", title: "Día 3 — Gastronomía criolla", items: [{ time: "10:00", text: "Café Du Monde: beignets con azúcar glas (obligatorio)" }, { time: "13:00", text: "Dooky Chase: cocina criolla histórica de los derechos civiles" }, { time: "16:00", text: "Frenchmen Street: jazz callejero al atardecer" }] },
+      { date: "", title: "Días 4-5 — Garden District y swamps", items: [{ time: "09:00", text: "Swamp tour: caimanes en los bayous" }, { time: "14:00", text: "Garden District: mansiones de la Belle Époque" }, { time: "16:00", text: "Cementerio de Lafayette: las tumbas sobre el suelo" }, { time: "Día 5", text: "Compras en Magazine Street y vuelo" }] },
+    ],
+    mapPlaces: [
+      { name: "French Quarter", lat: 29.96, lon: -90.06, note: "El corazón histórico de la ciudad" },
+      { name: "Preservation Hall", lat: 29.96, lon: -90.07, note: "La sala de jazz más famosa desde 1961" },
+      { name: "Garden District", lat: 29.93, lon: -90.09, note: "Mansiones victorianas y cementerios únicos" },
+      { name: "Frenchmen Street", lat: 29.96, lon: -90.06, note: "La calle del jazz en vivo más auténtica" },
+    ],
+  },
+  {
+    id: "costa-amalfi", name: "Costa Amalfitana", country: "Italia", flag: "🇮🇹",
+    costPerPerson: 1200, durationDays: 6, type: "playa",
+    description: "La costa más dramática de Europa: acantilados verticales con pueblos de colores colgantes, Positano, Ravello, el Vesubio y Pompeya, todo con limoncello y pizza napolitana.",
+    highlights: ["Positano", "Ravello", "Pompeya", "Capri"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Nápoles y Pompeya", items: [{ time: "12:00", text: "Llegada a Napoli Capodichino" }, { time: "15:00", text: "Pizza napolitana en la pizzería más antigua del mundo (Brandi, 1780)" }, { time: "Día 2", text: "Pompeya: la ciudad romana congelada en el tiempo" }, { time: "14:00", text: "Monte Vesubio: subir al cráter activo" }] },
+      { date: "", title: "Días 3-4 — Costa Amalfitana", items: [{ time: "09:00", text: "Positano: el pueblo más fotografiado de Italia" }, { time: "12:00", text: "Almuerzo con vistas al mar Tirreno" }, { time: "15:00", text: "Amalfi: catedral y casco histórico" }, { time: "Día 4", text: "Ravello: jardines de Villa Rufolo (vistas de infarto)" }] },
+      { date: "", title: "Días 5-6 — Capri", items: [{ time: "09:00", text: "Ferry a Capri (40 min desde Amalfi)" }, { time: "11:00", text: "Gruta Azul: cueva marina con luz espectacular" }, { time: "14:00", text: "Anacapri: Jardín de Augusto" }, { time: "16:00", text: "Via Krupp con vistas al Mediterráneo" }, { time: "Día 6", text: "Regreso y vuelo desde Nápoles" }] },
+    ],
+    mapPlaces: [
+      { name: "Positano", lat: 40.63, lon: 14.49, note: "El pueblo más pintoresco de Italia" },
+      { name: "Pompeya", lat: 40.75, lon: 14.49, note: "Ciudad romana sepultada en el 79 d.C." },
+      { name: "Capri (Gruta Azul)", lat: 40.55, lon: 14.22, note: "La cueva marina más famosa del Mediterráneo" },
+      { name: "Ravello", lat: 40.65, lon: 14.61, note: "Jardines sobre los acantilados con vistas absolutas" },
+    ],
+  },
+  {
+    id: "sevilla", name: "Sevilla", country: "España", flag: "🇪🇸",
+    costPerPerson: 480, durationDays: 4, type: "cultura",
+    description: "La capital del flamenco y la pasión española: la Giralda mora, el Real Alcázar de Game of Thrones, la Plaza de España, tapas infinitas y el barrio Santa Cruz laberíntico.",
+    highlights: ["Real Alcázar", "Catedral & Giralda", "Barrio de Triana", "Flamenco en vivo"],
+    itinerary: [
+      { date: "", title: "Día 1 — Catedral y Giralda", items: [{ time: "10:00", text: "Llegada a Aeropuerto SVQ" }, { time: "13:00", text: "Catedral de Sevilla — la más grande del mundo gótico" }, { time: "15:00", text: "Giralda: subir sin escalones (rampas árabes)" }, { time: "18:00", text: "Barrio de Santa Cruz: calles que huelen a azahar" }, { time: "21:00", text: "Tapas en la Calle Betis: carrillada y cazón en adobo" }] },
+      { date: "", title: "Día 2 — Real Alcázar y Plaza de España", items: [{ time: "09:00", text: "Real Alcázar: palacios mudéjares (escenario de GOT)" }, { time: "12:00", text: "Plaza de España: la más grandiosa de España" }, { time: "16:00", text: "Parque María Luisa" }, { time: "19:00", text: "Tablao flamenco: arte puro en vivo" }] },
+      { date: "", title: "Días 3-4 — Triana y Carmona", items: [{ time: "10:00", text: "Triana: cerámica, flamenco y el puente de Triana" }, { time: "13:00", text: "Mercado de Triana: gazpacho y montaditos" }, { time: "Día 4", text: "Carmona: la ciudad más antigua de Europa habitada" }, { time: "16:00", text: "Vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Real Alcázar", lat: 37.38, lon: -5.99, note: "Palacio mudéjar Patrimonio UNESCO (escenario GOT)" },
+      { name: "Catedral & Giralda", lat: 37.39, lon: -5.99, note: "La catedral gótica más grande del mundo" },
+      { name: "Plaza de España", lat: 37.38, lon: -5.99, note: "La plaza más grandiosa de España (1929)" },
+      { name: "Barrio de Triana", lat: 37.38, lon: -6.01, note: "Cuna del flamenco y la cerámica sevillana" },
+    ],
+  },
+  {
+    id: "los-angeles", name: "Los Ángeles", country: "Estados Unidos", flag: "🇺🇸",
+    costPerPerson: 2000, durationDays: 7, type: "ciudad",
+    description: "La capital del entretenimiento: Hollywood, las playas de Malibú, museos de clase mundial, Santa Mónica al atardecer, Disneyland y la comida más diversa del planeta.",
+    highlights: ["Hollywood & Walk of Fame", "Santa Mónica", "Malibu", "Getty Center"],
+    itinerary: [
+      { date: "", title: "Días 1-2 — Hollywood y Beverly Hills", items: [{ time: "12:00", text: "Llegada a LAX" }, { time: "16:00", text: "Hollywood Boulevard: Walk of Fame y TCL Chinese Theatre" }, { time: "Día 2", text: "Beverly Hills: Rodeo Drive y mansiones" }, { time: "14:00", text: "Griffith Observatory: vistas de Los Ángeles y el Hollywood Sign" }] },
+      { date: "", title: "Días 3-4 — Playas", items: [{ time: "09:00", text: "Venice Beach: paseo marítimo, skate park y artistas" }, { time: "13:00", text: "Santa Mónica: el famoso muelle y la Ruta 66" }, { time: "Día 4", text: "Malibú: playas de surfistas y Point Dume" }] },
+      { date: "", title: "Día 5 — Museos", items: [{ time: "10:00", text: "Getty Center: arquitectura y arte europeo (entrada gratuita)" }, { time: "14:00", text: "LACMA o el Broad (arte contemporáneo)" }, { time: "19:00", text: "Cena en Melrose Place o Silver Lake" }] },
+      { date: "", title: "Días 6-7 — Disneyland & regreso", items: [{ time: "09:00", text: "Disneyland en Anaheim — el original (45 min en coche)" }, { time: "Día 7", text: "Compras en The Grove y vuelo de regreso" }] },
+    ],
+    mapPlaces: [
+      { name: "Hollywood Sign", lat: 34.13, lon: -118.32, note: "El icono de Los Ángeles y el cine mundial" },
+      { name: "Santa Mónica Pier", lat: 34.01, lon: -118.50, note: "El final de la Ruta 66 sobre el Pacífico" },
+      { name: "Venice Beach", lat: 33.99, lon: -118.47, note: "La playa más excéntrica de California" },
+      { name: "Getty Center", lat: 34.08, lon: -118.47, note: "Museo de arte con vistas de 360° de LA" },
+    ],
+  },
 ];
 
 // ─── Destination alternatives map ────────────────────────────────────────────
@@ -2779,7 +2906,8 @@ export default function App() {
     if (!el) return;
     el.style.opacity = "0";
     el.style.transform = "translateY(10px)";
-    animate(el, { opacity: [0, 1], translateY: [10, 0], duration: 280, ease: "out(2)" });
+    animate(el, { opacity: [0, 1], translateY: [10, 0], duration: 280, ease: "out(2)",
+      onComplete: () => { el.style.transform = ""; } });
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [tab]);
 
