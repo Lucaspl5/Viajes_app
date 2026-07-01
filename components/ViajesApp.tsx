@@ -3232,13 +3232,11 @@ export default function App() {
   useEffect(() => { tripRef.current = trip; }, [trip]);
 
   // PWA install prompt
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [pwaPrompt, setPwaPrompt] = useState<any>(null);
+  const [pwaPrompt, setPwaPrompt] = useState<any>(null); // BeforeInstallPromptEvent not in lib.dom yet
   const [pwaDismissed, setPwaDismissed] = useState(false);
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (localStorage.getItem("pwa_dismissed") === "1") { setPwaDismissed(true); return; }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handler = (e: any) => { e.preventDefault(); setPwaPrompt(e); };
     window.addEventListener("beforeinstallprompt", handler);
     return () => window.removeEventListener("beforeinstallprompt", handler);
