@@ -2811,6 +2811,33 @@ function EntryScreen({ onEnter, externalError, prefillCode }: { onEnter: (code: 
         </div>
       </div>
 
+      {/* Trip history */}
+      {(() => {
+        let history: { code: string; name: string; destination: string; leftAt: number }[] = [];
+        try { history = JSON.parse(localStorage.getItem("trip_history") ?? "[]"); } catch { /* */ }
+        if (!history.length) return null;
+        return (
+          <div style={{ background: C.paper, padding: "24px 24px 12px", maxWidth: 800, margin: "0 auto", width: "100%" }}>
+            <p style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft, letterSpacing: 1.5, marginBottom: 10 }}>VIAJES RECIENTES</p>
+            <div className="flex flex-col gap-2">
+              {history.map(h => (
+                <button key={h.code} onClick={() => { setCode(h.code); setMode("join"); }}
+                  style={{ display: "flex", alignItems: "center", gap: 12, background: "#fff", border: `1px solid ${C.line}`, borderRadius: 8, padding: "10px 14px", textAlign: "left", cursor: "pointer", transition: "border-color 0.15s" }}
+                  onMouseOver={e => (e.currentTarget.style.borderColor = C.teal)}
+                  onMouseOut={e => (e.currentTarget.style.borderColor = C.line)}>
+                  <Plane size={15} color={C.inkSoft} />
+                  <div style={{ flex: 1 }}>
+                    <span style={{ fontWeight: 600, fontSize: 14, color: C.ink }}>{h.name}</span>
+                    {h.destination && <span style={{ color: C.inkSoft, fontSize: 12 }}> · {h.destination}</span>}
+                  </div>
+                  <span style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft, background: C.paperDark, borderRadius: 4, padding: "2px 6px" }}>{h.code}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Bottom decorative strip */}
       <div style={{ background: C.paper, padding: "28px 24px", textAlign: "center" }}>
         <p style={{ color: C.inkSoft, fontSize: 13, maxWidth: 480, margin: "0 auto", lineHeight: 1.7 }}>
@@ -2819,6 +2846,71 @@ function EntryScreen({ onEnter, externalError, prefillCode }: { onEnter: (code: 
         </p>
       </div>
     </div>
+  );
+}
+
+// ─── Weather widget ───────────────────────────────────────────────────────────
+
+const WMO: Record<number, string> = {
+  0:"☀️",1:"🌤️",2:"⛅",3:"☁️",45:"🌫️",48:"🌫️",
+  51:"🌦️",53:"🌦️",55:"🌧️",61:"🌧️",63:"🌧️",65:"🌧️",
+  71:"🌨️",73:"🌨️",75:"❄️",80:"🌦️",81:"🌧️",82:"⛈️",
+  95:"⛈️",96:"⛈️",99:"⛈️",
+};
+
+function WeatherWidget({ destination, startDate, endDate }: { destination: string; startDate: string | null; endDate: string | null }) {
+  type DayWeather = { date: string; max: number; min: number; code: number; rain: number };
+  const [data, setData] = useState<DayWeather[] | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!destination || !startDate) return;
+    const today = new Date().toISOString().slice(0, 10);
+    const cutoff = new Date(Date.now() + 16 * 864e5).toISOString().slice(0, 10);
+    if (startDate > cutoff) return; // too far in future, skip
+    let cancelled = false;
+    setLoading(true);
+    (async () => {
+      try {
+        const geo = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(destination)}&count=1&language=es&format=json`).then(r => r.json());
+        if (!geo.results?.length) return;
+        const { latitude: lat, longitude: lon } = geo.results[0];
+        const s = startDate < today ? today : startDate;
+        const e = endDate && endDate <= cutoff ? endDate : cutoff;
+        const wx = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode&timezone=auto&start_date=${s}&end_date=${e}`).then(r => r.json());
+        if (!cancelled && wx.daily) {
+          setData(wx.daily.time.map((d: string, i: number) => ({
+            date: d, max: Math.round(wx.daily.temperature_2m_max[i]),
+            min: Math.round(wx.daily.temperature_2m_min[i]),
+            code: wx.daily.weathercode[i], rain: Math.round(wx.daily.precipitation_sum[i] ?? 0),
+          })));
+        }
+      } catch { /* silent — weather is optional */ }
+      if (!cancelled) setLoading(false);
+    })();
+    return () => { cancelled = true; };
+  }, [destination, startDate, endDate]);
+
+  if (!destination || !startDate) return null;
+  if (loading) return <div style={{ height: 80, borderRadius: 10 }} className="skeleton" />;
+  if (!data?.length) return null;
+
+  return (
+    <Card>
+      <SectionLabel>{`Tiempo en ${destination.split(",")[0]}`}</SectionLabel>
+      <div className="flex gap-4 mt-3 overflow-x-auto no-scrollbar pb-1">
+        {data.slice(0, 8).map(d => (
+          <div key={d.date} style={{ textAlign: "center", minWidth: 48, flex: "0 0 48px" }}>
+            <div style={{ fontSize: 24 }}>{WMO[d.code] ?? "🌡️"}</div>
+            <div style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft, marginTop: 2 }}>{d.date.slice(5)}</div>
+            <div style={{ fontFamily: F.mono, fontSize: 13, fontWeight: 700, color: C.ink }}>{d.max}°</div>
+            <div style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft }}>{d.min}°</div>
+            {d.rain > 0 && <div style={{ fontFamily: F.mono, fontSize: 9, color: C.sky }}>💧{d.rain}mm</div>}
+          </div>
+        ))}
+      </div>
+      <p style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft, marginTop: 6 }}>Datos: Open-Meteo</p>
+    </Card>
   );
 }
 
@@ -3103,7 +3195,16 @@ export default function App() {
     setSession({ code, name }); setTrip(t); setLoading(false);
   }
 
-  function leave() { setSession(null); setTrip(null); setTab("resumen"); }
+  function leave() {
+    if (session && trip) {
+      try {
+        const prev = JSON.parse(localStorage.getItem("trip_history") ?? "[]") as { code: string; name: string; destination: string; leftAt: number }[];
+        const entry = { code: session.code, name: trip.name, destination: trip.destination, leftAt: Date.now() };
+        localStorage.setItem("trip_history", JSON.stringify([entry, ...prev.filter(h => h.code !== entry.code)].slice(0, 8)));
+      } catch { /* ignore */ }
+    }
+    setSession(null); setTrip(null); setTab("resumen");
+  }
 
   function toggleDark() {
     setDarkMode(d => {
@@ -3129,6 +3230,19 @@ export default function App() {
   const [syncToast, setSyncToast] = useState(false);
   const tripRef = useRef<Trip | null>(null);
   useEffect(() => { tripRef.current = trip; }, [trip]);
+
+  // PWA install prompt
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [pwaPrompt, setPwaPrompt] = useState<any>(null);
+  const [pwaDismissed, setPwaDismissed] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (localStorage.getItem("pwa_dismissed") === "1") { setPwaDismissed(true); return; }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handler = (e: any) => { e.preventDefault(); setPwaPrompt(e); };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
 
   useEffect(() => {
     if (!session) return;
@@ -3278,6 +3392,20 @@ export default function App() {
           ✓ SINCRONIZADO
         </div>
       )}
+      {pwaPrompt && !pwaDismissed && (
+        <div className="fade-in" style={{ position: "fixed", bottom: 72, left: 12, right: 12, background: C.navy, borderRadius: 14, padding: "14px 16px", zIndex: 9998, display: "flex", alignItems: "center", gap: 12, boxShadow: "0 8px 32px rgba(0,0,0,0.3)" }}>
+          <div style={{ flex: 1 }}>
+            <p style={{ fontFamily: F.mono, fontSize: 11, color: C.goldLight, letterSpacing: 1, margin: 0 }}>INSTALAR APP</p>
+            <p style={{ fontSize: 13, color: "#8BAFD4", marginTop: 2, margin: 0 }}>Añadir Bitácora a tu pantalla de inicio</p>
+          </div>
+          <button onClick={async () => { await pwaPrompt.prompt(); setPwaPrompt(null); }}
+            style={{ background: C.teal, color: "#fff", borderRadius: 8, padding: "8px 14px", fontFamily: F.mono, fontSize: 11, whiteSpace: "nowrap" }}>
+            INSTALAR
+          </button>
+          <button onClick={() => { localStorage.setItem("pwa_dismissed", "1"); setPwaDismissed(true); setPwaPrompt(null); }}
+            style={{ color: "#8BAFD4", padding: 4 }}><X size={16} /></button>
+        </div>
+      )}
     </div>
   );
 }
@@ -3398,6 +3526,9 @@ function Resumen({ trip, session, days, darkMode }: { trip: Trip; session: Sessi
           {trip.members.length === 0 && <p style={{ color: C.inkSoft, fontSize: 13 }}>Sin miembros todavía.</p>}
         </div>
       </Card>
+
+      {/* Weather forecast */}
+      <WeatherWidget destination={trip.destination} startDate={trip.startDate} endDate={trip.endDate} />
 
       {/* Invite + Print */}
       <InvitePanel code={session.code} trip={trip} darkMode={darkMode} />
@@ -3632,12 +3763,33 @@ function Mapa({ code }: { code: string }) {
 
 // ─── Fotos ────────────────────────────────────────────────────────────────────
 
+function compressImage(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const MAX = 900;
+      let w = img.width, h = img.height;
+      if (w > MAX || h > MAX) { if (w > h) { h = Math.round(h * MAX / w); w = MAX; } else { w = Math.round(w * MAX / h); h = MAX; } }
+      const canvas = document.createElement("canvas");
+      canvas.width = w; canvas.height = h;
+      canvas.getContext("2d")!.drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL("image/jpeg", 0.75));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("load")); };
+    img.src = url;
+  });
+}
+
 function Fotos({ code, session }: { code: string; session: Session }) {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({ url: "", caption: "" });
   const [err, setErr] = useState("");
   const [lightbox, setLightbox] = useState<Photo | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const key = `fotos:${code}`;
   useEffect(() => { loadShared<Photo[]>(key, []).then(p => { setPhotos(p); setLoading(false); }); }, [key]);
   const persist = useCallback(async (next: Photo[]) => { setPhotos(next); await saveShared(key, next); }, [key]);
@@ -3649,6 +3801,21 @@ function Fotos({ code, session }: { code: string; session: Session }) {
     if (!isValidUrl(url)) { setErr("URL inválida. Debe empezar por https:// o http://"); return; }
     persist([{ id: uid(), url, caption: form.caption.trim(), author: session.name, addedAt: Date.now() }, ...photos]);
     setForm({ url: "", caption: "" });
+  }
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
+    setUploading(true); setErr("");
+    try {
+      const newPhotos = await Promise.all(files.map(async f => {
+        const dataUrl = await compressImage(f);
+        return { id: uid(), url: dataUrl, caption: "", author: session.name, addedAt: Date.now() } as Photo;
+      }));
+      await persist([...newPhotos, ...photos]);
+    } catch { setErr("Error al procesar la imagen."); }
+    setUploading(false);
+    if (fileRef.current) fileRef.current.value = "";
   }
 
   if (loading) return <SkeletonCards />;
@@ -3667,8 +3834,14 @@ function Fotos({ code, session }: { code: string; session: Session }) {
       <div className="flex flex-col gap-4">
         <Card>
           <SectionLabel>Añadir recuerdo</SectionLabel>
-          <p style={{ color: C.inkSoft, fontSize: 12, marginTop: 4 }}>Pega la URL directa de una imagen (Google Fotos, Imgur, etc. en modo público).</p>
-          <div className="flex flex-wrap gap-2 mt-3">
+          {/* File upload */}
+          <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={handleFileChange} />
+          <button onClick={() => fileRef.current?.click()} disabled={uploading}
+            style={{ display: "flex", alignItems: "center", gap: 8, background: uploading ? C.inkSoft : C.navy, color: C.paper, borderRadius: 6, padding: "10px 16px", fontFamily: F.mono, fontSize: 12, width: "100%", justifyContent: "center", marginTop: 8 }}>
+            <Camera size={14} /> {uploading ? "SUBIENDO…" : "SUBIR DESDE DISPOSITIVO"}
+          </button>
+          <p style={{ color: C.inkSoft, fontSize: 11, textAlign: "center", fontFamily: F.mono, marginTop: 4 }}>o pega una URL</p>
+          <div className="flex flex-wrap gap-2 mt-2">
             <input placeholder="https://…" value={form.url} onChange={e => setForm({ ...form, url: e.target.value })} style={{ ...inputStyle, flex: "2 1 180px" }} />
             <input placeholder="Pie de foto (opcional)" value={form.caption} onChange={e => setForm({ ...form, caption: e.target.value })} onKeyDown={e => e.key === "Enter" && addPhoto()} style={{ ...inputStyle, flex: "1 1 120px" }} />
             <button onClick={addPhoto} style={{ background: C.navy, color: C.paper, borderRadius: 5, padding: "0 18px", fontFamily: F.mono, fontSize: 12, height: 39 }}>AÑADIR</button>
