@@ -2909,7 +2909,7 @@ export default function App() {
     animate(el, { opacity: [0, 1], translateY: [10, 0], duration: 280, ease: "out(2)",
       onComplete: () => { el.style.transform = ""; } });
     window.scrollTo({ top: 0, behavior: "instant" });
-  }, [tab]);
+  }, [tab, session]);
 
   if (loading) {
     return (
