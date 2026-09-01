@@ -15,6 +15,7 @@ interface LeafletMapProps {
   places: MapPlace[];
   onMapClick?: (lat: number, lon: number) => void;
   pendingLatLon?: { lat: number; lon: number } | null;
+  initialCenter?: { lat: number; lon: number; zoom: number } | null;
   height?: string;
 }
 
@@ -22,6 +23,7 @@ export default function LeafletMap({
   places,
   onMapClick,
   pendingLatLon,
+  initialCenter,
   height = "380px",
 }: LeafletMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -31,6 +33,8 @@ export default function LeafletMap({
   // We store the leaflet module after async import
   // Using a ref typed as unknown to avoid importing the full module at top-level
   const LRef = useRef<typeof import("leaflet") | null>(null);
+  const initialCenterRef = useRef(initialCenter);
+  initialCenterRef.current = initialCenter;
 
   // Inject Leaflet CSS once
   useEffect(() => {
@@ -76,6 +80,10 @@ export default function LeafletMap({
         }
       });
 
+      if (initialCenterRef.current) {
+        map.setView([initialCenterRef.current.lat, initialCenterRef.current.lon], initialCenterRef.current.zoom);
+      }
+
       mapRef.current = map;
     });
 
@@ -107,6 +115,15 @@ export default function LeafletMap({
     map.off("click");
     map.on("click", handler);
   }, [onMapClick]);
+
+  // Fly to the destination once geocoded, if the map hasn't been touched yet
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !initialCenter) return;
+    if (places.length > 0 || pendingLatLon) return;
+    map.flyTo([initialCenter.lat, initialCenter.lon], initialCenter.zoom);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialCenter]);
 
   // Update saved-place markers when places array changes
   useEffect(() => {
@@ -200,7 +217,7 @@ export default function LeafletMap({
 
     const marker = L.marker([pendingLatLon.lat, pendingLatLon.lon], { icon }).addTo(map);
     pendingMarkerRef.current = marker;
-    map.setView([pendingLatLon.lat, pendingLatLon.lon], Math.max(map.getZoom(), 8));
+    map.flyTo([pendingLatLon.lat, pendingLatLon.lon], Math.max(map.getZoom(), 8));
   }, [pendingLatLon]);
 
   return (

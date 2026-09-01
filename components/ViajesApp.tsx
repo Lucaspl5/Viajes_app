@@ -3360,8 +3360,8 @@ export default function App() {
       <main ref={contentRef as React.RefObject<HTMLElement>} className="max-w-4xl mx-auto px-4 py-6" style={{ opacity: 0, paddingBottom: "calc(1.5rem + 64px)" }}>
         {tab === "resumen"    && <Resumen trip={trip} session={session} days={days} darkMode={darkMode} />}
         {tab === "reservas"   && <Reservas code={session.code} session={session} darkMode={darkMode} />}
-        {tab === "itinerario" && <Itinerario code={session.code} />}
-        {tab === "mapa"       && <Mapa code={session.code} />}
+        {tab === "itinerario" && <Itinerario code={session.code} startDate={trip.startDate} />}
+        {tab === "mapa"       && <Mapa code={session.code} destination={trip.destination} />}
         {tab === "fotos"      && <Fotos code={session.code} session={session} />}
         {tab === "diario"     && <Diario code={session.code} session={session} darkMode={darkMode} />}
         {tab === "checklist"  && <Checklist code={session.code} session={session} />}
@@ -3656,14 +3656,22 @@ function InvitePanel({ code, trip, darkMode }: { code: string; trip: Trip; darkM
 
 // ─── Itinerario ───────────────────────────────────────────────────────────────
 
-function Itinerario({ code }: { code: string }) {
+function Itinerario({ code, startDate }: { code: string; startDate: string | null }) {
   const [days, setDays] = useState<ItineraryDay[]>([]);
   const [loading, setLoading] = useState(true);
   const key = `itin:${code}`;
   useEffect(() => { loadShared<ItineraryDay[]>(key, []).then(d => { setDays(d); setLoading(false); }); }, [key]);
   const persist = useCallback(async (next: ItineraryDay[]) => { setDays(next); await saveShared(key, next); }, [key]);
 
-  const addDay = () => persist([...days, { id: uid(), date: "", title: `Día ${days.length + 1}`, items: [] }]);
+  const addDay = () => {
+    let date = "";
+    if (startDate) {
+      const d = new Date(startDate + "T12:00:00");
+      d.setDate(d.getDate() + days.length);
+      date = d.toISOString().slice(0, 10);
+    }
+    persist([...days, { id: uid(), date, title: `Día ${days.length + 1}`, items: [] }]);
+  };
   const removeDay = (id: string) => persist(days.filter(d => d.id !== id));
   const updateDay = (id: string, p: Partial<ItineraryDay>) => persist(days.map(d => d.id === id ? { ...d, ...p } : d));
   const addItem = (dayId: string) => persist(days.map(d => d.id === dayId ? { ...d, items: [...d.items, { id: uid(), time: "", text: "" }] } : d));
@@ -3717,15 +3725,32 @@ function Itinerario({ code }: { code: string }) {
 
 // ─── Mapa ─────────────────────────────────────────────────────────────────────
 
-function Mapa({ code }: { code: string }) {
+function Mapa({ code, destination }: { code: string; destination: string }) {
   const [places, setPlaces] = useState<MapPlace[]>([]);
   const [loading, setLoading] = useState(true);
   const [pendingLatLon, setPendingLatLon] = useState<{ lat: number; lon: number } | null>(null);
   const [form, setForm] = useState({ name: "", note: "" });
   const [err, setErr] = useState("");
+  const [initialCenter, setInitialCenter] = useState<{ lat: number; lon: number; zoom: number } | null>(null);
   const key = `mapa:${code}`;
   useEffect(() => { loadShared<MapPlace[]>(key, []).then(p => { setPlaces(p); setLoading(false); }); }, [key]);
   const persist = useCallback(async (next: MapPlace[]) => { setPlaces(next); await saveShared(key, next); }, [key]);
+
+  // Center the map on the trip's destination when there are no saved places yet.
+  useEffect(() => {
+    if (!destination || places.length > 0) return;
+    let cancelled = false;
+    fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(destination)}&count=1&language=es&format=json`)
+      .then(r => r.json())
+      .then(geo => {
+        if (cancelled || !geo.results?.length) return;
+        const { latitude: lat, longitude: lon } = geo.results[0];
+        setInitialCenter({ lat, lon, zoom: 12 });
+      })
+      .catch(() => { /* geocoding is optional — keep default world view */ });
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [destination, loading]);
 
   function handleMapClick(lat: number, lon: number) {
     setPendingLatLon({ lat, lon });
@@ -3747,7 +3772,7 @@ function Mapa({ code }: { code: string }) {
     <div className="flex flex-col gap-4">
       {/* Map first */}
       <Card style={{ padding: 8 }}>
-        <LeafletMap places={places} onMapClick={handleMapClick} pendingLatLon={pendingLatLon} height="380px" />
+        <LeafletMap places={places} onMapClick={handleMapClick} pendingLatLon={pendingLatLon} initialCenter={initialCenter} height="380px" />
         {pendingLatLon ? (
           <p style={{ color: C.teal, fontSize: 12, fontFamily: F.mono, marginTop: 6, textAlign: "center" }}>
             📍 {pendingLatLon.lat.toFixed(4)}, {pendingLatLon.lon.toFixed(4)} — Añade el nombre abajo
@@ -3944,7 +3969,7 @@ function Checklist({ code, session }: { code: string; session: Session }) {
       </Card>
       <Card>
         <div className="flex items-center justify-between mb-2">
-          <SectionLabel>Presupuesto</SectionLabel>
+          <SectionLabel>Coste de la lista</SectionLabel>
           <span style={{ fontFamily: F.mono, fontSize: 13, color: C.inkSoft }}>{done.toFixed(2)} € / {total.toFixed(2)} €</span>
         </div>
         <div style={{ background: C.paperDark, height: 8, borderRadius: 999, overflow: "hidden" }}>
@@ -5188,6 +5213,10 @@ function Destinos({ code, onSelect }: { code: string; onSelect: () => void }) {
           </div>
         )}
       </div>
+
+      <p style={{ fontFamily: F.mono, fontSize: 11, color: C.inkSoft, textAlign: "center" }}>
+        Plantillas de viaje listas para aplicar — sustituyen tu plan actual
+      </p>
 
       {/* Search */}
       <div style={{ position: "relative" }}>
