@@ -2918,7 +2918,7 @@ function WeatherWidget({ destination, startDate, endDate }: { destination: strin
 
 interface ChatMsg { role: "user" | "assistant"; content: string; }
 
-function AsistenteIA({ code: _code, trip, session: _session, onImportItinerary }: {
+function AsistenteIA({ code, trip, session: _session, onImportItinerary }: {
   code: string; trip: Trip; session: Session;
   onImportItinerary: (days: ItineraryDay[]) => void;
 }) {
@@ -2978,6 +2978,7 @@ Responde siempre en español. Sé concreto, práctico y entusiasta.`;
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          code,
           system: systemPrompt,
           messages: newMsgs.map(m => ({ role: m.role, content: m.content })),
         }),
@@ -3101,10 +3102,18 @@ Responde siempre en español. Sé concreto, práctico y entusiasta.`;
               <p style={{ color: C.inkSoft, fontSize: 12 }}>Importar reemplazará el itinerario actual</p>
             </div>
             <button onClick={() => {
-              const importDays: ItineraryDay[] = itinerary.map(d => ({
-                id: uid(), date: "", title: d.title,
-                items: d.items.map(it => ({ id: uid(), time: it.time, text: it.text })),
-              }));
+              const importDays: ItineraryDay[] = itinerary.map((d, i) => {
+                let date = "";
+                if (trip.startDate) {
+                  const dt = new Date(trip.startDate + "T12:00:00");
+                  dt.setDate(dt.getDate() + i);
+                  date = dt.toISOString().slice(0, 10);
+                }
+                return {
+                  id: uid(), date, title: d.title,
+                  items: d.items.map(it => ({ id: uid(), time: it.time, text: it.text })),
+                };
+              });
               onImportItinerary(importDays);
             }} style={{ display: "flex", alignItems: "center", gap: 6, background: C.teal, color: "#fff", borderRadius: 6, padding: "9px 16px", fontFamily: F.mono, fontSize: 12 }}>
               <Download size={13} /> IMPORTAR AL PLAN
@@ -3369,7 +3378,7 @@ export default function App() {
         {tab === "equipaje"   && <Equipaje code={session.code} session={session} />}
         {tab === "ideas"      && <Ideas code={session.code} session={session} />}
         {tab === "ahorro"     && <Ahorro code={session.code} members={trip.members} />}
-        {tab === "destinos"   && <Destinos code={session.code} onSelect={() => setTab("itinerario")} />}
+        {tab === "destinos"   && <Destinos code={session.code} startDate={trip.startDate} onSelect={() => setTab("itinerario")} />}
         {tab === "asistente"  && <AsistenteIA code={session.code} trip={trip} session={session} onImportItinerary={async (days) => { await saveShared(`itin:${session.code}`, days); setTab("itinerario"); }} />}
       </main>
 
@@ -3701,7 +3710,7 @@ function Itinerario({ code, startDate }: { code: string; startDate: string | nul
                 <input value={it.time} onChange={e => updateItem(d.id, it.id, { time: e.target.value })} placeholder="10:00" maxLength={5}
                   style={{ ...inputStyle, width: 72, fontFamily: F.mono, fontSize: 12 }} />
                 <input value={it.text} onChange={e => updateItem(d.id, it.id, { text: e.target.value })}
-                  onKeyDown={e => e.key === "Enter" && addItem(d.id)} placeholder="Visita al Partenón…" style={{ ...inputStyle, flex: 1 }} />
+                  onKeyDown={e => e.key === "Enter" && addItem(d.id)} placeholder="Ej. Visita al museo…" style={{ ...inputStyle, flex: 1 }} />
                 <button onClick={() => removeItem(d.id, it.id)} style={{ color: C.inkSoft, padding: 4 }} aria-label="Eliminar"><X size={15} /></button>
               </div>
             ))}
@@ -4454,7 +4463,7 @@ function Ideas({ code, session }: { code: string; session: Session }) {
                   <p style={{ fontWeight: 600, fontSize: 15, color: C.ink }}>{idea.text}</p>
                   {idea.note && (
                     isValidUrl(idea.note)
-                      ? <a href={idea.note} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1" style={{ color: C.sky, fontSize: 12, marginTop: 3 }}><ExternalLink size={11} />{idea.note.slice(0, 50)}…</a>
+                      ? <a href={idea.note} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1" style={{ color: C.sky, fontSize: 12, marginTop: 3 }}><ExternalLink size={11} />{idea.note.length > 50 ? `${idea.note.slice(0, 50)}…` : idea.note}</a>
                       : <p style={{ color: C.inkSoft, fontSize: 13, marginTop: 3 }}>{idea.note}</p>
                   )}
                   <p style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft, marginTop: 4 }}>Por {idea.author}</p>
@@ -4821,7 +4830,7 @@ function Ahorro({ code, members }: { code: string; members: string[] }) {
           <p style={{ color: C.inkSoft, fontSize: 13, lineHeight: 1.7 }}>
             <strong style={{ color: C.ink }}>¿Cómo funciona?</strong><br />
             Define períodos de ahorro (ej. Fase 1: agosto → octubre, Fase 2: noviembre → diciembre).
-            En cada fase pones cuánto aporta cada persona a la cuenta conjunta de Revolut.
+            En cada fase pones cuánto aporta cada persona a la cuenta conjunta del grupo.
             La app calcula automáticamente el bote total según el número de viajeros y te muestra cuánto tenéis acumulado al final.
           </p>
         </div>
@@ -5089,7 +5098,7 @@ function CurrencyWidget({ currency }: { currency: typeof CURRENCIES[0] }) {
   );
 }
 
-function Destinos({ code, onSelect }: { code: string; onSelect: () => void }) {
+function Destinos({ code, startDate, onSelect }: { code: string; startDate: string | null; onSelect: () => void }) {
   const [savings, setSavings] = useState<SavingsConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("todos");
@@ -5125,9 +5134,15 @@ function Destinos({ code, onSelect }: { code: string; onSelect: () => void }) {
   }, [savings]);
 
   async function applyDestination(dest: DestinationTemplate) {
-    const itinDays: ItineraryDay[] = dest.itinerary.map(d => ({
-      ...d, id: uid(), items: d.items.map(it => ({ ...it, id: uid() })),
-    }));
+    const itinDays: ItineraryDay[] = dest.itinerary.map((d, i) => {
+      let date = "";
+      if (startDate) {
+        const dt = new Date(startDate + "T12:00:00");
+        dt.setDate(dt.getDate() + i);
+        date = dt.toISOString().slice(0, 10);
+      }
+      return { ...d, id: uid(), date, items: d.items.map(it => ({ ...it, id: uid() })) };
+    });
     await saveShared(`itin:${code}`, itinDays);
     const mapPlaces: MapPlace[] = dest.mapPlaces.map(p => ({ ...p, id: uid() }));
     await saveShared(`mapa:${code}`, mapPlaces);
@@ -5469,7 +5484,7 @@ function Reservas({ code, session, darkMode }: { code: string; session: Session;
                   <span style={{ fontSize: 13, color: textColor }}>{b.location}</span>
                 </div>
               )}
-              {b.bookingUrl && (
+              {b.bookingUrl && isValidUrl(b.bookingUrl) && (
                 <a href={b.bookingUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1"
                   style={{ fontFamily: F.mono, fontSize: 10, color: C.sky, marginTop: 2 }}>
                   <ExternalLink size={10} /> VER RESERVA
