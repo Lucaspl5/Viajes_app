@@ -9,7 +9,7 @@ import { genTripCode, loadShared, saveShared } from "./utils";
 import type { Trip } from "./types";
 
 
-export function EntryScreen({ onEnter, externalError, prefillCode }: { onEnter: (code: string, name: string) => Promise<void>; externalError: string; prefillCode?: string }) {
+export function EntryScreen({ onEnter, externalError, prefillCode }: { onEnter: (code: string, name: string, preloadedTrip?: Trip) => Promise<void>; externalError: string; prefillCode?: string }) {
   const [mode, setMode] = useState<"join" | "create">(prefillCode ? "join" : "create");
   const [name, setName] = useState("");
   const [code, setCode] = useState(prefillCode ?? "");
@@ -29,7 +29,7 @@ export function EntryScreen({ onEnter, externalError, prefillCode }: { onEnter: 
     setBusy(true); setError("");
     const t = await loadShared<Trip | null>(`trip:${code.trim().toUpperCase()}`, null);
     if (!t) { setError("No existe ese código. Revísalo o crea un viaje nuevo."); setBusy(false); return; }
-    await onEnter(code.trim().toUpperCase(), name.trim());
+    await onEnter(code.trim().toUpperCase(), name.trim(), t);
     setBusy(false);
   }
 
@@ -40,10 +40,10 @@ export function EntryScreen({ onEnter, externalError, prefillCode }: { onEnter: 
     setBusy(true); setError("");
     let newCode = genTripCode(), tries = 0;
     while ((await loadShared<Trip | null>(`trip:${newCode}`, null)) !== null && tries < 10) { newCode = genTripCode(); tries++; }
-    const trip: Trip = { name: tripName.trim(), destination: destination.trim(), startDate: startDate || null, endDate: endDate || null, members: [], createdAt: Date.now() };
+    const trip: Trip = { name: tripName.trim(), destination: destination.trim(), startDate: startDate || null, endDate: endDate || null, members: [name.trim()], createdAt: Date.now() };
     const ok = await saveShared(`trip:${newCode}`, trip);
     if (!ok) { setError("Error al guardar el viaje. Inténtalo de nuevo."); setBusy(false); return; }
-    await onEnter(newCode, name.trim());
+    await onEnter(newCode, name.trim(), trip);
     setBusy(false);
   }
 

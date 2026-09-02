@@ -8,6 +8,7 @@ import { useCountdown } from "./ui";
 import { loadShared, saveShared, loadPersonal, savePersonal } from "./utils";
 import type { Trip, Session, TabId } from "./types";
 import { EntryScreen } from "./EntryScreen";
+import { LoadingScreen } from "./LoadingScreen";
 import { AsistenteIA } from "./AsistenteIA";
 import { Resumen } from "./Resumen";
 import { SyncButton } from "./SyncButton";
@@ -28,6 +29,7 @@ export default function App() {
   const [trip, setTrip] = useState<Trip | null>(null);
   const [tab, setTab] = useState<TabId>("resumen");
   const [loading, setLoading] = useState(true);
+  const [loadingMessage, setLoadingMessage] = useState("Cargando tu viaje…");
   const [copied, setCopied] = useState(false);
   const [entryError, setEntryError] = useState("");
   const [inviteCode, setInviteCode] = useState<string | null>(null);
@@ -70,9 +72,10 @@ export default function App() {
     })();
   }, []);
 
-  async function enter(code: string, name: string) {
+  async function enter(code: string, name: string, preloadedTrip?: Trip) {
+    setLoadingMessage(preloadedTrip ? "Preparando tu viaje…" : "Entrando al viaje…");
     setLoading(true); setEntryError("");
-    const t = await loadShared<Trip | null>(`trip:${code}`, null);
+    const t = preloadedTrip ?? await loadShared<Trip | null>(`trip:${code}`, null);
     if (!t) { setLoading(false); setEntryError("No se pudo cargar el viaje. Inténtalo de nuevo."); return; }
     if (!t.members.some(m => m.toLowerCase() === name.toLowerCase())) {
       t.members = [...t.members, name];
@@ -150,14 +153,7 @@ export default function App() {
   }, [session]);
 
   if (loading) {
-    return (
-      <div style={{ background: C.paper, minHeight: "100dvh", fontFamily: F.body }} className="flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="float"><Plane size={32} color={C.gold} strokeWidth={1.3} /></div>
-          <p style={{ fontFamily: F.mono, color: C.inkSoft, fontSize: 13 }}>cargando…</p>
-        </div>
-      </div>
-    );
+    return <LoadingScreen message={loadingMessage} />;
   }
 
   if (!session || !trip) return <EntryScreen onEnter={enter} externalError={entryError} prefillCode={inviteCode ?? undefined} />;

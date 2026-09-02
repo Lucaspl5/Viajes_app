@@ -27,7 +27,19 @@ function isValidUrl(s: string) {
 
 // ─── Storage ─────────────────────────────────────────────────────────────────
 
+// Short-lived in-memory cache so switching tabs doesn't refetch over the
+// network every time — each tab component calls loadShared on mount, and
+// without this, revisiting a tab you were just on a second ago meant a full
+// round trip to Redis again. Writes refresh the cache immediately so this
+// never serves stale data back to the device that just wrote it.
+const memCache = new Map<string, { data: unknown; ts: number }>();
+const CACHE_TTL_MS = 15_000;
+
 async function loadShared<T>(key: string, fallback: T): Promise<T> {
+  const cached = memCache.get(key);
+  if (cached && Date.now() - cached.ts < CACHE_TTL_MS) {
+    return cached.data as T;
+  }
   // Try remote KV first (works across devices), fall back to localStorage
   try {
     const res = await fetch(`/api/store?key=${encodeURIComponent(key)}`);
@@ -36,6 +48,7 @@ async function loadShared<T>(key: string, fallback: T): Promise<T> {
       if (data !== null) {
         // Keep local cache in sync
         try { localStorage.setItem(key, JSON.stringify(data)); } catch { /* ignore */ }
+        memCache.set(key, { data, ts: Date.now() });
         return data as T;
       }
       // KV is reachable but key doesn't exist yet — migrate from localStorage
@@ -49,6 +62,7 @@ async function loadShared<T>(key: string, fallback: T): Promise<T> {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ key, value: parsed }),
           }).catch(() => {});
+          memCache.set(key, { data: parsed, ts: Date.now() });
           return parsed;
         }
       } catch { /* ignore */ }
@@ -61,6 +75,7 @@ async function loadShared<T>(key: string, fallback: T): Promise<T> {
 async function saveShared(key: string, value: unknown): Promise<boolean> {
   // Save to localStorage immediately for responsiveness
   try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* ignore */ }
+  memCache.set(key, { data: value, ts: Date.now() });
   // Then persist to remote KV
   try {
     const res = await fetch("/api/store", {
