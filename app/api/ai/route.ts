@@ -1,24 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getRedis, checkRateLimit, clientIp } from "@/lib/redis";
 
 export const runtime = "edge";
 
-// Supports both Upstash Redis (UPSTASH_REDIS_REST_URL) and legacy Vercel KV (KV_REST_API_URL)
-function getRedisConfig() {
-  const url = process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN;
-  return url && token ? { url, token } : null;
-}
+const TRIP_CODE_LIMIT = { count: 30, windowSeconds: 3600 }; // per trip, per hour
+const IP_LIMIT = { count: 30, windowSeconds: 3600 }; // per IP, per hour
 
 // Requires a valid, existing trip code so this endpoint can't be hit for
 // free by anyone who just finds the public URL — not real auth, but it
 // stops anonymous abuse of the personal Anthropic API key behind it.
 async function isValidTripCode(code: unknown): Promise<boolean> {
   if (typeof code !== "string" || !code.trim()) return false;
-  const cfg = getRedisConfig();
-  if (!cfg) return true; // KV not configured (e.g. local dev) — can't check, don't block
   try {
-    const { Redis } = await import("@upstash/redis");
-    const redis = new Redis(cfg);
+    const redis = await getRedis();
+    if (!redis) return true; // KV not configured (e.g. local dev) — can't check, don't block
     const trip = await redis.get(`trip:${code}`);
     return trip !== null;
   } catch {
@@ -41,6 +36,15 @@ export async function POST(req: NextRequest) {
 
   if (!(await isValidTripCode(body.code))) {
     return NextResponse.json({ error: "invalid_trip_code" }, { status: 403 });
+  }
+
+  const ipLimit = await checkRateLimit(`ai:ip:${clientIp(req)}`, IP_LIMIT.count, IP_LIMIT.windowSeconds);
+  if (!ipLimit.ok) {
+    return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  }
+  const tripLimit = await checkRateLimit(`ai:trip:${body.code}`, TRIP_CODE_LIMIT.count, TRIP_CODE_LIMIT.windowSeconds);
+  if (!tripLimit.ok) {
+    return NextResponse.json({ error: "rate_limited" }, { status: 429 });
   }
 
   const { messages, system } = body;
