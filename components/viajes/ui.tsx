@@ -72,5 +72,5 @@ export function useCountdown(dateStr: string | null) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => { const t = setInterval(() => setNow(Date.now()), 60_000); return () => clearInterval(t); }, []);
   if (!dateStr) return null;
-  return Math.ceil((new Date(dateStr + "T00:00:00").getTime() - now) / 86_400_000);
+  return Math.ceil((new Date(dateStr + "T12:00:00").getTime() - now) / 86_400_000);
 }

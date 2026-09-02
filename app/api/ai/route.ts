@@ -6,6 +6,13 @@ export const runtime = "edge";
 const TRIP_CODE_LIMIT = { count: 30, windowSeconds: 3600 }; // per trip, per hour
 const IP_LIMIT = { count: 30, windowSeconds: 3600 }; // per IP, per hour
 
+// Bounds on the client-controlled payload so a valid trip code can't be used
+// to inflate the token cost billed to the personal Anthropic API key.
+const MAX_BODY_BYTES = 60_000;
+const MAX_MESSAGES = 40;
+const MAX_MESSAGE_CHARS = 8_000;
+const MAX_SYSTEM_CHARS = 12_000;
+
 // Requires a valid, existing trip code so this endpoint can't be hit for
 // free by anyone who just finds the public URL — not real auth, but it
 // stops anonymous abuse of the personal Anthropic API key behind it.
@@ -27,15 +34,30 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "no_key" }, { status: 503 });
   }
 
+  const raw = await req.text();
+  if (raw.length > MAX_BODY_BYTES) {
+    return NextResponse.json({ error: "too_large" }, { status: 413 });
+  }
+
   let body: { messages: { role: string; content: string }[]; system: string; code?: string };
   try {
-    body = await req.json();
+    body = JSON.parse(raw);
   } catch {
     return NextResponse.json({ error: "invalid_body" }, { status: 400 });
   }
 
   if (!(await isValidTripCode(body.code))) {
     return NextResponse.json({ error: "invalid_trip_code" }, { status: 403 });
+  }
+
+  if (
+    !Array.isArray(body.messages) ||
+    body.messages.length === 0 ||
+    body.messages.length > MAX_MESSAGES ||
+    body.messages.some((m) => typeof m?.content !== "string" || m.content.length > MAX_MESSAGE_CHARS) ||
+    (typeof body.system === "string" && body.system.length > MAX_SYSTEM_CHARS)
+  ) {
+    return NextResponse.json({ error: "invalid_body" }, { status: 400 });
   }
 
   const ipLimit = await checkRateLimit(`ai:ip:${clientIp(req)}`, IP_LIMIT.count, IP_LIMIT.windowSeconds);

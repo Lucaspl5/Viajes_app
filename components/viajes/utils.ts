@@ -5,9 +5,9 @@ function uid() { return Math.random().toString(36).slice(2, 9); }
 function genTripCode() {
   const L = "ABCDEFGHJKLMNPQRSTUVWXYZ", N = "23456789";
   let c = "";
-  for (let i = 0; i < 3; i++) c += L[Math.floor(Math.random() * L.length)];
+  for (let i = 0; i < 4; i++) c += L[Math.floor(Math.random() * L.length)];
   c += "-";
-  for (let i = 0; i < 3; i++) c += N[Math.floor(Math.random() * N.length)];
+  for (let i = 0; i < 4; i++) c += N[Math.floor(Math.random() * N.length)];
   return c;
 }
 

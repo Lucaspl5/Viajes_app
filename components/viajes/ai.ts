@@ -103,12 +103,37 @@ export function parseItinerary(text: string): { title: string; items: { time: st
   try { return JSON.parse(match[1]).itinerary ?? null; } catch { return null; }
 }
 
+function isValidAction(a: unknown): a is AiAction {
+  if (typeof a !== "object" || a === null || !("type" in a)) return false;
+  const o = a as Record<string, unknown>;
+  const str = (v: unknown) => typeof v === "string" && v.trim().length > 0;
+  const optStr = (v: unknown) => v === undefined || typeof v === "string";
+  switch (o.type) {
+    case "add_expense":
+      return str(o.description) && typeof o.amount === "number" && Number.isFinite(o.amount) && o.amount > 0 && optStr(o.category);
+    case "add_packing_item":
+      return str(o.text) && optStr(o.category);
+    case "add_checklist_item":
+      return str(o.text);
+    case "add_idea":
+      return str(o.text) && optStr(o.note);
+    case "add_booking":
+      return str(o.title) && optStr(o.bookingType) && optStr(o.location) && optStr(o.notes);
+    default:
+      return false;
+  }
+}
+
+// The model's output is untrusted input: reject any action whose shape doesn't
+// match AiAction before it can be persisted to the shared trip store.
 export function parseActions(text: string): AiAction[] | null {
   const match = text.match(/```actions\s*([\s\S]*?)```/);
   if (!match) return null;
   try {
     const parsed = JSON.parse(match[1]);
-    return Array.isArray(parsed.actions) ? parsed.actions : null;
+    if (!Array.isArray(parsed.actions)) return null;
+    const valid = parsed.actions.filter(isValidAction);
+    return valid.length ? valid : null;
   } catch { return null; }
 }
 

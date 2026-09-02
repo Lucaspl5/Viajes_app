@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, IBM_Plex_Mono, Inter } from "next/font/google";
 import "./globals.css";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -26,7 +27,13 @@ export const metadata: Metadata = {
   title: "Bitácora de Viaje",
   description: "Itinerarios, fotos y cuentas atrás compartidas con tu gente.",
   manifest: "/manifest.json",
-  icons: { icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>" },
+  icons: {
+    icon: [
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: "/icon-192.png",
+  },
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Bitácora" },
 };
 
@@ -43,7 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${fraunces.variable} ${ibmPlexMono.variable} ${inter.variable}`}
     >
       <body>
-        {children}
+        <ErrorBoundary>{children}</ErrorBoundary>
         <script dangerouslySetInnerHTML={{ __html: `
           if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
