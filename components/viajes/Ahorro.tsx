@@ -4,21 +4,22 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { Check, Trash2, X, Euro, Circle, PiggyBank, Edit2 } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, Field, Banner, EmptyState, SkeletonCards } from "./ui";
-import { uid, loadShared, saveShared, formatMonth, monthsBetween } from "./utils";
+import { uid, loadShared, saveShared, peekShared, formatMonth, monthsBetween } from "./utils";
 import type { SavingsPhase, SavingsConfig, Trip, Session } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
 
 export function Ahorro({ code, members, trip, session }: { code: string; members: string[]; trip: Trip; session: Session }) {
-  const [config, setConfig] = useState<SavingsConfig>({ targetBudget: 0, phases: [] });
-  const [loading, setLoading] = useState(true);
+  const key = `ahorro:${code}`;
+  const cachedConfig = peekShared<SavingsConfig>(key);
+  const [config, setConfig] = useState<SavingsConfig>(() => cachedConfig ?? { targetBudget: 0, phases: [] });
+  const [loading, setLoading] = useState(() => cachedConfig === undefined);
   const [editTarget, setEditTarget] = useState(false);
-  const [targetInput, setTargetInput] = useState("");
+  const [targetInput, setTargetInput] = useState(() => (cachedConfig && cachedConfig.targetBudget > 0) ? cachedConfig.targetBudget.toString() : "");
   const [editN, setEditN] = useState(false);
-  const [nInput, setNInput] = useState("");
+  const [nInput, setNInput] = useState(() => (cachedConfig?.numPersonas ?? Math.max(members.length, 1)).toString());
   const [phaseForm, setPhaseForm] = useState({ name: "", startDate: "", endDate: "", amountPerPerson: "" });
   const [phaseErr, setPhaseErr] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
-  const key = `ahorro:${code}`;
 
   const defaultN = Math.max(members.length, 1);
   const n = config.numPersonas != null ? config.numPersonas : defaultN;

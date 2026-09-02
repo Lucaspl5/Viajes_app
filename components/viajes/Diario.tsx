@@ -4,20 +4,20 @@ import { useState, useEffect, useCallback } from "react";
 import { Trash2, Edit2, BookOpen } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, EmptyState, SkeletonCards } from "./ui";
-import { uid, formatDateFull, loadShared, saveShared } from "./utils";
+import { uid, formatDateFull, loadShared, saveShared, peekShared } from "./utils";
 import { DIARY_MOODS } from "./data/constants";
 import type { Session, DiaryEntry, Trip } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
 
 
 export function Diario({ code, session, trip, darkMode }: { code: string; session: Session; trip: Trip; darkMode: boolean }) {
-  const [entries, setEntries] = useState<DiaryEntry[]>([]);
-  const [loading, setLoading] = useState(true);
+  const key = `diario:${code}`;
+  const [entries, setEntries] = useState<DiaryEntry[]>(() => peekShared<DiaryEntry[]>(key) ?? []);
+  const [loading, setLoading] = useState(() => peekShared<DiaryEntry[]>(key) === undefined);
   const [text, setText] = useState("");
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [mood, setMood] = useState(DIARY_MOODS[0]);
   const [editId, setEditId] = useState<string | null>(null);
-  const key = `diario:${code}`;
 
   useEffect(() => { loadShared<DiaryEntry[]>(key, []).then(e => { setEntries(e); setLoading(false); }); }, [key]);
   const persist = useCallback(async (next: DiaryEntry[]) => { setEntries(next); await saveShared(key, next); }, [key]);

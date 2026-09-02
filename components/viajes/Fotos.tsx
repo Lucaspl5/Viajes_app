@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Camera, Trash2, X } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, Banner, EmptyState, SkeletonCards } from "./ui";
-import { uid, isValidUrl, loadShared, saveShared } from "./utils";
+import { uid, isValidUrl, loadShared, saveShared, peekShared } from "./utils";
 import type { Session, Photo, Trip } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
 
@@ -29,14 +29,14 @@ export function compressImage(file: File): Promise<string> {
 }
 
 export function Fotos({ code, session, trip }: { code: string; session: Session; trip: Trip }) {
-  const [photos, setPhotos] = useState<Photo[]>([]);
-  const [loading, setLoading] = useState(true);
+  const key = `fotos:${code}`;
+  const [photos, setPhotos] = useState<Photo[]>(() => peekShared<Photo[]>(key) ?? []);
+  const [loading, setLoading] = useState(() => peekShared<Photo[]>(key) === undefined);
   const [form, setForm] = useState({ url: "", caption: "" });
   const [err, setErr] = useState("");
   const [lightbox, setLightbox] = useState<Photo | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
-  const key = `fotos:${code}`;
   useEffect(() => { loadShared<Photo[]>(key, []).then(p => { setPhotos(p); setLoading(false); }); }, [key]);
   const persist = useCallback(async (next: Photo[]) => { setPhotos(next); await saveShared(key, next); }, [key]);
 

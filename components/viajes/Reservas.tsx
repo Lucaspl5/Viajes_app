@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Copy, Plus, Trash2, X, Euro, ExternalLink, Edit2, Ticket } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Banner, EmptyState, SkeletonCards } from "./ui";
-import { uid, isValidUrl, loadShared, saveShared } from "./utils";
+import { uid, isValidUrl, loadShared, saveShared, peekShared } from "./utils";
 import { BOOKING_TYPES } from "./data/constants";
 import type { Session, Booking, Trip } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
@@ -13,8 +13,9 @@ import { AiQuickButton } from "./AiQuickButton";
 export const BOOKING_TYPE_ICONS: Record<string, string> = { vuelo: "✈️", hotel: "🏨", actividad: "🎭", traslado: "🚗", otro: "📋" };
 
 export function Reservas({ code, session, trip, darkMode }: { code: string; session: Session; trip: Trip; darkMode: boolean }) {
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(true);
+  const key = `reservas:${code}`;
+  const [bookings, setBookings] = useState<Booking[]>(() => peekShared<Booking[]>(key) ?? []);
+  const [loading, setLoading] = useState(() => peekShared<Booking[]>(key) === undefined);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Booking | null>(null);
   const [form, setForm] = useState<Omit<Booking, "id">>({
@@ -22,7 +23,6 @@ export function Reservas({ code, session, trip, darkMode }: { code: string; sess
     endDate: "", endTime: "", location: "", bookingUrl: "", notes: "", amount: 0,
   });
   const [err, setErr] = useState("");
-  const key = `reservas:${code}`;
 
   useEffect(() => { loadShared<Booking[]>(key, []).then(b => { setBookings(b); setLoading(false); }); }, [key]);
   const persist = useCallback(async (next: Booking[]) => { setBookings(next); await saveShared(key, next); }, [key]);

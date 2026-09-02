@@ -4,16 +4,16 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { Trash2, ThumbsUp, ThumbsDown, Lightbulb, ExternalLink } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, EmptyState, SkeletonCards } from "./ui";
-import { uid, isValidUrl, loadShared, saveShared } from "./utils";
+import { uid, isValidUrl, loadShared, saveShared, peekShared } from "./utils";
 import type { Session, Idea, Trip } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
 
 
 export function Ideas({ code, session, trip }: { code: string; session: Session; trip: Trip }) {
-  const [ideas, setIdeas] = useState<Idea[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [text, setText] = useState(""); const [note, setNote] = useState("");
   const key = `ideas:${code}`;
+  const [ideas, setIdeas] = useState<Idea[]>(() => peekShared<Idea[]>(key) ?? []);
+  const [loading, setLoading] = useState(() => peekShared<Idea[]>(key) === undefined);
+  const [text, setText] = useState(""); const [note, setNote] = useState("");
   useEffect(() => { loadShared<Idea[]>(key, []).then(it => { setIdeas(it); setLoading(false); }); }, [key]);
   const persist = useCallback(async (next: Idea[]) => { setIdeas(next); await saveShared(key, next); }, [key]);
 

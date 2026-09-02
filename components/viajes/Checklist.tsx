@@ -4,17 +4,17 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { ListChecks, Check, Trash2, Euro, ChevronDown } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, EmptyState, SkeletonCards } from "./ui";
-import { uid, loadShared, saveShared } from "./utils";
+import { uid, loadShared, saveShared, peekShared } from "./utils";
 import type { Session, ChecklistItem, Trip } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
 
 
 export function Checklist({ code, session, trip }: { code: string; session: Session; trip: Trip }) {
-  const [items, setItems] = useState<ChecklistItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const key = `checklist:${code}`;
+  const [items, setItems] = useState<ChecklistItem[]>(() => peekShared<ChecklistItem[]>(key) ?? []);
+  const [loading, setLoading] = useState(() => peekShared<ChecklistItem[]>(key) === undefined);
   const [text, setText] = useState(""); const [cost, setCost] = useState("");
   const [showBreak, setShowBreak] = useState(false);
-  const key = `checklist:${code}`;
   useEffect(() => { loadShared<ChecklistItem[]>(key, []).then(it => { setItems(it); setLoading(false); }); }, [key]);
   const persist = useCallback(async (next: ChecklistItem[]) => { setItems(next); await saveShared(key, next); }, [key]);
 

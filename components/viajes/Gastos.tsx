@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { Trash2, X, Euro, ChevronDown, Wallet, Filter } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, Banner, EmptyState, SkeletonCards } from "./ui";
-import { uid, loadShared, saveShared } from "./utils";
+import { uid, loadShared, saveShared, peekShared } from "./utils";
 import { EXPENSE_CATEGORIES } from "./data/constants";
 import type { Session, Expense, Trip } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
@@ -38,8 +38,9 @@ export function calculateSettlements(expenses: Expense[], members: string[]) {
 }
 
 export function Gastos({ code, session, members, trip, darkMode }: { code: string; session: Session; members: string[]; trip: Trip; darkMode: boolean }) {
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [loading, setLoading] = useState(true);
+  const key = `gastos:${code}`;
+  const [expenses, setExpenses] = useState<Expense[]>(() => peekShared<Expense[]>(key) ?? []);
+  const [loading, setLoading] = useState(() => peekShared<Expense[]>(key) === undefined);
   const [form, setForm] = useState({ description: "", amount: "", paidBy: session.name, category: EXPENSE_CATEGORIES[0], date: "", splitWith: [] as string[] });
   const [err, setErr] = useState("");
   const [showSettle, setShowSettle] = useState(false);
@@ -48,7 +49,6 @@ export function Gastos({ code, session, members, trip, darkMode }: { code: strin
   const [filterPerson, setFilterPerson] = useState("");
   const [filterFrom, setFilterFrom] = useState("");
   const [filterTo, setFilterTo] = useState("");
-  const key = `gastos:${code}`;
   useEffect(() => { loadShared<Expense[]>(key, []).then(e => { setExpenses(e); setLoading(false); }); }, [key]);
   const persist = useCallback(async (next: Expense[]) => { setExpenses(next); await saveShared(key, next); }, [key]);
 

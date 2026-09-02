@@ -35,6 +35,16 @@ function isValidUrl(s: string) {
 const memCache = new Map<string, { data: unknown; ts: number }>();
 const CACHE_TTL_MS = 15_000;
 
+// Synchronous cache peek — lets a tab initialize its React state with
+// already-known data instead of always starting from a loading skeleton,
+// so revisiting a tab within the cache window renders instantly with no
+// flash.
+function peekShared<T>(key: string): T | undefined {
+  const cached = memCache.get(key);
+  if (cached && Date.now() - cached.ts < CACHE_TTL_MS) return cached.data as T;
+  return undefined;
+}
+
 async function loadShared<T>(key: string, fallback: T): Promise<T> {
   const cached = memCache.get(key);
   if (cached && Date.now() - cached.ts < CACHE_TTL_MS) {
@@ -108,4 +118,4 @@ function monthsBetween(start: string, end: string): number {
   return Math.max(1, (ey - sy) * 12 + (em - sm) + 1);
 }
 
-export { uid, genTripCode, formatDate, formatDateFull, tripDuration, isValidUrl, loadShared, saveShared, loadPersonal, savePersonal, formatMonth, monthsBetween };
+export { uid, genTripCode, formatDate, formatDateFull, tripDuration, isValidUrl, loadShared, saveShared, peekShared, loadPersonal, savePersonal, formatMonth, monthsBetween };

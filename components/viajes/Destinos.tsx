@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { MapPin, X, Globe, Heart, RefreshCw } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Perf, Card, SectionLabel, EmptyState, SkeletonCards } from "./ui";
-import { uid, loadShared, saveShared, loadPersonal, savePersonal, monthsBetween } from "./utils";
+import { uid, loadShared, saveShared, loadPersonal, savePersonal, peekShared, monthsBetween } from "./utils";
 import { CURRENCIES, DEST_TIPS, DEST_TYPE_FILTERS } from "./data/constants";
 import { DESTINATIONS, DESTINATION_ALTERNATIVES } from "./data/destinations";
 import type { ItineraryDay, MapPlace, SavingsConfig, DestinationTemplate, Trip, Session } from "./types";
@@ -269,8 +269,9 @@ export function CurrencyWidget({ currency }: { currency: typeof CURRENCIES[0] })
 }
 
 export function Destinos({ code, startDate, trip, session, onSelect }: { code: string; startDate: string | null; trip: Trip; session: Session; onSelect: () => void }) {
-  const [savings, setSavings] = useState<SavingsConfig | null>(null);
-  const [loading, setLoading] = useState(true);
+  const cachedSavings = peekShared<SavingsConfig>(`ahorro:${code}`);
+  const [savings, setSavings] = useState<SavingsConfig | null>(() => cachedSavings ?? null);
+  const [loading, setLoading] = useState(() => cachedSavings === undefined);
   const [filter, setFilter] = useState("todos");
   const [search, setSearch] = useState("");
   const [preview, setPreview] = useState<DestinationTemplate | null>(null);

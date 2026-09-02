@@ -116,10 +116,8 @@ export default function App() {
   useEffect(() => {
     const el = contentRef.current;
     if (!el) return;
-    el.style.opacity = "0";
-    el.style.transform = "translateY(10px)";
-    animate(el, { opacity: [0, 1], translateY: [10, 0], duration: 280, ease: "out(2)",
-      onComplete: () => { el.style.transform = ""; } });
+    el.style.opacity = "0.4";
+    animate(el, { opacity: [0.4, 1], duration: 120, ease: "out(2)" });
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [tab, session]);
 

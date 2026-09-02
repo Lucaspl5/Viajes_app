@@ -5,7 +5,7 @@ import { MapPin, Trash2 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, Banner, EmptyState, SkeletonCards } from "./ui";
-import { uid, loadShared, saveShared } from "./utils";
+import { uid, loadShared, saveShared, peekShared } from "./utils";
 import type { MapPlace, Trip, Session } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
 
@@ -13,13 +13,13 @@ const LeafletMap = dynamic(() => import("../LeafletMap"), { ssr: false });
 
 
 export function Mapa({ code, destination, trip, session }: { code: string; destination: string; trip: Trip; session: Session }) {
-  const [places, setPlaces] = useState<MapPlace[]>([]);
-  const [loading, setLoading] = useState(true);
+  const key = `mapa:${code}`;
+  const [places, setPlaces] = useState<MapPlace[]>(() => peekShared<MapPlace[]>(key) ?? []);
+  const [loading, setLoading] = useState(() => peekShared<MapPlace[]>(key) === undefined);
   const [pendingLatLon, setPendingLatLon] = useState<{ lat: number; lon: number } | null>(null);
   const [form, setForm] = useState({ name: "", note: "" });
   const [err, setErr] = useState("");
   const [initialCenter, setInitialCenter] = useState<{ lat: number; lon: number; zoom: number } | null>(null);
-  const key = `mapa:${code}`;
   useEffect(() => { loadShared<MapPlace[]>(key, []).then(p => { setPlaces(p); setLoading(false); }); }, [key]);
   const persist = useCallback(async (next: MapPlace[]) => { setPlaces(next); await saveShared(key, next); }, [key]);
 

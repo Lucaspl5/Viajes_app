@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Plane, Plus, Trash2, X } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Perf, Card, EmptyState, SkeletonCards } from "./ui";
-import { uid, formatDateFull, loadShared, saveShared } from "./utils";
+import { uid, formatDateFull, loadShared, saveShared, peekShared } from "./utils";
 import type { ItineraryDay, ItineraryItem, Trip, Session } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
 
@@ -16,9 +16,9 @@ export function Itinerario({ code, startDate, trip, session, onImportItinerary }
   code: string; startDate: string | null; trip: Trip; session: Session;
   onImportItinerary: (days: ItineraryDay[]) => void;
 }) {
-  const [days, setDays] = useState<ItineraryDay[]>([]);
-  const [loading, setLoading] = useState(true);
   const key = `itin:${code}`;
+  const [days, setDays] = useState<ItineraryDay[]>(() => peekShared<ItineraryDay[]>(key) ?? []);
+  const [loading, setLoading] = useState(() => peekShared<ItineraryDay[]>(key) === undefined);
   useEffect(() => { loadShared<ItineraryDay[]>(key, []).then(d => { setDays(d); setLoading(false); }); }, [key]);
   const persist = useCallback(async (next: ItineraryDay[]) => { setDays(next); await saveShared(key, next); }, [key]);
 

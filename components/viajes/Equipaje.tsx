@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { X, ChevronDown, Luggage, CheckCircle2, Circle } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, EmptyState, SkeletonCards } from "./ui";
-import { uid, loadShared, saveShared } from "./utils";
+import { uid, loadShared, saveShared, peekShared } from "./utils";
 import { PACKING_CATEGORIES } from "./data/constants";
 import type { Session, PackingItem, Trip } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
@@ -19,12 +19,12 @@ export const PACKING_TEMPLATES: Record<string, string[]> = {
 };
 
 export function Equipaje({ code, session, trip }: { code: string; session: Session; trip: Trip }) {
-  const [items, setItems] = useState<PackingItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const key = `equipaje:${code}`;
+  const [items, setItems] = useState<PackingItem[]>(() => peekShared<PackingItem[]>(key) ?? []);
+  const [loading, setLoading] = useState(() => peekShared<PackingItem[]>(key) === undefined);
   const [activeCategory, setActiveCategory] = useState<string>(PACKING_CATEGORIES[0]);
   const [text, setText] = useState("");
   const [expanded, setExpanded] = useState<Set<string>>(new Set(PACKING_CATEGORIES));
-  const key = `equipaje:${code}`;
   useEffect(() => { loadShared<PackingItem[]>(key, []).then(it => { setItems(it); setLoading(false); }); }, [key]);
   const persist = useCallback(async (next: PackingItem[]) => { setItems(next); await saveShared(key, next); }, [key]);
 
