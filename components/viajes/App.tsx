@@ -6,7 +6,7 @@ import { animate } from "animejs";
 import { C, F } from "./theme";
 import { useCountdown } from "./ui";
 import { loadShared, saveShared, loadPersonal, savePersonal } from "./utils";
-import type { Trip, Session, TabId } from "./types";
+import type { Trip, Session, TabId, ItineraryDay } from "./types";
 import { EntryScreen } from "./EntryScreen";
 import { LoadingScreen } from "./LoadingScreen";
 import { AsistenteIA } from "./AsistenteIA";
@@ -83,6 +83,12 @@ export default function App() {
     }
     await savePersonal("lastSession", { code, name });
     setSession({ code, name }); setTrip(t); setLoading(false);
+  }
+
+  async function importItinerary(days: ItineraryDay[]) {
+    if (!session) return;
+    await saveShared(`itin:${session.code}`, days);
+    setTab("itinerario");
   }
 
   function leave() {
@@ -242,18 +248,18 @@ export default function App() {
       {/* Content */}
       <main ref={contentRef as React.RefObject<HTMLElement>} className="max-w-4xl mx-auto px-4 py-6" style={{ opacity: 0, paddingBottom: "calc(1.5rem + 64px)" }}>
         {tab === "resumen"    && <Resumen trip={trip} session={session} days={days} darkMode={darkMode} />}
-        {tab === "reservas"   && <Reservas code={session.code} session={session} darkMode={darkMode} />}
-        {tab === "itinerario" && <Itinerario code={session.code} startDate={trip.startDate} />}
-        {tab === "mapa"       && <Mapa code={session.code} destination={trip.destination} />}
-        {tab === "fotos"      && <Fotos code={session.code} session={session} />}
-        {tab === "diario"     && <Diario code={session.code} session={session} darkMode={darkMode} />}
-        {tab === "checklist"  && <Checklist code={session.code} session={session} />}
-        {tab === "gastos"     && <Gastos code={session.code} session={session} members={trip.members} darkMode={darkMode} />}
-        {tab === "equipaje"   && <Equipaje code={session.code} session={session} />}
-        {tab === "ideas"      && <Ideas code={session.code} session={session} />}
-        {tab === "ahorro"     && <Ahorro code={session.code} members={trip.members} />}
-        {tab === "destinos"   && <Destinos code={session.code} startDate={trip.startDate} onSelect={() => setTab("itinerario")} />}
-        {tab === "asistente"  && <AsistenteIA code={session.code} trip={trip} session={session} onImportItinerary={async (days) => { await saveShared(`itin:${session.code}`, days); setTab("itinerario"); }} />}
+        {tab === "reservas"   && <Reservas code={session.code} session={session} trip={trip} darkMode={darkMode} />}
+        {tab === "itinerario" && <Itinerario code={session.code} startDate={trip.startDate} trip={trip} session={session} onImportItinerary={importItinerary} />}
+        {tab === "mapa"       && <Mapa code={session.code} destination={trip.destination} trip={trip} session={session} />}
+        {tab === "fotos"      && <Fotos code={session.code} session={session} trip={trip} />}
+        {tab === "diario"     && <Diario code={session.code} session={session} trip={trip} darkMode={darkMode} />}
+        {tab === "checklist"  && <Checklist code={session.code} session={session} trip={trip} />}
+        {tab === "gastos"     && <Gastos code={session.code} session={session} members={trip.members} trip={trip} darkMode={darkMode} />}
+        {tab === "equipaje"   && <Equipaje code={session.code} session={session} trip={trip} />}
+        {tab === "ideas"      && <Ideas code={session.code} session={session} trip={trip} />}
+        {tab === "ahorro"     && <Ahorro code={session.code} members={trip.members} trip={trip} session={session} />}
+        {tab === "destinos"   && <Destinos code={session.code} startDate={trip.startDate} trip={trip} session={session} onSelect={() => setTab("itinerario")} />}
+        {tab === "asistente"  && <AsistenteIA code={session.code} trip={trip} session={session} onImportItinerary={importItinerary} />}
       </main>
 
       {/* Fixed bottom navigation */}

@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { RefreshCw, Sparkles, Send, Download } from "lucide-react";
+import { RefreshCw, Sparkles, Send, Download, Check } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, Banner } from "./ui";
 import { uid } from "./utils";
+import { loadAiContext, buildSystemPrompt, parseItinerary, parseActions, stripActionBlocks, actionLabel, applyAction, type AiAction, type AiContext } from "./ai";
 import type { Trip, Session, ItineraryDay, ChatMsg } from "./types";
 
-export function AsistenteIA({ code, trip, session: _session, onImportItinerary }: {
+export function AsistenteIA({ code, trip, session, onImportItinerary }: {
   code: string; trip: Trip; session: Session;
   onImportItinerary: (days: ItineraryDay[]) => void;
 }) {
@@ -15,52 +16,29 @@ export function AsistenteIA({ code, trip, session: _session, onImportItinerary }
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const [noKey, setNoKey] = useState(false);
+  const [context, setContext] = useState<AiContext | null>(null);
+  const [appliedIdx, setAppliedIdx] = useState<Set<number>>(new Set());
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const systemPrompt = `Eres un asistente experto en planificación de viajes integrado en Bitácora de Viaje, una app colaborativa en español.
-
-Datos del viaje actual:
-- Nombre: ${trip.name}
-- Destino: ${trip.destination || "no especificado"}
-- Fechas: ${trip.startDate ? `${trip.startDate} → ${trip.endDate || "?"}` : "no fijadas"}
-- Viajeros: ${trip.members.join(", ")} (${trip.members.length} persona${trip.members.length !== 1 ? "s" : ""})
-
-Cuando el usuario pida crear un itinerario o plan de viaje, responde con tu explicación y AL FINAL incluye el itinerario en este formato JSON exacto, delimitado por \`\`\`json y \`\`\`:
-{
-  "itinerary": [
-    {
-      "title": "Día 1 — Nombre descriptivo",
-      "items": [
-        { "time": "09:00", "text": "Descripción de la actividad" }
-      ]
-    }
-  ]
-}
-
-Responde siempre en español. Sé concreto, práctico y entusiasta.`;
+  useEffect(() => { loadAiContext(code).then(setContext); }, [code]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [msgs, streaming]);
 
-  function extractItinerary(text: string): { title: string; items: { time: string; text: string }[] }[] | null {
-    const match = text.match(/```json\s*([\s\S]*?)```/);
-    if (!match) return null;
-    try {
-      const parsed = JSON.parse(match[1]);
-      return parsed.itinerary ?? null;
-    } catch { return null; }
-  }
-
-  async function send() {
-    const text = input.trim();
+  async function send(overrideText?: string) {
+    const text = (overrideText ?? input).trim();
     if (!text || streaming) return;
     setInput("");
     const newMsgs: ChatMsg[] = [...msgs, { role: "user", content: text }];
     setMsgs(newMsgs);
     setStreaming(true);
     setNoKey(false);
+
+    const ctx = context ?? await loadAiContext(code);
+    if (!context) setContext(ctx);
+    const systemPrompt = buildSystemPrompt(trip, ctx);
 
     try {
       const res = await fetch("/api/ai", {
@@ -119,11 +97,12 @@ Responde siempre en español. Sé concreto, práctico y entusiasta.`;
   }
 
   const lastAssistantMsg = [...msgs].reverse().find(m => m.role === "assistant");
-  const itinerary = lastAssistantMsg ? extractItinerary(lastAssistantMsg.content) : null;
+  const itinerary = lastAssistantMsg ? parseItinerary(lastAssistantMsg.content) : null;
+  const actions = lastAssistantMsg ? parseActions(lastAssistantMsg.content) : null;
 
-  function renderMsgContent(content: string) {
-    // Strip the json block for display, show clean text
-    return content.replace(/```json[\s\S]*?```/g, "").trim();
+  async function handleApplyAction(a: AiAction, idx: number) {
+    await applyAction(code, session, a);
+    setAppliedIdx(prev => new Set(prev).add(idx));
   }
 
   return (
@@ -134,7 +113,7 @@ Responde siempre en español. Sé concreto, práctico y entusiasta.`;
           <SectionLabel>Asistente de Planificación</SectionLabel>
         </div>
         <p style={{ color: C.inkSoft, fontSize: 13 }}>
-          Pídeme un itinerario, consejos, presupuesto estimado o cualquier cosa sobre {trip.destination || "tu destino"}.
+          Pídeme un itinerario, consejos, o que añada gastos, equipaje, ideas o reservas directamente a {trip.destination || "tu viaje"}.
         </p>
       </Card>
 
@@ -145,7 +124,7 @@ Responde siempre en español. Sé concreto, práctico y entusiasta.`;
             {[
               `Crea un itinerario de ${trip.destination || "mi viaje"} para ${trip.members.length} personas`,
               "¿Qué presupuesto diario necesito?",
-              "¿Qué documentación necesito para este viaje?",
+              "Añade protector solar y adaptador de corriente al equipaje",
               "Dame 5 restaurantes imprescindibles",
             ].map(s => (
               <button key={s} onClick={() => { setInput(s); inputRef.current?.focus(); }}
@@ -172,7 +151,7 @@ Responde siempre en español. Sé concreto, práctico y entusiasta.`;
               whiteSpace: "pre-wrap",
               wordBreak: "break-word",
             }}>
-              {m.role === "assistant" ? renderMsgContent(m.content) : m.content}
+              {m.role === "assistant" ? stripActionBlocks(m.content) : m.content}
               {m.role === "assistant" && streaming && i === msgs.length - 1 && (
                 <span style={{ display: "inline-block", width: 8, height: 14, background: C.inkSoft, borderRadius: 2, marginLeft: 2, animation: "fadeIn 0.5s ease infinite alternate" }} />
               )}
@@ -211,6 +190,27 @@ Responde siempre en español. Sé concreto, práctico y entusiasta.`;
         </Card>
       )}
 
+      {/* Proposed actions */}
+      {actions && actions.length > 0 && !streaming && (
+        <Card style={{ background: `${C.purple}0D`, border: `1px solid ${C.purple}40` }}>
+          <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 8 }}>Propuesta de la IA — {actions.length} elemento{actions.length !== 1 ? "s" : ""}</p>
+          <div className="flex flex-col gap-2">
+            {actions.map((a, i) => {
+              const applied = appliedIdx.has(i);
+              return (
+                <div key={i} className="flex items-center justify-between gap-2" style={{ background: "#fff", border: `1px solid ${C.line}`, borderRadius: 6, padding: "8px 12px" }}>
+                  <span style={{ fontSize: 13 }}>{actionLabel(a)}</span>
+                  <button disabled={applied} onClick={() => handleApplyAction(a, i)}
+                    style={{ display: "flex", alignItems: "center", gap: 4, background: applied ? C.green : C.purple, color: "#fff", borderRadius: 5, padding: "6px 10px", fontFamily: F.mono, fontSize: 11, opacity: applied ? 0.75 : 1 }}>
+                    {applied ? <><Check size={12} /> AÑADIDO</> : "AÑADIR"}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      )}
+
       {/* Input */}
       <div className="flex gap-2">
         <input ref={inputRef} value={input} onChange={e => setInput(e.target.value)}
@@ -218,7 +218,7 @@ Responde siempre en español. Sé concreto, práctico y entusiasta.`;
           placeholder={streaming ? "La IA está respondiendo…" : "Escribe tu pregunta…"}
           disabled={streaming}
           style={{ ...inputStyle, flex: 1, fontSize: 14 }} />
-        <button onClick={send} disabled={streaming || !input.trim()}
+        <button onClick={() => send()} disabled={streaming || !input.trim()}
           style={{ background: (streaming || !input.trim()) ? C.inkSoft : C.purple, color: "#fff", borderRadius: 6, padding: "0 16px", display: "flex", alignItems: "center", gap: 6, fontFamily: F.mono, fontSize: 12, transition: "background 0.15s", minWidth: 56 }}>
           {streaming ? <RefreshCw size={14} className="animate-spin" /> : <Send size={14} />}
         </button>
@@ -229,4 +229,3 @@ Responde siempre en español. Sé concreto, práctico y entusiasta.`;
     </div>
   );
 }
-

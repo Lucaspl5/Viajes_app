@@ -6,12 +6,13 @@ import { C, F, inputStyle } from "./theme";
 import { Banner, EmptyState, SkeletonCards } from "./ui";
 import { uid, isValidUrl, loadShared, saveShared } from "./utils";
 import { BOOKING_TYPES } from "./data/constants";
-import type { Session, Booking } from "./types";
+import type { Session, Booking, Trip } from "./types";
+import { AiQuickButton } from "./AiQuickButton";
 
 
 export const BOOKING_TYPE_ICONS: Record<string, string> = { vuelo: "✈️", hotel: "🏨", actividad: "🎭", traslado: "🚗", otro: "📋" };
 
-export function Reservas({ code, session, darkMode }: { code: string; session: Session; darkMode: boolean }) {
+export function Reservas({ code, session, trip, darkMode }: { code: string; session: Session; trip: Trip; darkMode: boolean }) {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -76,13 +77,19 @@ export function Reservas({ code, session, darkMode }: { code: string; session: S
         </p>
       </div>
 
-      <button onClick={openAdd} style={{
-        display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-        background: C.teal, color: "#fff", borderRadius: 10, padding: "12px 16px",
-        fontFamily: F.mono, fontSize: 12, fontWeight: 700,
-      }}>
-        <Plus size={14} /> AÑADIR RESERVA
-      </button>
+      <div className="flex gap-2">
+        <button onClick={openAdd} style={{
+          flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+          background: C.teal, color: "#fff", borderRadius: 10, padding: "12px 16px",
+          fontFamily: F.mono, fontSize: 12, fontWeight: 700,
+        }}>
+          <Plus size={14} /> AÑADIR RESERVA
+        </button>
+        <AiQuickButton code={code} trip={trip} session={session} suggestions={[
+          "Añade una reserva de hotel",
+          "¿Qué debo comprobar antes de reservar un vuelo?",
+        ]} />
+      </div>
 
       {/* Form modal */}
       {showForm && (

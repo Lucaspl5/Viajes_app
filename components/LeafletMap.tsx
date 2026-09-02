@@ -227,13 +227,24 @@ export default function LeafletMap({
           0%, 100% { transform: scale(1); opacity: 1; }
           50% { transform: scale(1.2); opacity: 0.75; }
         }
+        .leaflet-popup-content-wrapper {
+          border-radius: 10px;
+          box-shadow: 0 8px 24px rgba(11,25,48,0.18);
+        }
+        .leaflet-popup-content { margin: 10px 12px; }
+        .leaflet-popup-tip { box-shadow: 0 4px 10px rgba(11,25,48,0.1); }
+        .leaflet-container { font-family: var(--font-body), system-ui, sans-serif; }
+        .leaflet-control-zoom a {
+          border-radius: 6px !important;
+          color: #0E1726 !important;
+        }
       `}</style>
       <div
         ref={containerRef}
         style={{
           width: "100%",
           height,
-          borderRadius: 6,
+          borderRadius: 10,
           overflow: "hidden",
           zIndex: 0,
         }}

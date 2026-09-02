@@ -5,10 +5,11 @@ import { Trash2, ThumbsUp, ThumbsDown, Lightbulb, ExternalLink } from "lucide-re
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, EmptyState, SkeletonCards } from "./ui";
 import { uid, isValidUrl, loadShared, saveShared } from "./utils";
-import type { Session, Idea } from "./types";
+import type { Session, Idea, Trip } from "./types";
+import { AiQuickButton } from "./AiQuickButton";
 
 
-export function Ideas({ code, session }: { code: string; session: Session }) {
+export function Ideas({ code, session, trip }: { code: string; session: Session; trip: Trip }) {
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [loading, setLoading] = useState(true);
   const [text, setText] = useState(""); const [note, setNote] = useState("");
@@ -43,6 +44,12 @@ export function Ideas({ code, session }: { code: string; session: Session }) {
 
   return (
     <div className="flex flex-col gap-4">
+      <div className="flex justify-end">
+        <AiQuickButton code={code} trip={trip} session={session} suggestions={[
+          `Sugiéreme 5 ideas de actividades en ${trip.destination || "mi destino"}`,
+          "Propón un plan para un día lluvioso",
+        ]} />
+      </div>
       <Card>
         <SectionLabel>Proponer idea</SectionLabel>
         <p style={{ color: C.inkSoft, fontSize: 12, marginTop: 4 }}>Actividades, restaurantes, planes… El grupo vota.</p>

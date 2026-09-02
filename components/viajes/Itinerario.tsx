@@ -5,10 +5,17 @@ import { Plane, Plus, Trash2, X } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Perf, Card, EmptyState, SkeletonCards } from "./ui";
 import { uid, formatDateFull, loadShared, saveShared } from "./utils";
-import type { ItineraryDay, ItineraryItem } from "./types";
+import type { ItineraryDay, ItineraryItem, Trip, Session } from "./types";
+import { AiQuickButton } from "./AiQuickButton";
 
+function sortItems(items: ItineraryItem[]) {
+  return [...items].sort((a, b) => (a.time || "99:99").localeCompare(b.time || "99:99"));
+}
 
-export function Itinerario({ code, startDate }: { code: string; startDate: string | null }) {
+export function Itinerario({ code, startDate, trip, session, onImportItinerary }: {
+  code: string; startDate: string | null; trip: Trip; session: Session;
+  onImportItinerary: (days: ItineraryDay[]) => void;
+}) {
   const [days, setDays] = useState<ItineraryDay[]>([]);
   const [loading, setLoading] = useState(true);
   const key = `itin:${code}`;
@@ -29,12 +36,24 @@ export function Itinerario({ code, startDate }: { code: string; startDate: strin
   const addItem = (dayId: string) => persist(days.map(d => d.id === dayId ? { ...d, items: [...d.items, { id: uid(), time: "", text: "" }] } : d));
   const updateItem = (dayId: string, itemId: string, p: Partial<ItineraryItem>) =>
     persist(days.map(d => d.id === dayId ? { ...d, items: d.items.map(it => it.id === itemId ? { ...it, ...p } : it) } : d));
+  const sortDayItems = (dayId: string) =>
+    persist(days.map(d => d.id === dayId ? { ...d, items: sortItems(d.items) } : d));
   const removeItem = (dayId: string, itemId: string) =>
     persist(days.map(d => d.id === dayId ? { ...d, items: d.items.filter(it => it.id !== itemId) } : d));
 
   if (loading) return <SkeletonCards />;
   return (
     <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <span style={{ fontFamily: F.mono, fontSize: 11, color: C.inkSoft, letterSpacing: 1 }}>
+          {days.length ? `${days.length} día${days.length !== 1 ? "s" : ""} planificados` : "PLAN DE VIAJE"}
+        </span>
+        <AiQuickButton code={code} trip={trip} session={session} onImportItinerary={onImportItinerary} suggestions={[
+          `Crea un itinerario de ${trip.destination || "mi viaje"} para ${trip.members.length} personas`,
+          "Añade un día más al itinerario",
+          "Sugiere actividades para rellenar los huecos libres",
+        ]} />
+      </div>
       {days.map(d => (
         <Card key={d.id}>
           <div className="flex items-start gap-3">
@@ -47,10 +66,15 @@ export function Itinerario({ code, startDate }: { code: string; startDate: strin
             <button onClick={() => removeDay(d.id)} style={{ color: C.inkSoft, padding: 4 }} aria-label="Eliminar día"><Trash2 size={15} /></button>
           </div>
           <Perf />
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3" style={{ position: "relative" }}>
+            {d.items.length > 1 && (
+              <div style={{ position: "absolute", left: 35, top: 8, bottom: 8, width: 1, background: C.line }} />
+            )}
             {d.items.map(it => (
-              <div key={it.id} className="flex items-center gap-2">
-                <input value={it.time} onChange={e => updateItem(d.id, it.id, { time: e.target.value })} placeholder="10:00" maxLength={5}
+              <div key={it.id} className="flex items-center gap-2" style={{ position: "relative" }}>
+                <span style={{ position: "absolute", left: 34, width: 5, height: 5, borderRadius: 999, background: C.teal, zIndex: 1 }} />
+                <input value={it.time} onChange={e => updateItem(d.id, it.id, { time: e.target.value })}
+                  onBlur={() => sortDayItems(d.id)} placeholder="10:00" maxLength={5}
                   style={{ ...inputStyle, width: 72, fontFamily: F.mono, fontSize: 12 }} />
                 <input value={it.text} onChange={e => updateItem(d.id, it.id, { text: e.target.value })}
                   onKeyDown={e => e.key === "Enter" && addItem(d.id)} placeholder="Ej. Visita al museo…" style={{ ...inputStyle, flex: 1 }} />

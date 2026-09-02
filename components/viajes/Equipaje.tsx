@@ -6,7 +6,8 @@ import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, EmptyState, SkeletonCards } from "./ui";
 import { uid, loadShared, saveShared } from "./utils";
 import { PACKING_CATEGORIES } from "./data/constants";
-import type { Session, PackingItem } from "./types";
+import type { Session, PackingItem, Trip } from "./types";
+import { AiQuickButton } from "./AiQuickButton";
 
 
 export const PACKING_TEMPLATES: Record<string, string[]> = {
@@ -17,7 +18,7 @@ export const PACKING_TEMPLATES: Record<string, string[]> = {
   "💊 Medicamentos":["Analgésicos", "Antidiarreicos", "Tiritas", "Pastillas para el mareo"],
 };
 
-export function Equipaje({ code, session }: { code: string; session: Session }) {
+export function Equipaje({ code, session, trip }: { code: string; session: Session; trip: Trip }) {
   const [items, setItems] = useState<PackingItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState<string>(PACKING_CATEGORIES[0]);
@@ -58,6 +59,14 @@ export function Equipaje({ code, session }: { code: string; session: Session }) 
 
   return (
     <div className="flex flex-col gap-4">
+      <div className="flex justify-end">
+        <AiQuickButton code={code} trip={trip} session={session} suggestions={[
+          `Añade lo esencial para el clima de ${trip.destination || "mi destino"}`,
+          "¿Qué documentación no debo olvidar?",
+          "Sugiéreme equipo especial para las actividades del viaje",
+        ]} />
+      </div>
+
       {/* Progress */}
       {totalItems > 0 && (
         <Card style={{ padding: "14px 18px" }}>

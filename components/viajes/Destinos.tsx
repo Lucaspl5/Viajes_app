@@ -7,7 +7,8 @@ import { Perf, Card, SectionLabel, EmptyState, SkeletonCards } from "./ui";
 import { uid, loadShared, saveShared, loadPersonal, savePersonal, monthsBetween } from "./utils";
 import { CURRENCIES, DEST_TIPS, DEST_TYPE_FILTERS } from "./data/constants";
 import { DESTINATIONS, DESTINATION_ALTERNATIVES } from "./data/destinations";
-import type { ItineraryDay, MapPlace, SavingsConfig, DestinationTemplate } from "./types";
+import type { ItineraryDay, MapPlace, SavingsConfig, DestinationTemplate, Trip, Session } from "./types";
+import { AiQuickButton } from "./AiQuickButton";
 
 
 export const TYPE_COLORS: Record<string, string> = {
@@ -267,7 +268,7 @@ export function CurrencyWidget({ currency }: { currency: typeof CURRENCIES[0] })
   );
 }
 
-export function Destinos({ code, startDate, onSelect }: { code: string; startDate: string | null; onSelect: () => void }) {
+export function Destinos({ code, startDate, trip, session, onSelect }: { code: string; startDate: string | null; trip: Trip; session: Session; onSelect: () => void }) {
   const [savings, setSavings] = useState<SavingsConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("todos");
@@ -398,9 +399,15 @@ export function Destinos({ code, startDate, onSelect }: { code: string; startDat
         )}
       </div>
 
-      <p style={{ fontFamily: F.mono, fontSize: 11, color: C.inkSoft, textAlign: "center" }}>
-        Plantillas de viaje listas para aplicar — sustituyen tu plan actual
-      </p>
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <p style={{ fontFamily: F.mono, fontSize: 11, color: C.inkSoft }}>
+          Plantillas de viaje listas para aplicar — sustituyen tu plan actual
+        </p>
+        <AiQuickButton code={code} trip={trip} session={session} suggestions={[
+          "Recomiéndame destinos parecidos a mis favoritos",
+          "¿Qué destino se ajusta mejor a mi presupuesto?",
+        ]} />
+      </div>
 
       {/* Search */}
       <div style={{ position: "relative" }}>

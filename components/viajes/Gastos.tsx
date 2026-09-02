@@ -6,7 +6,8 @@ import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, Banner, EmptyState, SkeletonCards } from "./ui";
 import { uid, loadShared, saveShared } from "./utils";
 import { EXPENSE_CATEGORIES } from "./data/constants";
-import type { Session, Expense } from "./types";
+import type { Session, Expense, Trip } from "./types";
+import { AiQuickButton } from "./AiQuickButton";
 
 
 export function calculateSettlements(expenses: Expense[], members: string[]) {
@@ -36,7 +37,7 @@ export function calculateSettlements(expenses: Expense[], members: string[]) {
   return settlements;
 }
 
-export function Gastos({ code, session, members, darkMode }: { code: string; session: Session; members: string[]; darkMode: boolean }) {
+export function Gastos({ code, session, members, trip, darkMode }: { code: string; session: Session; members: string[]; trip: Trip; darkMode: boolean }) {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({ description: "", amount: "", paidBy: session.name, category: EXPENSE_CATEGORIES[0], date: "", splitWith: [] as string[] });
@@ -88,10 +89,24 @@ export function Gastos({ code, session, members, darkMode }: { code: string; ses
 
   const settlements = useMemo(() => calculateSettlements(expenses, members), [expenses, members]);
 
+  const byCategory = useMemo(() => {
+    const m: Record<string, number> = {};
+    expenses.forEach(e => { m[e.category] = (m[e.category] || 0) + e.amount; });
+    return Object.entries(m).sort((a, b) => b[1] - a[1]);
+  }, [expenses]);
+
   if (loading) return <SkeletonCards />;
 
   return (
     <div className="flex flex-col gap-4">
+      <div className="flex justify-end">
+        <AiQuickButton code={code} trip={trip} session={session} suggestions={[
+          "¿Qué presupuesto diario es razonable para este viaje?",
+          "Añade un gasto de cena para todos",
+          "¿En qué categoría estamos gastando más?",
+        ]} />
+      </div>
+
       {/* Add form */}
       <Card>
         <SectionLabel>Añadir gasto</SectionLabel>
@@ -151,6 +166,23 @@ export function Gastos({ code, session, members, darkMode }: { code: string; ses
             </div>
           ))}
         </div>
+
+        {byCategory.length > 0 && (
+          <div className="flex flex-col gap-1.5 mb-4">
+            {byCategory.map(([cat, amt]) => {
+              const pct = total > 0 ? (amt / total) * 100 : 0;
+              return (
+                <div key={cat} className="flex items-center gap-2">
+                  <span style={{ fontSize: 12, width: 100, flexShrink: 0 }}>{cat}</span>
+                  <div style={{ flex: 1, height: 6, background: C.paperDark, borderRadius: 999, overflow: "hidden" }}>
+                    <div style={{ width: `${pct}%`, height: "100%", background: C.teal, borderRadius: 999 }} />
+                  </div>
+                  <span style={{ fontFamily: F.mono, fontSize: 11, color: C.inkSoft, width: 56, textAlign: "right", flexShrink: 0 }}>{amt.toFixed(0)} € ({pct.toFixed(0)}%)</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         {settlements.length > 0 && (
           <>

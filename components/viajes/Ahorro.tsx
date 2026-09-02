@@ -5,9 +5,10 @@ import { Check, Trash2, X, Euro, Circle, PiggyBank, Edit2 } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, Field, Banner, EmptyState, SkeletonCards } from "./ui";
 import { uid, loadShared, saveShared, formatMonth, monthsBetween } from "./utils";
-import type { SavingsPhase, SavingsConfig } from "./types";
+import type { SavingsPhase, SavingsConfig, Trip, Session } from "./types";
+import { AiQuickButton } from "./AiQuickButton";
 
-export function Ahorro({ code, members }: { code: string; members: string[] }) {
+export function Ahorro({ code, members, trip, session }: { code: string; members: string[]; trip: Trip; session: Session }) {
   const [config, setConfig] = useState<SavingsConfig>({ targetBudget: 0, phases: [] });
   const [loading, setLoading] = useState(true);
   const [editTarget, setEditTarget] = useState(false);
@@ -99,6 +100,12 @@ export function Ahorro({ code, members }: { code: string; members: string[] }) {
 
   return (
     <div className="flex flex-col gap-5">
+      <div className="flex justify-end">
+        <AiQuickButton code={code} trip={trip} session={session} suggestions={[
+          "¿Cuánto debería ahorrar cada mes para este viaje?",
+          "Sugiere fases de ahorro razonables según la fecha de salida",
+        ]} />
+      </div>
       {/* Header card */}
       <div style={{ background: `linear-gradient(135deg, ${C.navy}, ${C.navyMid})`, borderRadius: 12, padding: "22px 20px", color: C.paper, position: "relative", overflow: "hidden" }} className="dot-grid">
         <div className="glow-pulse" style={{ position: "absolute", top: -30, right: -30, width: 130, height: 130, borderRadius: 999, background: `radial-gradient(circle, ${C.gold}25, transparent 70%)`, pointerEvents: "none" }} />

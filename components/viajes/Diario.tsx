@@ -6,10 +6,11 @@ import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, EmptyState, SkeletonCards } from "./ui";
 import { uid, formatDateFull, loadShared, saveShared } from "./utils";
 import { DIARY_MOODS } from "./data/constants";
-import type { Session, DiaryEntry } from "./types";
+import type { Session, DiaryEntry, Trip } from "./types";
+import { AiQuickButton } from "./AiQuickButton";
 
 
-export function Diario({ code, session, darkMode }: { code: string; session: Session; darkMode: boolean }) {
+export function Diario({ code, session, trip, darkMode }: { code: string; session: Session; trip: Trip; darkMode: boolean }) {
   const [entries, setEntries] = useState<DiaryEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [text, setText] = useState("");
@@ -48,6 +49,12 @@ export function Diario({ code, session, darkMode }: { code: string; session: Ses
 
   return (
     <div className="flex flex-col gap-4">
+      <div className="flex justify-end">
+        <AiQuickButton code={code} trip={trip} session={session} suggestions={[
+          "Ayúdame a redactar una entrada de diario sobre hoy",
+          "Dame ideas de qué contar en el diario del viaje",
+        ]} />
+      </div>
       <Card>
         <SectionLabel>{editId ? "Editando entrada" : "Nueva entrada"}</SectionLabel>
         <div className="flex flex-col gap-3 mt-3">

@@ -5,10 +5,11 @@ import { ListChecks, Check, Trash2, Euro, ChevronDown } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, EmptyState, SkeletonCards } from "./ui";
 import { uid, loadShared, saveShared } from "./utils";
-import type { Session, ChecklistItem } from "./types";
+import type { Session, ChecklistItem, Trip } from "./types";
+import { AiQuickButton } from "./AiQuickButton";
 
 
-export function Checklist({ code, session }: { code: string; session: Session }) {
+export function Checklist({ code, session, trip }: { code: string; session: Session; trip: Trip }) {
   const [items, setItems] = useState<ChecklistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [text, setText] = useState(""); const [cost, setCost] = useState("");
@@ -36,6 +37,12 @@ export function Checklist({ code, session }: { code: string; session: Session })
   if (loading) return <SkeletonCards />;
   return (
     <div className="flex flex-col gap-4">
+      <div className="flex justify-end">
+        <AiQuickButton code={code} trip={trip} session={session} suggestions={[
+          "Añade tareas típicas antes de un viaje internacional",
+          "¿Qué documentación necesito preparar antes de salir?",
+        ]} />
+      </div>
       <Card>
         <div className="flex flex-wrap gap-2">
           <input placeholder="Tarea o gasto…" value={text} onChange={e => setText(e.target.value)} onKeyDown={e => e.key === "Enter" && addItem()} style={{ ...inputStyle, flex: "2 1 160px" }} />

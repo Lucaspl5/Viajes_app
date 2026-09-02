@@ -5,7 +5,8 @@ import { Camera, Trash2, X } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, Banner, EmptyState, SkeletonCards } from "./ui";
 import { uid, isValidUrl, loadShared, saveShared } from "./utils";
-import type { Session, Photo } from "./types";
+import type { Session, Photo, Trip } from "./types";
+import { AiQuickButton } from "./AiQuickButton";
 
 
 export function compressImage(file: File): Promise<string> {
@@ -27,7 +28,7 @@ export function compressImage(file: File): Promise<string> {
   });
 }
 
-export function Fotos({ code, session }: { code: string; session: Session }) {
+export function Fotos({ code, session, trip }: { code: string; session: Session; trip: Trip }) {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({ url: "", caption: "" });
@@ -77,6 +78,11 @@ export function Fotos({ code, session }: { code: string; session: Session }) {
         </div>
       )}
       <div className="flex flex-col gap-4">
+        <div className="flex justify-end">
+          <AiQuickButton code={code} trip={trip} session={session} suggestions={[
+            `Dame ideas de fotos imprescindibles para ${trip.destination || "mi destino"}`,
+          ]} />
+        </div>
         <Card>
           <SectionLabel>Añadir recuerdo</SectionLabel>
           {/* File upload */}
