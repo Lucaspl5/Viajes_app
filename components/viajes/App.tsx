@@ -5,8 +5,8 @@ import { Plane, MapPin, Camera, ListChecks, Copy, Check, X, ArrowLeft, Luggage, 
 import { animate } from "animejs";
 import { C, F } from "./theme";
 import { useCountdown } from "./ui";
-import { loadShared, saveShared, loadPersonal, savePersonal } from "./utils";
-import type { Trip, Session, TabId, ItineraryDay } from "./types";
+import { genTripCode, loadShared, saveShared, loadPersonal, savePersonal } from "./utils";
+import type { Trip, Session, TabId, ItineraryDay, ChecklistItem, PackingItem } from "./types";
 import { EntryScreen } from "./EntryScreen";
 import { LoadingScreen } from "./LoadingScreen";
 import { AsistenteIA } from "./AsistenteIA";
@@ -23,6 +23,7 @@ import { Ahorro } from "./Ahorro";
 import { Destinos } from "./Destinos";
 import { Reservas } from "./Reservas";
 import { Diario } from "./Diario";
+import { PrintExport } from "./PrintExport";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -89,6 +90,38 @@ export default function App() {
     if (!session) return;
     await saveShared(`itin:${session.code}`, days);
     setTab("itinerario");
+  }
+
+  // Copies structure (itinerary, checklist, packing list) into a brand-new
+  // trip code so a group can reuse a past trip as a starting point without
+  // dragging along its expenses, diary or photos.
+  async function duplicateTrip(): Promise<string | null> {
+    if (!session || !trip) return null;
+    const newCode = genTripCode();
+    const newTrip: Trip = {
+      name: `${trip.name} (copia)`,
+      destination: trip.destination,
+      startDate: null,
+      endDate: null,
+      members: [session.name],
+      createdAt: Date.now(),
+    };
+    const [itin, checklist, equipaje] = await Promise.all([
+      loadShared<ItineraryDay[]>(`itin:${session.code}`, []),
+      loadShared<ChecklistItem[]>(`checklist:${session.code}`, []),
+      loadShared<PackingItem[]>(`equipaje:${session.code}`, []),
+    ]);
+    await Promise.all([
+      saveShared(`trip:${newCode}`, newTrip),
+      saveShared(`itin:${newCode}`, itin),
+      saveShared(`checklist:${newCode}`, checklist.map(c => ({ ...c, done: false }))),
+      saveShared(`equipaje:${newCode}`, equipaje.map(e => ({ ...e, checkedBy: [] }))),
+    ]);
+    return newCode;
+  }
+
+  async function enterDuplicated(code: string) {
+    await enter(code, session!.name);
   }
 
   function leave() {
@@ -187,7 +220,7 @@ export default function App() {
   } : null;
 
   return (
-    <div style={{ background: dk ? dk.bg : C.paper, fontFamily: F.body, color: dk ? dk.text : C.ink, minHeight: "100dvh", transition: "background 0.3s" }}>
+    <div className="app-shell" style={{ background: dk ? dk.bg : C.paper, fontFamily: F.body, color: dk ? dk.text : C.ink, minHeight: "100dvh", transition: "background 0.3s" }}>
       {/* Header */}
       <header style={{ background: dk ? dk.bgHeader : `linear-gradient(135deg, ${C.navy} 0%, ${C.navyMid} 60%, #1A3560 100%)`, color: C.paper }} className="dot-grid">
         <div className="max-w-4xl mx-auto px-4 pt-4 pb-0">
@@ -245,8 +278,8 @@ export default function App() {
 
       {/* Content */}
       <main ref={contentRef as React.RefObject<HTMLElement>} className="max-w-4xl mx-auto px-4 py-6" style={{ opacity: 0, paddingBottom: "calc(1.5rem + 64px)" }}>
-        {tab === "resumen"    && <Resumen trip={trip} session={session} days={days} darkMode={darkMode} />}
-        {tab === "reservas"   && <Reservas code={session.code} session={session} trip={trip} darkMode={darkMode} />}
+        {tab === "resumen"    && <Resumen trip={trip} session={session} days={days} darkMode={darkMode} onTripUpdate={setTrip} onDuplicate={duplicateTrip} onEnterDuplicate={enterDuplicated} />}
+        {tab === "reservas"   && <Reservas code={session.code} session={session} trip={trip} darkMode={darkMode} onTripUpdate={setTrip} />}
         {tab === "itinerario" && <Itinerario code={session.code} startDate={trip.startDate} trip={trip} session={session} onImportItinerary={importItinerary} />}
         {tab === "mapa"       && <Mapa code={session.code} destination={trip.destination} trip={trip} session={session} />}
         {tab === "fotos"      && <Fotos code={session.code} session={session} trip={trip} />}
@@ -326,6 +359,8 @@ export default function App() {
             style={{ color: "#8BAFD4", padding: 4 }}><X size={16} /></button>
         </div>
       )}
+
+      <PrintExport code={session.code} trip={trip} />
     </div>
   );
 }

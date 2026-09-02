@@ -134,11 +134,10 @@ input, textarea, select { outline: none; }
 .hover-underline:hover::after { width: 100%; }
 
 /* Print / PDF export */
+.print-export { display: none; }
 @media print {
-  header nav { display: none !important; }
-  button { display: none !important; }
-  .no-print { display: none !important; }
   body { background: #fff !important; color: #000 !important; }
-  main { padding: 0 !important; }
   * { box-shadow: none !important; }
+  .app-shell > *:not(.print-export) { display: none !important; }
+  .print-export { display: block !important; }
 }

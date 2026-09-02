@@ -1,13 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { Copy, Check, Printer } from "lucide-react";
+import { Copy, Check, Printer, Lock } from "lucide-react";
 import { C, F } from "./theme";
 import type { Trip } from "./types";
+import { isPremium } from "./premium";
+import { PremiumGate } from "./PremiumGate";
 
-export function InvitePanel({ code, trip, darkMode }: { code: string; trip: Trip; darkMode: boolean }) {
+export function InvitePanel({ code, trip, darkMode, onTripUpdate }: { code: string; trip: Trip; darkMode: boolean; onTripUpdate: (t: Trip) => void }) {
   const [copied, setCopied] = useState(false);
   const [codeCopied, setCodeCopied] = useState(false);
+  const [showUpsell, setShowUpsell] = useState(false);
+  const premium = isPremium(trip);
   const softColor = darkMode ? "#8B949E" : C.inkSoft;
   const textColor = darkMode ? "#E6EDF3" : C.ink;
   const borderColor = darkMode ? "#30363D" : C.line;
@@ -38,13 +42,18 @@ export function InvitePanel({ code, trip, darkMode }: { code: string; trip: Trip
           {copied ? <Check size={12} /> : <Copy size={12} />}
           {copied ? "¡ENLACE COPIADO!" : "COPIAR ENLACE DE INVITACIÓN"}
         </button>
-        <button onClick={() => window.print()} style={{ display: "flex", alignItems: "center", gap: 6, color: softColor, fontFamily: F.mono, fontSize: 11, border: `1px solid ${borderColor}`, borderRadius: 6, padding: "7px 12px" }}>
-          <Printer size={12} /> EXPORTAR PDF
+        <button onClick={() => (premium ? window.print() : setShowUpsell(v => !v))} style={{ display: "flex", alignItems: "center", gap: 6, color: softColor, fontFamily: F.mono, fontSize: 11, border: `1px solid ${borderColor}`, borderRadius: 6, padding: "7px 12px" }}>
+          {premium ? <Printer size={12} /> : <Lock size={12} />} EXPORTAR VIAJE A PDF
         </button>
       </div>
       <p style={{ color: softColor, fontSize: 11, fontFamily: F.mono }}>
         El enlace lleva los datos del viaje, así tu grupo puede unirse directamente.
       </p>
+      {showUpsell && !premium && (
+        <PremiumGate code={code} trip={trip} onUnlock={t => { onTripUpdate(t); setShowUpsell(false); }} feature="Exportar el viaje completo a PDF (itinerario, reservas, checklist y gastos)" darkMode={darkMode}>
+          <></>
+        </PremiumGate>
+      )}
     </div>
   );
 }

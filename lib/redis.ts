@@ -16,7 +16,7 @@ export async function getRedis() {
 // so the store endpoint can't be used as free-form key/value storage.
 // Accepts both the legacy 3-letter/3-digit codes already issued to existing trips
 // and the wider 4/4 codes new trips now generate (see genTripCode).
-const KEY_PATTERN = /^(trip|ahorro|checklist|diario|equipaje|fotos|gastos|ideas|itin|mapa|reservas):[A-Z]{3,4}-[0-9]{3,4}$/;
+const KEY_PATTERN = /^(trip|ahorro|checklist|diario|documentos|equipaje|fotos|gastos|ideas|itin|mapa|reservas):[A-Z]{3,4}-[0-9]{3,4}$/;
 
 export function isValidStoreKey(key: unknown): key is string {
   return typeof key === "string" && KEY_PATTERN.test(key);

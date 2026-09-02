@@ -5,6 +5,7 @@ export interface Trip {
   endDate: string | null;
   members: string[];
   createdAt: number;
+  premium?: boolean;
 }
 export interface Session { code: string; name: string; }
 export interface ItineraryDay { id: string; date: string; title: string; items: ItineraryItem[]; }
@@ -50,4 +51,11 @@ export interface DestinationTemplate {
   mapPlaces: { name: string; lat: number; lon: number; note: string }[];
 }
 export interface ChatMsg { role: "user" | "assistant"; content: string; }
+export interface TravelDocument {
+  id: string;
+  kind: "pasaporte" | "visado" | "seguro" | "checkin" | "otro";
+  title: string;
+  dueDate: string;
+  notes: string;
+}
 export type TabId = "resumen" | "itinerario" | "mapa" | "fotos" | "checklist" | "gastos" | "equipaje" | "ideas" | "ahorro" | "destinos" | "reservas" | "diario" | "asistente";

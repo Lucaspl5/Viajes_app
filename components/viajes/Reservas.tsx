@@ -8,11 +8,13 @@ import { uid, isValidUrl, loadShared, saveShared, peekShared } from "./utils";
 import { BOOKING_TYPES } from "./data/constants";
 import type { Session, Booking, Trip } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
+import { PremiumGate } from "./PremiumGate";
+import { Documentos } from "./Documentos";
 
 
 export const BOOKING_TYPE_ICONS: Record<string, string> = { vuelo: "✈️", hotel: "🏨", actividad: "🎭", traslado: "🚗", otro: "📋" };
 
-export function Reservas({ code, session, trip, darkMode }: { code: string; session: Session; trip: Trip; darkMode: boolean }) {
+export function Reservas({ code, session, trip, darkMode, onTripUpdate }: { code: string; session: Session; trip: Trip; darkMode: boolean; onTripUpdate: (t: Trip) => void }) {
   const key = `reservas:${code}`;
   const [bookings, setBookings] = useState<Booking[]>(() => peekShared<Booking[]>(key) ?? []);
   const [loading, setLoading] = useState(() => peekShared<Booking[]>(key) === undefined);
@@ -205,6 +207,11 @@ export function Reservas({ code, session, trip, darkMode }: { code: string; sess
         ))}
         {bookings.length === 0 && <EmptyState icon={<Ticket size={28} color={C.line} />} text="Sin reservas todavía. Añade vuelos, hoteles y actividades." />}
       </div>
+
+      {/* Document reminders — premium */}
+      <PremiumGate code={code} trip={trip} onUnlock={onTripUpdate} feature="Los recordatorios de documentos (pasaporte, visado, seguro, check-in)" darkMode={darkMode}>
+        <Documentos code={code} darkMode={darkMode} />
+      </PremiumGate>
     </div>
   );
 }

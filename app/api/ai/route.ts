@@ -5,6 +5,7 @@ export const runtime = "edge";
 
 const TRIP_CODE_LIMIT = { count: 30, windowSeconds: 3600 }; // per trip, per hour
 const IP_LIMIT = { count: 30, windowSeconds: 3600 }; // per IP, per hour
+const FREE_AI_MESSAGES = 10; // lifetime, per non-premium trip
 
 // Bounds on the client-controlled payload so a valid trip code can't be used
 // to inflate the token cost billed to the personal Anthropic API key.
@@ -16,15 +17,18 @@ const MAX_SYSTEM_CHARS = 12_000;
 // Requires a valid, existing trip code so this endpoint can't be hit for
 // free by anyone who just finds the public URL — not real auth, but it
 // stops anonymous abuse of the personal Anthropic API key behind it.
-async function isValidTripCode(code: unknown): Promise<boolean> {
-  if (typeof code !== "string" || !code.trim()) return false;
+// Returns "no_kv" when Redis isn't configured (can't check, don't block),
+// null when the code doesn't resolve to a trip, or the trip's premium flag.
+async function lookupTrip(code: unknown): Promise<{ premium: boolean } | "no_kv" | null> {
+  if (typeof code !== "string" || !code.trim()) return null;
   try {
     const redis = await getRedis();
-    if (!redis) return true; // KV not configured (e.g. local dev) — can't check, don't block
-    const trip = await redis.get(`trip:${code}`);
-    return trip !== null;
+    if (!redis) return "no_kv";
+    const trip = await redis.get<{ premium?: boolean }>(`trip:${code}`);
+    if (!trip) return null;
+    return { premium: !!trip.premium };
   } catch {
-    return true; // Redis unreachable — fail open rather than break the feature
+    return "no_kv"; // Redis unreachable — fail open rather than break the feature
   }
 }
 
@@ -46,7 +50,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid_body" }, { status: 400 });
   }
 
-  if (!(await isValidTripCode(body.code))) {
+  const tripLookup = await lookupTrip(body.code);
+  if (tripLookup === null) {
     return NextResponse.json({ error: "invalid_trip_code" }, { status: 403 });
   }
 
@@ -67,6 +72,16 @@ export async function POST(req: NextRequest) {
   const tripLimit = await checkRateLimit(`ai:trip:${body.code}`, TRIP_CODE_LIMIT.count, TRIP_CODE_LIMIT.windowSeconds);
   if (!tripLimit.ok) {
     return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  }
+
+  if (tripLookup !== "no_kv" && !tripLookup.premium) {
+    const redis = await getRedis();
+    if (redis) {
+      const used = await redis.incr(`ai:usage:${body.code}`);
+      if (used > FREE_AI_MESSAGES) {
+        return NextResponse.json({ error: "premium_required" }, { status: 402 });
+      }
+    }
   }
 
   const { messages, system } = body;

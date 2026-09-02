@@ -58,6 +58,12 @@ export function AsistenteIA({ code, trip, session, onImportItinerary }: {
         return;
       }
 
+      if (res.status === 402) {
+        setMsgs(m => [...m, { role: "assistant", content: "✨ Has usado tus 10 mensajes gratis con el asistente en este viaje. Hazte Premium (pestaña Inicio) para seguir preguntando sin límite." }]);
+        setStreaming(false);
+        return;
+      }
+
       if (!res.ok || !res.body) {
         setMsgs(m => [...m, { role: "assistant", content: "Error al conectar con la IA. Inténtalo de nuevo." }]);
         setStreaming(false);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Camera, X, Edit2 } from "lucide-react";
+import { Camera, X, Edit2, Copy, Check, PlusSquare } from "lucide-react";
 import { animate, spring } from "animejs";
 import { C, F, inputStyle } from "./theme";
 import { useAnimeStagger } from "./animation";
@@ -12,7 +12,12 @@ import { WeatherWidget } from "./WeatherWidget";
 import { InvitePanel } from "./InvitePanel";
 
 
-export function Resumen({ trip, session, days, darkMode }: { trip: Trip; session: Session; days: number | null; darkMode: boolean }) {
+export function Resumen({ trip, session, days, darkMode, onTripUpdate, onDuplicate, onEnterDuplicate }: {
+  trip: Trip; session: Session; days: number | null; darkMode: boolean;
+  onTripUpdate: (t: Trip) => void;
+  onDuplicate: () => Promise<string | null>;
+  onEnterDuplicate: (code: string) => Promise<void>;
+}) {
   const dur = tripDuration(trip.startDate, trip.endDate);
   const [coverUrl, setCoverUrl] = useState("");
   const [coverInput, setCoverInput] = useState("");
@@ -33,6 +38,17 @@ export function Resumen({ trip, session, days, darkMode }: { trip: Trip; session
   const cardBorder = darkMode ? "#30363D" : C.line;
   const textColor = darkMode ? "#E6EDF3" : C.ink;
   const softColor = darkMode ? "#8B949E" : C.inkSoft;
+
+  const [duplicating, setDuplicating] = useState(false);
+  const [duplicatedCode, setDuplicatedCode] = useState<string | null>(null);
+  const [duplicatedCopied, setDuplicatedCopied] = useState(false);
+
+  async function handleDuplicate() {
+    setDuplicating(true);
+    const code = await onDuplicate();
+    setDuplicating(false);
+    if (code) setDuplicatedCode(code);
+  }
 
   // Stagger entrance for the whole resumen section
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -131,7 +147,45 @@ export function Resumen({ trip, session, days, darkMode }: { trip: Trip; session
       <WeatherWidget destination={trip.destination} startDate={trip.startDate} endDate={trip.endDate} />
 
       {/* Invite + Print */}
-      <InvitePanel code={session.code} trip={trip} darkMode={darkMode} />
+      <InvitePanel code={session.code} trip={trip} darkMode={darkMode} onTripUpdate={onTripUpdate} />
+
+      {/* Duplicate trip */}
+      <Card style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
+        <div className="flex items-center gap-2 mb-2">
+          <PlusSquare size={15} color={softColor} />
+          <SectionLabel>Duplicar viaje</SectionLabel>
+        </div>
+        {!duplicatedCode ? (
+          <div className="flex flex-col gap-2">
+            <p style={{ color: softColor, fontSize: 13 }}>
+              Crea un viaje nuevo reutilizando este itinerario, checklist y equipaje.
+            </p>
+            <button onClick={handleDuplicate} disabled={duplicating} style={{
+              alignSelf: "flex-start", display: "flex", alignItems: "center", gap: 6,
+              background: darkMode ? "#21262D" : C.paperDark, color: textColor, border: `1px solid ${cardBorder}`,
+              borderRadius: 6, padding: "7px 14px", fontFamily: F.mono, fontSize: 11,
+            }}>
+              <PlusSquare size={12} /> {duplicating ? "DUPLICANDO…" : "DUPLICAR ESTE VIAJE"}
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2">
+            <p style={{ color: softColor, fontSize: 13 }}>
+              Nuevo viaje creado con código{" "}
+              <button onClick={() => { navigator.clipboard?.writeText(duplicatedCode).catch(() => {}); setDuplicatedCopied(true); setTimeout(() => setDuplicatedCopied(false), 2000); }}
+                style={{ color: textColor, fontFamily: F.mono, fontWeight: 700, background: darkMode ? "#21262D" : C.paperDark, borderRadius: 4, padding: "1px 6px", fontSize: 13, display: "inline-flex", alignItems: "center", gap: 4 }}>
+                {duplicatedCode} {duplicatedCopied ? <Check size={11} color={C.teal} /> : <Copy size={10} />}
+              </button>.
+            </p>
+            <button onClick={() => onEnterDuplicate(duplicatedCode)} style={{
+              alignSelf: "flex-start", background: C.teal, color: "#fff", borderRadius: 6,
+              padding: "8px 16px", fontFamily: F.mono, fontSize: 11, fontWeight: 700,
+            }}>
+              ENTRAR EN EL VIAJE DUPLICADO
+            </button>
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

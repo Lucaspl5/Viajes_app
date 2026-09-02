@@ -37,6 +37,7 @@ export function AiQuickButton({ code, trip, session, suggestions, onImportItiner
         body: JSON.stringify({ code, system: buildSystemPrompt(trip, ctx), messages: [{ role: "user", content: q }] }),
       });
       if (res.status === 503) { setError("Falta configurar ANTHROPIC_API_KEY en Vercel."); setBusy(false); return; }
+      if (res.status === 402) { setError("✨ Has usado tus 10 mensajes gratis con el asistente en este viaje. Hazte Premium (pestaña Inicio) para seguir sin límite."); setBusy(false); return; }
       if (!res.ok || !res.body) { setError("No se pudo conectar con la IA. Inténtalo de nuevo."); setBusy(false); return; }
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
