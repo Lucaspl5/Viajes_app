@@ -26,6 +26,7 @@ import { Destinos } from "./Destinos";
 import { Reservas } from "./Reservas";
 import { Diario } from "./Diario";
 import { PrintExport } from "./PrintExport";
+import { WelcomeModal } from "./WelcomeModal";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -392,6 +393,7 @@ export default function App() {
       )}
 
       <PrintExport code={session.code} trip={trip} />
+      <WelcomeModal />
     </div>
   );
 }
