@@ -1,18 +1,21 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { ListChecks, Check, Trash2, Euro, ChevronDown } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, EmptyState, SkeletonCards } from "./ui";
 import { uid, loadShared, saveShared, peekShared } from "./utils";
 import type { Session, ChecklistItem, Trip } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
+import { useAnimeStagger, AnimatedIn } from "./animation";
 
 
 export function Checklist({ code, session, trip }: { code: string; session: Session; trip: Trip }) {
   const key = `checklist:${code}`;
   const [items, setItems] = useState<ChecklistItem[]>(() => peekShared<ChecklistItem[]>(key) ?? []);
   const [loading, setLoading] = useState(() => peekShared<ChecklistItem[]>(key) === undefined);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  useAnimeStagger(sectionRef);
   const [text, setText] = useState(""); const [cost, setCost] = useState("");
   const [showBreak, setShowBreak] = useState(false);
   useEffect(() => { loadShared<ChecklistItem[]>(key, []).then(it => { setItems(it); setLoading(false); }); }, [key]);
@@ -36,7 +39,7 @@ export function Checklist({ code, session, trip }: { code: string; session: Sess
 
   if (loading) return <SkeletonCards />;
   return (
-    <div className="flex flex-col gap-4">
+    <div ref={sectionRef} className="flex flex-col gap-4">
       <div className="flex justify-end">
         <AiQuickButton code={code} trip={trip} session={session} suggestions={[
           "Añade tareas típicas antes de un viaje internacional",
@@ -85,18 +88,20 @@ export function Checklist({ code, session, trip }: { code: string; session: Sess
       </Card>
       <div className="flex flex-col gap-2">
         {items.map(it => (
-          <div key={it.id} className="flex items-center gap-3 px-3 py-2" style={{ background: "#fff", border: `1px solid ${C.line}`, borderRadius: 6 }}>
-            <button onClick={() => persist(items.map(x => x.id === it.id ? { ...x, done: !x.done } : x))} style={{ flexShrink: 0 }}>
-              <div style={{ width: 20, height: 20, borderRadius: 5, border: `1.5px solid ${it.done ? C.teal : C.line}`, background: it.done ? C.teal : "transparent", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s" }}>
-                {it.done && <Check size={13} color="#fff" strokeWidth={2.5} />}
+          <AnimatedIn key={it.id}>
+            <div className="flex items-center gap-3 px-3 py-2" style={{ background: "#fff", border: `1px solid ${C.line}`, borderRadius: 6 }}>
+              <button onClick={() => persist(items.map(x => x.id === it.id ? { ...x, done: !x.done } : x))} style={{ flexShrink: 0 }}>
+                <div style={{ width: 20, height: 20, borderRadius: 5, border: `1.5px solid ${it.done ? C.teal : C.line}`, background: it.done ? C.teal : "transparent", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s" }}>
+                  {it.done && <Check size={13} color="#fff" strokeWidth={2.5} />}
+                </div>
+              </button>
+              <div className="flex-1 min-w-0">
+                <span style={{ fontSize: 14, textDecoration: it.done ? "line-through" : "none", color: it.done ? C.inkSoft : C.ink }}>{it.text}</span>
+                <div style={{ fontFamily: F.mono, fontSize: 11, color: C.inkSoft, marginTop: 1 }}>{it.cost > 0 ? `${it.cost.toFixed(2)} € · ` : ""}{it.by}</div>
               </div>
-            </button>
-            <div className="flex-1 min-w-0">
-              <span style={{ fontSize: 14, textDecoration: it.done ? "line-through" : "none", color: it.done ? C.inkSoft : C.ink }}>{it.text}</span>
-              <div style={{ fontFamily: F.mono, fontSize: 11, color: C.inkSoft, marginTop: 1 }}>{it.cost > 0 ? `${it.cost.toFixed(2)} € · ` : ""}{it.by}</div>
+              <button onClick={() => persist(items.filter(x => x.id !== it.id))} style={{ color: C.inkSoft, padding: 4 }}><Trash2 size={14} /></button>
             </div>
-            <button onClick={() => persist(items.filter(x => x.id !== it.id))} style={{ color: C.inkSoft, padding: 4 }}><Trash2 size={14} /></button>
-          </div>
+          </AnimatedIn>
         ))}
         {items.length === 0 && <EmptyState icon={<ListChecks size={28} color={C.line} />} text="Lista vacía — añade la primera tarea." />}
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Copy, Plus, Trash2, X, Euro, ExternalLink, Edit2, Ticket } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Banner, EmptyState, SkeletonCards } from "./ui";
@@ -10,6 +10,7 @@ import type { Session, Booking, Trip } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
 import { PremiumGate } from "./PremiumGate";
 import { Documentos } from "./Documentos";
+import { useAnimeStagger, AnimatedIn } from "./animation";
 
 
 export const BOOKING_TYPE_ICONS: Record<string, string> = { vuelo: "✈️", hotel: "🏨", actividad: "🎭", traslado: "🚗", otro: "📋" };
@@ -25,6 +26,8 @@ export function Reservas({ code, session, trip, darkMode, onTripUpdate }: { code
     endDate: "", endTime: "", location: "", bookingUrl: "", notes: "", amount: 0,
   });
   const [err, setErr] = useState("");
+  const sectionRef = useRef<HTMLDivElement>(null);
+  useAnimeStagger(sectionRef);
 
   useEffect(() => { loadShared<Booking[]>(key, []).then(b => { setBookings(b); setLoading(false); }); }, [key]);
   const persist = useCallback(async (next: Booking[]) => { setBookings(next); await saveShared(key, next); }, [key]);
@@ -66,7 +69,7 @@ export function Reservas({ code, session, trip, darkMode, onTripUpdate }: { code
   const formInStyle = { ...inputStyle, background: cardBg, color: textColor, border: `1px solid ${cardBorder}` };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div ref={sectionRef} className="flex flex-col gap-4">
       {/* Header */}
       <div style={{ background: `linear-gradient(135deg, ${C.navy}, ${C.navyMid})`, borderRadius: 14, padding: "20px 20px", color: C.paper, position: "relative", overflow: "hidden" }} className="dot-grid">
         <div className="glow-pulse" style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: 999, background: `radial-gradient(circle, ${C.teal}30, transparent 70%)`, pointerEvents: "none" }} />
@@ -162,7 +165,8 @@ export function Reservas({ code, session, trip, darkMode, onTripUpdate }: { code
       {/* Booking cards */}
       <div className="flex flex-col gap-3">
         {sorted.map(b => (
-          <div key={b.id} style={{ background: cardBg, border: `1px solid ${cardBorder}`, borderRadius: 12, overflow: "hidden" }}>
+          <AnimatedIn key={b.id}>
+          <div style={{ background: cardBg, border: `1px solid ${cardBorder}`, borderRadius: 12, overflow: "hidden" }}>
             <div style={{ background: `linear-gradient(135deg, ${C.navyMid}, ${C.navy})`, padding: "12px 16px", display: "flex", alignItems: "center", gap: 10 }}>
               <span style={{ fontSize: 22 }}>{BOOKING_TYPE_ICONS[b.type]}</span>
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -204,6 +208,7 @@ export function Reservas({ code, session, trip, darkMode, onTripUpdate }: { code
               </div>
             </div>
           </div>
+          </AnimatedIn>
         ))}
         {bookings.length === 0 && <EmptyState icon={<Ticket size={28} color={C.line} />} text="Sin reservas todavía. Añade vuelos, hoteles y actividades." />}
       </div>

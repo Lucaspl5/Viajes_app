@@ -9,6 +9,7 @@ import type { Session, Photo, Trip } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
 import { isPremium } from "./premium";
 import { PremiumGate } from "./PremiumGate";
+import { useAnimeStagger, AnimatedIn } from "./animation";
 
 
 export function compressImage(file: File): Promise<string> {
@@ -50,6 +51,8 @@ export function Fotos({ code, session, trip, darkMode, onTripUpdate }: { code: s
   const [showZipUpsell, setShowZipUpsell] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const premium = isPremium(trip);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  useAnimeStagger(sectionRef);
   useEffect(() => { loadShared<Photo[]>(key, []).then(p => { setPhotos(p); setLoading(false); }); }, [key]);
   const persist = useCallback(async (next: Photo[]) => { setPhotos(next); await saveShared(key, next); }, [key]);
 
@@ -118,7 +121,7 @@ export function Fotos({ code, session, trip, darkMode, onTripUpdate }: { code: s
           </div>
         </div>
       )}
-      <div className="flex flex-col gap-4">
+      <div ref={sectionRef} className="flex flex-col gap-4">
         <div className="flex justify-between items-center gap-2 flex-wrap">
           {photos.length > 0 ? (
             <button onClick={downloadZip} disabled={zipping} className="flex items-center gap-1.5"
@@ -153,17 +156,19 @@ export function Fotos({ code, session, trip, darkMode, onTripUpdate }: { code: s
         </Card>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {photos.map(p => (
-            <div key={p.id} className="card-lift" style={{ background: "#fff", border: `1px solid ${C.line}`, borderRadius: 8, padding: 8 }}>
-              <div onClick={() => setLightbox(p)} style={{ width: "100%", paddingBottom: "100%", position: "relative", background: C.paperDark, borderRadius: 5, overflow: "hidden", cursor: "zoom-in" }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={p.url} alt={p.caption} loading="lazy" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+            <AnimatedIn key={p.id}>
+              <div className="card-lift" style={{ background: "#fff", border: `1px solid ${C.line}`, borderRadius: 8, padding: 8 }}>
+                <div onClick={() => setLightbox(p)} style={{ width: "100%", paddingBottom: "100%", position: "relative", background: C.paperDark, borderRadius: 5, overflow: "hidden", cursor: "zoom-in" }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={p.url} alt={p.caption} loading="lazy" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                </div>
+                {p.caption && <p style={{ fontSize: 12, marginTop: 6, color: C.ink, lineHeight: 1.4 }}>{p.caption}</p>}
+                <div className="flex items-center justify-between mt-1">
+                  <span style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft }}>{p.author}</span>
+                  <button onClick={() => persist(photos.filter(x => x.id !== p.id))} style={{ color: C.inkSoft, padding: 2 }}><Trash2 size={12} /></button>
+                </div>
               </div>
-              {p.caption && <p style={{ fontSize: 12, marginTop: 6, color: C.ink, lineHeight: 1.4 }}>{p.caption}</p>}
-              <div className="flex items-center justify-between mt-1">
-                <span style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft }}>{p.author}</span>
-                <button onClick={() => persist(photos.filter(x => x.id !== p.id))} style={{ color: C.inkSoft, padding: 2 }}><Trash2 size={12} /></button>
-              </div>
-            </div>
+            </AnimatedIn>
           ))}
         </div>
         {photos.length === 0 && <EmptyState icon={<Camera size={28} color={C.line} />} text="Aún no hay fotos. ¡Sé el primero!" />}

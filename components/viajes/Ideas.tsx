@@ -1,18 +1,21 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { Trash2, ThumbsUp, ThumbsDown, Lightbulb, ExternalLink } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, EmptyState, SkeletonCards } from "./ui";
 import { uid, isValidUrl, loadShared, saveShared, peekShared } from "./utils";
 import type { Session, Idea, Trip } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
+import { useAnimeStagger, AnimatedIn } from "./animation";
 
 
 export function Ideas({ code, session, trip }: { code: string; session: Session; trip: Trip }) {
   const key = `ideas:${code}`;
   const [ideas, setIdeas] = useState<Idea[]>(() => peekShared<Idea[]>(key) ?? []);
   const [loading, setLoading] = useState(() => peekShared<Idea[]>(key) === undefined);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  useAnimeStagger(sectionRef);
   const [text, setText] = useState(""); const [note, setNote] = useState("");
   useEffect(() => { loadShared<Idea[]>(key, []).then(it => { setIdeas(it); setLoading(false); }); }, [key]);
   const persist = useCallback(async (next: Idea[]) => { setIdeas(next); await saveShared(key, next); }, [key]);
@@ -43,7 +46,7 @@ export function Ideas({ code, session, trip }: { code: string; session: Session;
   if (loading) return <SkeletonCards />;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div ref={sectionRef} className="flex flex-col gap-4">
       <div className="flex justify-end">
         <AiQuickButton code={code} trip={trip} session={session} suggestions={[
           `Sugiéreme 5 ideas de actividades en ${trip.destination || "mi destino"}`,
@@ -68,35 +71,37 @@ export function Ideas({ code, session, trip }: { code: string; session: Session;
           const upCount = Object.values(idea.votes).filter(v => v === 1).length;
           const downCount = Object.values(idea.votes).filter(v => v === -1).length;
           return (
-            <Card key={idea.id} className="card-lift" style={{ padding: "14px 16px" }}>
-              <div className="flex items-start gap-3">
-                {/* Vote column */}
-                <div className="flex flex-col items-center gap-1 shrink-0" style={{ minWidth: 40 }}>
-                  <button className="vote-btn" onClick={() => vote(idea.id, 1)}
-                    style={{ color: myVote === 1 ? C.green : C.line, display: "flex", flexDirection: "column", alignItems: "center" }}>
-                    <ThumbsUp size={18} fill={myVote === 1 ? C.green : "none"} />
-                    <span style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft }}>{upCount}</span>
-                  </button>
-                  <div style={{ fontFamily: F.display, fontSize: 18, fontWeight: 700, color: score > 0 ? C.green : score < 0 ? C.red : C.inkSoft }}>{score > 0 ? "+" : ""}{score}</div>
-                  <button className="vote-btn" onClick={() => vote(idea.id, -1)}
-                    style={{ color: myVote === -1 ? C.red : C.line, display: "flex", flexDirection: "column", alignItems: "center" }}>
-                    <ThumbsDown size={18} fill={myVote === -1 ? C.red : "none"} />
-                    <span style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft }}>{downCount}</span>
-                  </button>
+            <AnimatedIn key={idea.id}>
+              <Card className="card-lift" style={{ padding: "14px 16px" }}>
+                <div className="flex items-start gap-3">
+                  {/* Vote column */}
+                  <div className="flex flex-col items-center gap-1 shrink-0" style={{ minWidth: 40 }}>
+                    <button className="vote-btn" onClick={() => vote(idea.id, 1)}
+                      style={{ color: myVote === 1 ? C.green : C.line, display: "flex", flexDirection: "column", alignItems: "center" }}>
+                      <ThumbsUp size={18} fill={myVote === 1 ? C.green : "none"} />
+                      <span style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft }}>{upCount}</span>
+                    </button>
+                    <div style={{ fontFamily: F.display, fontSize: 18, fontWeight: 700, color: score > 0 ? C.green : score < 0 ? C.red : C.inkSoft }}>{score > 0 ? "+" : ""}{score}</div>
+                    <button className="vote-btn" onClick={() => vote(idea.id, -1)}
+                      style={{ color: myVote === -1 ? C.red : C.line, display: "flex", flexDirection: "column", alignItems: "center" }}>
+                      <ThumbsDown size={18} fill={myVote === -1 ? C.red : "none"} />
+                      <span style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft }}>{downCount}</span>
+                    </button>
+                  </div>
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <p style={{ fontWeight: 600, fontSize: 15, color: C.ink }}>{idea.text}</p>
+                    {idea.note && (
+                      isValidUrl(idea.note)
+                        ? <a href={idea.note} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1" style={{ color: C.sky, fontSize: 12, marginTop: 3 }}><ExternalLink size={11} />{idea.note.length > 50 ? `${idea.note.slice(0, 50)}…` : idea.note}</a>
+                        : <p style={{ color: C.inkSoft, fontSize: 13, marginTop: 3 }}>{idea.note}</p>
+                    )}
+                    <p style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft, marginTop: 4 }}>Por {idea.author}</p>
+                  </div>
+                  <button onClick={() => persist(ideas.filter(x => x.id !== idea.id))} style={{ color: C.inkSoft, padding: 4, flexShrink: 0 }}><Trash2 size={14} /></button>
                 </div>
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  <p style={{ fontWeight: 600, fontSize: 15, color: C.ink }}>{idea.text}</p>
-                  {idea.note && (
-                    isValidUrl(idea.note)
-                      ? <a href={idea.note} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1" style={{ color: C.sky, fontSize: 12, marginTop: 3 }}><ExternalLink size={11} />{idea.note.length > 50 ? `${idea.note.slice(0, 50)}…` : idea.note}</a>
-                      : <p style={{ color: C.inkSoft, fontSize: 13, marginTop: 3 }}>{idea.note}</p>
-                  )}
-                  <p style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft, marginTop: 4 }}>Por {idea.author}</p>
-                </div>
-                <button onClick={() => persist(ideas.filter(x => x.id !== idea.id))} style={{ color: C.inkSoft, padding: 4, flexShrink: 0 }}><Trash2 size={14} /></button>
-              </div>
-            </Card>
+              </Card>
+            </AnimatedIn>
           );
         })}
         {ideas.length === 0 && <EmptyState icon={<Lightbulb size={28} color={C.line} />} text="Sin ideas todavía. ¡Propón la primera actividad!" />}

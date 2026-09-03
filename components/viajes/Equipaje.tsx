@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { X, ChevronDown, Luggage, CheckCircle2, Circle } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, EmptyState, SkeletonCards } from "./ui";
@@ -8,6 +8,7 @@ import { uid, loadShared, saveShared, peekShared } from "./utils";
 import { PACKING_CATEGORIES } from "./data/constants";
 import type { Session, PackingItem, Trip } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
+import { useAnimeStagger, AnimatedIn } from "./animation";
 
 
 export const PACKING_TEMPLATES: Record<string, string[]> = {
@@ -25,6 +26,8 @@ export function Equipaje({ code, session, trip }: { code: string; session: Sessi
   const [activeCategory, setActiveCategory] = useState<string>(PACKING_CATEGORIES[0]);
   const [text, setText] = useState("");
   const [expanded, setExpanded] = useState<Set<string>>(new Set(PACKING_CATEGORIES));
+  const sectionRef = useRef<HTMLDivElement>(null);
+  useAnimeStagger(sectionRef);
   useEffect(() => { loadShared<PackingItem[]>(key, []).then(it => { setItems(it); setLoading(false); }); }, [key]);
   const persist = useCallback(async (next: PackingItem[]) => { setItems(next); await saveShared(key, next); }, [key]);
 
@@ -58,7 +61,7 @@ export function Equipaje({ code, session, trip }: { code: string; session: Sessi
   if (loading) return <SkeletonCards />;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div ref={sectionRef} className="flex flex-col gap-4">
       <div className="flex justify-end">
         <AiQuickButton code={code} trip={trip} session={session} suggestions={[
           `Añade lo esencial para el clima de ${trip.destination || "mi destino"}`,
@@ -122,18 +125,20 @@ export function Equipaje({ code, session, trip }: { code: string; session: Sessi
                   const isMeChecked = it.checkedBy.includes(session.name);
                   const othersChecked = it.checkedBy.filter(x => x !== session.name);
                   return (
-                    <div key={it.id} className="flex items-center gap-3 px-4 py-2" style={{ borderBottom: `1px solid ${C.paperDark}` }}>
-                      <button onClick={() => toggleCheck(it.id)} style={{ flexShrink: 0 }}>
-                        {isMeChecked
-                          ? <CheckCircle2 size={20} color={C.teal} />
-                          : <Circle size={20} color={C.line} />}
-                      </button>
-                      <span style={{ flex: 1, fontSize: 14, textDecoration: isMeChecked ? "line-through" : "none", color: isMeChecked ? C.inkSoft : C.ink }}>{it.text}</span>
-                      {othersChecked.length > 0 && (
-                        <span style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft }}>✓ {othersChecked.join(", ")}</span>
-                      )}
-                      <button onClick={() => persist(items.filter(x => x.id !== it.id))} style={{ color: C.inkSoft, padding: 4 }}><X size={13} /></button>
-                    </div>
+                    <AnimatedIn key={it.id}>
+                      <div className="flex items-center gap-3 px-4 py-2" style={{ borderBottom: `1px solid ${C.paperDark}` }}>
+                        <button onClick={() => toggleCheck(it.id)} style={{ flexShrink: 0 }}>
+                          {isMeChecked
+                            ? <CheckCircle2 size={20} color={C.teal} />
+                            : <Circle size={20} color={C.line} />}
+                        </button>
+                        <span style={{ flex: 1, fontSize: 14, textDecoration: isMeChecked ? "line-through" : "none", color: isMeChecked ? C.inkSoft : C.ink }}>{it.text}</span>
+                        {othersChecked.length > 0 && (
+                          <span style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft }}>✓ {othersChecked.join(", ")}</span>
+                        )}
+                        <button onClick={() => persist(items.filter(x => x.id !== it.id))} style={{ color: C.inkSoft, padding: 4 }}><X size={13} /></button>
+                      </div>
+                    </AnimatedIn>
                   );
                 })}
               </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { Trash2, X, Euro, ChevronDown, Wallet, Filter, Lock } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, Banner, EmptyState, SkeletonCards } from "./ui";
@@ -10,6 +10,7 @@ import type { Session, Expense, Trip } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
 import { isPremium } from "./premium";
 import { PremiumGate } from "./PremiumGate";
+import { useAnimeStagger, AnimatedIn } from "./animation";
 
 
 export function calculateSettlements(expenses: Expense[], members: string[]) {
@@ -48,6 +49,8 @@ export function Gastos({ code, session, members, trip, darkMode, onTripUpdate }:
   const [showSettle, setShowSettle] = useState(false);
   const [showCurrencyUpsell, setShowCurrencyUpsell] = useState(false);
   const premium = isPremium(trip);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  useAnimeStagger(sectionRef);
   const [showFilters, setShowFilters] = useState(false);
   const [filterCat, setFilterCat] = useState("");
   const [filterPerson, setFilterPerson] = useState("");
@@ -108,7 +111,7 @@ export function Gastos({ code, session, members, trip, darkMode, onTripUpdate }:
   if (loading) return <SkeletonCards />;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div ref={sectionRef} className="flex flex-col gap-4">
       <div className="flex justify-end">
         <AiQuickButton code={code} trip={trip} session={session} suggestions={[
           "¿Qué presupuesto diario es razonable para este viaje?",
@@ -280,7 +283,8 @@ export function Gastos({ code, session, members, trip, darkMode, onTripUpdate }:
       {/* List */}
       <div className="flex flex-col gap-2">
         {filteredExpenses.map(e => (
-          <div key={e.id} className="flex items-center gap-3 px-3 py-2" style={{ background: darkMode ? "#161B22" : "#fff", border: `1px solid ${darkMode ? "#30363D" : C.line}`, borderRadius: 6 }}>
+          <AnimatedIn key={e.id}>
+          <div className="flex items-center gap-3 px-3 py-2" style={{ background: darkMode ? "#161B22" : "#fff", border: `1px solid ${darkMode ? "#30363D" : C.line}`, borderRadius: 6 }}>
             <span style={{ fontSize: 18, flexShrink: 0 }}>{e.category.split(" ")[0]}</span>
             <div className="flex-1 min-w-0">
               <div style={{ fontWeight: 600, fontSize: 14, color: darkMode ? "#E6EDF3" : C.ink }}>{e.description}</div>
@@ -298,6 +302,7 @@ export function Gastos({ code, session, members, trip, darkMode, onTripUpdate }:
             </span>
             <button onClick={() => persist(expenses.filter(x => x.id !== e.id))} style={{ color: darkMode ? "#8B949E" : C.inkSoft, padding: 4 }}><Trash2 size={14} /></button>
           </div>
+          </AnimatedIn>
         ))}
         {filteredExpenses.length === 0 && expenses.length > 0 && <EmptyState icon={<Filter size={28} color={C.line} />} text="Ningún gasto coincide con los filtros." />}
         {expenses.length === 0 && <EmptyState icon={<Wallet size={28} color={C.line} />} text="Sin gastos todavía. Añade el primero." />}
