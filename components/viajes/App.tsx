@@ -5,7 +5,9 @@ import { Plane, MapPin, Camera, ListChecks, Copy, Check, X, ArrowLeft, Luggage, 
 import { animate } from "animejs";
 import { C, F } from "./theme";
 import { useCountdown } from "./ui";
-import { genTripCode, loadShared, saveShared, loadPersonal, savePersonal } from "./utils";
+import { genTripCode, loadShared, saveShared, flushDirtyKeys, loadPersonal, savePersonal } from "./utils";
+import { isPremium } from "./premium";
+import { sendPresenceHeartbeat, fetchActivePresence } from "./presence";
 import type { Trip, Session, TabId, ItineraryDay, ChecklistItem, PackingItem } from "./types";
 import { EntryScreen } from "./EntryScreen";
 import { LoadingScreen } from "./LoadingScreen";
@@ -156,6 +158,16 @@ export default function App() {
 
   const [showMore, setShowMore] = useState(false);
   const [syncToast, setSyncToast] = useState(false);
+  const [isOffline, setIsOffline] = useState(() => typeof navigator !== "undefined" && !navigator.onLine);
+
+  useEffect(() => {
+    flushDirtyKeys();
+    const onOnline = () => { setIsOffline(false); flushDirtyKeys(); };
+    const onOffline = () => setIsOffline(true);
+    window.addEventListener("online", onOnline);
+    window.addEventListener("offline", onOffline);
+    return () => { window.removeEventListener("online", onOnline); window.removeEventListener("offline", onOffline); };
+  }, []);
   const tripRef = useRef<Trip | null>(null);
   useEffect(() => { tripRef.current = trip; }, [trip]);
 
@@ -188,6 +200,20 @@ export default function App() {
     const id = setInterval(poll, 30000);
     return () => clearInterval(id);
   }, [session]);
+
+  // "Who's here now" — premium only, cheap heartbeat + poll piggybacked on
+  // the same cadence as trip sync above.
+  const [activePresence, setActivePresence] = useState<string[]>([]);
+  useEffect(() => {
+    if (!session || !trip || !isPremium(trip)) { setActivePresence([]); return; }
+    const beat = () => {
+      sendPresenceHeartbeat(session.code, session.name);
+      fetchActivePresence(session.code).then(setActivePresence);
+    };
+    beat();
+    const id = setInterval(beat, 45000);
+    return () => clearInterval(id);
+  }, [session, trip?.premium]);
 
   if (loading) {
     return <LoadingScreen message={loadingMessage} />;
@@ -278,14 +304,14 @@ export default function App() {
 
       {/* Content */}
       <main ref={contentRef as React.RefObject<HTMLElement>} className="max-w-4xl mx-auto px-4 py-6" style={{ opacity: 0, paddingBottom: "calc(1.5rem + 64px)" }}>
-        {tab === "resumen"    && <Resumen trip={trip} session={session} days={days} darkMode={darkMode} onTripUpdate={setTrip} onDuplicate={duplicateTrip} onEnterDuplicate={enterDuplicated} />}
+        {tab === "resumen"    && <Resumen trip={trip} session={session} days={days} darkMode={darkMode} onTripUpdate={setTrip} onDuplicate={duplicateTrip} onEnterDuplicate={enterDuplicated} activePresence={activePresence} />}
         {tab === "reservas"   && <Reservas code={session.code} session={session} trip={trip} darkMode={darkMode} onTripUpdate={setTrip} />}
         {tab === "itinerario" && <Itinerario code={session.code} startDate={trip.startDate} trip={trip} session={session} onImportItinerary={importItinerary} />}
         {tab === "mapa"       && <Mapa code={session.code} destination={trip.destination} trip={trip} session={session} />}
-        {tab === "fotos"      && <Fotos code={session.code} session={session} trip={trip} />}
+        {tab === "fotos"      && <Fotos code={session.code} session={session} trip={trip} darkMode={darkMode} onTripUpdate={setTrip} />}
         {tab === "diario"     && <Diario code={session.code} session={session} trip={trip} darkMode={darkMode} />}
         {tab === "checklist"  && <Checklist code={session.code} session={session} trip={trip} />}
-        {tab === "gastos"     && <Gastos code={session.code} session={session} members={trip.members} trip={trip} darkMode={darkMode} />}
+        {tab === "gastos"     && <Gastos code={session.code} session={session} members={trip.members} trip={trip} darkMode={darkMode} onTripUpdate={setTrip} />}
         {tab === "equipaje"   && <Equipaje code={session.code} session={session} trip={trip} />}
         {tab === "ideas"      && <Ideas code={session.code} session={session} trip={trip} />}
         {tab === "ahorro"     && <Ahorro code={session.code} members={trip.members} trip={trip} session={session} />}
@@ -340,6 +366,11 @@ export default function App() {
         </>
       )}
 
+      {isOffline && (
+        <div className="no-print fade-in" style={{ position: "fixed", top: 8, left: "50%", transform: "translateX(-50%)", background: C.red, color: "#fff", borderRadius: 20, padding: "6px 14px", fontSize: 11, fontFamily: F.mono, zIndex: 9999, boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}>
+          ⚠ SIN CONEXIÓN · guardando en local
+        </div>
+      )}
       {syncToast && (
         <div style={{ position: "fixed", bottom: 80, right: 16, background: C.teal, color: "#fff", borderRadius: 20, padding: "8px 16px", fontSize: 12, fontFamily: "var(--font-mono)", zIndex: 9999, boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }} className="fade-in">
           ✓ SINCRONIZADO

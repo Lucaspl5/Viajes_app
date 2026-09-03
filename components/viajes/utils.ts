@@ -82,6 +82,27 @@ async function loadShared<T>(key: string, fallback: T): Promise<T> {
   try { const r = localStorage.getItem(key); return r ? JSON.parse(r) as T : fallback; } catch { return fallback; }
 }
 
+// Keys whose latest write only made it to localStorage (offline, or the
+// request failed) — retried once connectivity is back, see flushDirtyKeys.
+const DIRTY_KEYS_STORAGE_KEY = "_dirty_keys";
+
+function readDirtyKeys(): string[] {
+  try { return JSON.parse(localStorage.getItem(DIRTY_KEYS_STORAGE_KEY) ?? "[]"); } catch { return []; }
+}
+function markDirty(key: string) {
+  try {
+    const keys = readDirtyKeys();
+    if (!keys.includes(key)) keys.push(key);
+    localStorage.setItem(DIRTY_KEYS_STORAGE_KEY, JSON.stringify(keys));
+  } catch { /* ignore */ }
+}
+function clearDirty(key: string) {
+  try {
+    const keys = readDirtyKeys().filter(k => k !== key);
+    localStorage.setItem(DIRTY_KEYS_STORAGE_KEY, JSON.stringify(keys));
+  } catch { /* ignore */ }
+}
+
 async function saveShared(key: string, value: unknown): Promise<boolean> {
   // Save to localStorage immediately for responsiveness
   try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* ignore */ }
@@ -93,11 +114,33 @@ async function saveShared(key: string, value: unknown): Promise<boolean> {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ key, value }),
     });
-    if (res.ok) return true;
+    if (res.ok) { clearDirty(key); return true; }
     // 503 means KV not configured yet — not an error, just not synced
     if (res.status === 503) return true;
-  } catch { /* network issue */ }
+    // A 4xx (invalid key, payload too large…) would never succeed on
+    // retry — only 5xx and network failures are worth flushing later.
+    if (res.status >= 500) markDirty(key);
+  } catch {
+    markDirty(key); // network issue — retry once we're back online
+  }
   return true; // local save succeeded
+}
+
+// Re-pushes every write that only landed in localStorage (made while
+// offline, or during a transient server error) once connectivity returns.
+async function flushDirtyKeys(): Promise<void> {
+  for (const key of readDirtyKeys()) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw === null) { clearDirty(key); continue; }
+      const res = await fetch("/api/store", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key, value: JSON.parse(raw) }),
+      });
+      if (res.ok || res.status === 503) clearDirty(key);
+    } catch { /* still offline — try again on the next flush */ }
+  }
 }
 
 async function loadPersonal<T>(key: string, fallback: T): Promise<T> {
@@ -118,4 +161,4 @@ function monthsBetween(start: string, end: string): number {
   return Math.max(1, (ey - sy) * 12 + (em - sm) + 1);
 }
 
-export { uid, genTripCode, formatDate, formatDateFull, tripDuration, isValidUrl, loadShared, saveShared, peekShared, loadPersonal, savePersonal, formatMonth, monthsBetween };
+export { uid, genTripCode, formatDate, formatDateFull, tripDuration, isValidUrl, loadShared, saveShared, flushDirtyKeys, peekShared, loadPersonal, savePersonal, formatMonth, monthsBetween };

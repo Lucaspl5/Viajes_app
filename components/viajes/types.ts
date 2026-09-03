@@ -16,6 +16,9 @@ export interface ChecklistItem { id: string; text: string; done: boolean; cost: 
 export interface Expense {
   id: string; description: string; amount: number;
   paidBy: string; splitWith: string[]; category: string; date: string;
+  // amount is always the EUR equivalent (used for totals/settlements);
+  // these two are set only when the expense was entered in another currency.
+  origCurrency?: string; origAmount?: number;
 }
 export interface PackingItem { id: string; text: string; category: string; checkedBy: string[]; }
 export interface Idea {

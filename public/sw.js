@@ -14,6 +14,31 @@ self.addEventListener("activate", event => {
   );
 });
 
+self.addEventListener("push", event => {
+  let payload = {};
+  try { payload = event.data ? event.data.json() : {}; } catch { payload = { body: event.data ? event.data.text() : "" }; }
+  const title = payload.title || "Bitácora de Viaje";
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: payload.body || "",
+      icon: "/icon-192.png",
+      badge: "/icon-192.png",
+      data: { code: payload.code },
+    })
+  );
+});
+
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
+  const code = event.notification.data && event.notification.data.code;
+  event.waitUntil(
+    clients.matchAll({ type: "window" }).then(list => {
+      for (const client of list) if ("focus" in client) return client.focus();
+      if (clients.openWindow) return clients.openWindow(code ? `/?code=${code}` : "/");
+    })
+  );
+});
+
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);

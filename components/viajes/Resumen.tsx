@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Camera, X, Edit2, Copy, Check, PlusSquare } from "lucide-react";
+import { Camera, X, Edit2, Copy, Check, PlusSquare, Bell, BellOff } from "lucide-react";
 import { animate, spring } from "animejs";
 import { C, F, inputStyle } from "./theme";
 import { useAnimeStagger } from "./animation";
@@ -10,13 +10,17 @@ import { formatDate, tripDuration, loadShared, saveShared } from "./utils";
 import type { Trip, Session } from "./types";
 import { WeatherWidget } from "./WeatherWidget";
 import { InvitePanel } from "./InvitePanel";
+import { isPremium } from "./premium";
+import { PremiumGate } from "./PremiumGate";
+import { getPushSubscriptionStatus, subscribeToPush, unsubscribeFromPush } from "./push";
 
 
-export function Resumen({ trip, session, days, darkMode, onTripUpdate, onDuplicate, onEnterDuplicate }: {
+export function Resumen({ trip, session, days, darkMode, onTripUpdate, onDuplicate, onEnterDuplicate, activePresence }: {
   trip: Trip; session: Session; days: number | null; darkMode: boolean;
   onTripUpdate: (t: Trip) => void;
   onDuplicate: () => Promise<string | null>;
   onEnterDuplicate: (code: string) => Promise<void>;
+  activePresence: string[];
 }) {
   const dur = tripDuration(trip.startDate, trip.endDate);
   const [coverUrl, setCoverUrl] = useState("");
@@ -42,6 +46,23 @@ export function Resumen({ trip, session, days, darkMode, onTripUpdate, onDuplica
   const [duplicating, setDuplicating] = useState(false);
   const [duplicatedCode, setDuplicatedCode] = useState<string | null>(null);
   const [duplicatedCopied, setDuplicatedCopied] = useState(false);
+
+  const premium = isPremium(trip);
+  const [pushStatus, setPushStatus] = useState<"subscribed" | "unsubscribed" | "unsupported">("unsupported");
+  const [pushBusy, setPushBusy] = useState(false);
+  useEffect(() => { getPushSubscriptionStatus().then(setPushStatus); }, []);
+
+  async function togglePush() {
+    setPushBusy(true);
+    if (pushStatus === "subscribed") {
+      await unsubscribeFromPush(session.code);
+      setPushStatus("unsubscribed");
+    } else {
+      const ok = await subscribeToPush(session.code);
+      setPushStatus(ok ? "subscribed" : "unsubscribed");
+    }
+    setPushBusy(false);
+  }
 
   async function handleDuplicate() {
     setDuplicating(true);
@@ -128,11 +149,15 @@ export function Resumen({ trip, session, days, darkMode, onTripUpdate, onDuplica
         <div className="flex flex-wrap gap-2">
           {trip.members.map(m => {
             const isMe = m.toLowerCase() === session.name.toLowerCase();
+            const isActive = premium && activePresence.some(a => a.toLowerCase() === m.toLowerCase());
             return (
               <div key={m} className="flex items-center gap-2 px-3 py-1.5 card-lift"
                 style={{ background: isMe ? C.navy : C.paperDark, borderRadius: 999, fontSize: 13, color: isMe ? C.paper : C.ink, fontWeight: isMe ? 600 : 400, border: isMe ? `1px solid ${C.navyMid}` : `1px solid ${C.line}` }}>
-                <div style={{ width: 22, height: 22, borderRadius: 999, background: isMe ? C.red : C.teal, color: "#fff", fontSize: 11, fontFamily: F.mono, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 600 }}>
-                  {m[0]?.toUpperCase()}
+                <div style={{ position: "relative", width: 22, height: 22, flexShrink: 0 }}>
+                  <div style={{ width: 22, height: 22, borderRadius: 999, background: isMe ? C.red : C.teal, color: "#fff", fontSize: 11, fontFamily: F.mono, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 600 }}>
+                    {m[0]?.toUpperCase()}
+                  </div>
+                  {isActive && <div title="Activo ahora" style={{ position: "absolute", bottom: -1, right: -1, width: 8, height: 8, borderRadius: 999, background: C.green, border: `1.5px solid ${isMe ? C.navy : (darkMode ? "#161B22" : "#fff")}` }} />}
                 </div>
                 {m}
                 {isMe && <span style={{ fontSize: 9, color: C.goldLight, fontFamily: F.mono }}>TÚ</span>}
@@ -141,6 +166,11 @@ export function Resumen({ trip, session, days, darkMode, onTripUpdate, onDuplica
           })}
           {trip.members.length === 0 && <p style={{ color: C.inkSoft, fontSize: 13 }}>Sin miembros todavía.</p>}
         </div>
+        {!premium && trip.members.length > 1 && (
+          <p style={{ fontFamily: F.mono, fontSize: 10, color: softColor, marginTop: 8 }}>
+            Premium: ve quién está viendo el viaje ahora mismo.
+          </p>
+        )}
       </Card>
 
       {/* Weather forecast */}
@@ -148,6 +178,32 @@ export function Resumen({ trip, session, days, darkMode, onTripUpdate, onDuplica
 
       {/* Invite + Print */}
       <InvitePanel code={session.code} trip={trip} darkMode={darkMode} onTripUpdate={onTripUpdate} />
+
+      {/* Push notifications */}
+      {pushStatus !== "unsupported" && (
+        <Card style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
+          <div className="flex items-center gap-2 mb-2">
+            {pushStatus === "subscribed" ? <Bell size={15} color={softColor} /> : <BellOff size={15} color={softColor} />}
+            <SectionLabel>Notificaciones</SectionLabel>
+          </div>
+          <PremiumGate code={session.code} trip={trip} onUnlock={onTripUpdate} feature="Recibir un aviso diario con el plan del día" darkMode={darkMode}>
+            <div className="flex items-center justify-between gap-3">
+              <p style={{ color: softColor, fontSize: 13 }}>
+                {pushStatus === "subscribed" ? "Recibirás un aviso cada mañana con el plan del día." : "Recibe un aviso cada mañana con el plan del día."}
+              </p>
+              <button onClick={togglePush} disabled={pushBusy} style={{
+                flexShrink: 0, display: "flex", alignItems: "center", gap: 6,
+                background: pushStatus === "subscribed" ? (darkMode ? "#21262D" : C.paperDark) : C.teal,
+                color: pushStatus === "subscribed" ? textColor : "#fff",
+                border: pushStatus === "subscribed" ? `1px solid ${cardBorder}` : "none",
+                borderRadius: 6, padding: "8px 14px", fontFamily: F.mono, fontSize: 11, fontWeight: 700,
+              }}>
+                {pushBusy ? "…" : pushStatus === "subscribed" ? "DESACTIVAR" : "ACTIVAR"}
+              </button>
+            </div>
+          </PremiumGate>
+        </Card>
+      )}
 
       {/* Duplicate trip */}
       <Card style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>

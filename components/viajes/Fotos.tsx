@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Camera, Trash2, X } from "lucide-react";
+import { Camera, Trash2, X, Download, Lock } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, Banner, EmptyState, SkeletonCards } from "./ui";
 import { uid, isValidUrl, loadShared, saveShared, peekShared } from "./utils";
 import type { Session, Photo, Trip } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
+import { isPremium } from "./premium";
+import { PremiumGate } from "./PremiumGate";
 
 
 export function compressImage(file: File): Promise<string> {
@@ -28,7 +30,15 @@ export function compressImage(file: File): Promise<string> {
   });
 }
 
-export function Fotos({ code, session, trip }: { code: string; session: Session; trip: Trip }) {
+function extensionFor(url: string): string {
+  const m = /^data:image\/(\w+);/.exec(url);
+  if (m) return m[1] === "jpeg" ? "jpg" : m[1];
+  const clean = url.split(/[?#]/)[0];
+  const ext = clean.split(".").pop();
+  return ext && ext.length <= 4 ? ext : "jpg";
+}
+
+export function Fotos({ code, session, trip, darkMode, onTripUpdate }: { code: string; session: Session; trip: Trip; darkMode: boolean; onTripUpdate: (t: Trip) => void }) {
   const key = `fotos:${code}`;
   const [photos, setPhotos] = useState<Photo[]>(() => peekShared<Photo[]>(key) ?? []);
   const [loading, setLoading] = useState(() => peekShared<Photo[]>(key) === undefined);
@@ -36,9 +46,40 @@ export function Fotos({ code, session, trip }: { code: string; session: Session;
   const [err, setErr] = useState("");
   const [lightbox, setLightbox] = useState<Photo | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [zipping, setZipping] = useState(false);
+  const [showZipUpsell, setShowZipUpsell] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const premium = isPremium(trip);
   useEffect(() => { loadShared<Photo[]>(key, []).then(p => { setPhotos(p); setLoading(false); }); }, [key]);
   const persist = useCallback(async (next: Photo[]) => { setPhotos(next); await saveShared(key, next); }, [key]);
+
+  async function downloadZip() {
+    if (!premium) { setShowZipUpsell(v => !v); return; }
+    setZipping(true); setErr("");
+    try {
+      const { default: JSZip } = await import("jszip");
+      const zip = new JSZip();
+      let failed = 0;
+      await Promise.all(photos.map(async (p, i) => {
+        try {
+          const res = await fetch(p.url);
+          const blob = await res.blob();
+          zip.file(`${String(i + 1).padStart(3, "0")}-${p.author.replace(/[^a-z0-9]/gi, "_")}.${extensionFor(p.url)}`, blob);
+        } catch { failed++; }
+      }));
+      if (failed === photos.length) { setErr("No se pudo descargar ninguna foto."); setZipping(false); return; }
+      const blob = await zip.generateAsync({ type: "blob" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `${trip.name || "viaje"}-fotos.zip`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      if (failed > 0) setErr(`${failed} foto(s) no se pudieron incluir (enlace externo bloqueado).`);
+    } catch {
+      setErr("Error al generar el ZIP.");
+    }
+    setZipping(false);
+  }
 
   function addPhoto() {
     setErr("");
@@ -78,11 +119,22 @@ export function Fotos({ code, session, trip }: { code: string; session: Session;
         </div>
       )}
       <div className="flex flex-col gap-4">
-        <div className="flex justify-end">
+        <div className="flex justify-between items-center gap-2 flex-wrap">
+          {photos.length > 0 ? (
+            <button onClick={downloadZip} disabled={zipping} className="flex items-center gap-1.5"
+              style={{ background: premium ? C.teal : (darkMode ? "#21262D" : C.paperDark), color: premium ? "#fff" : C.inkSoft, border: premium ? "none" : `1px solid ${C.line}`, borderRadius: 999, padding: "6px 12px", fontFamily: F.mono, fontSize: 11, fontWeight: 600 }}>
+              {premium ? <Download size={12} /> : <Lock size={12} />} {zipping ? "PREPARANDO ZIP…" : "DESCARGAR TODAS (ZIP)"}
+            </button>
+          ) : <span />}
           <AiQuickButton code={code} trip={trip} session={session} suggestions={[
             `Dame ideas de fotos imprescindibles para ${trip.destination || "mi destino"}`,
           ]} />
         </div>
+        {showZipUpsell && !premium && (
+          <PremiumGate code={code} trip={trip} onUnlock={onTripUpdate} feature="Descargar todas las fotos del viaje en un ZIP" darkMode={darkMode}>
+            <></>
+          </PremiumGate>
+        )}
         <Card>
           <SectionLabel>Añadir recuerdo</SectionLabel>
           {/* File upload */}

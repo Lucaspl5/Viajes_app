@@ -1,13 +1,15 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { Trash2, X, Euro, ChevronDown, Wallet, Filter } from "lucide-react";
+import { Trash2, X, Euro, ChevronDown, Wallet, Filter, Lock } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, Banner, EmptyState, SkeletonCards } from "./ui";
 import { uid, loadShared, saveShared, peekShared } from "./utils";
-import { EXPENSE_CATEGORIES } from "./data/constants";
+import { EXPENSE_CATEGORIES, CURRENCIES } from "./data/constants";
 import type { Session, Expense, Trip } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
+import { isPremium } from "./premium";
+import { PremiumGate } from "./PremiumGate";
 
 
 export function calculateSettlements(expenses: Expense[], members: string[]) {
@@ -37,13 +39,15 @@ export function calculateSettlements(expenses: Expense[], members: string[]) {
   return settlements;
 }
 
-export function Gastos({ code, session, members, trip, darkMode }: { code: string; session: Session; members: string[]; trip: Trip; darkMode: boolean }) {
+export function Gastos({ code, session, members, trip, darkMode, onTripUpdate }: { code: string; session: Session; members: string[]; trip: Trip; darkMode: boolean; onTripUpdate: (t: Trip) => void }) {
   const key = `gastos:${code}`;
   const [expenses, setExpenses] = useState<Expense[]>(() => peekShared<Expense[]>(key) ?? []);
   const [loading, setLoading] = useState(() => peekShared<Expense[]>(key) === undefined);
-  const [form, setForm] = useState({ description: "", amount: "", paidBy: session.name, category: EXPENSE_CATEGORIES[0], date: "", splitWith: [] as string[] });
+  const [form, setForm] = useState({ description: "", amount: "", currency: "EUR", paidBy: session.name, category: EXPENSE_CATEGORIES[0], date: "", splitWith: [] as string[] });
   const [err, setErr] = useState("");
   const [showSettle, setShowSettle] = useState(false);
+  const [showCurrencyUpsell, setShowCurrencyUpsell] = useState(false);
+  const premium = isPremium(trip);
   const [showFilters, setShowFilters] = useState(false);
   const [filterCat, setFilterCat] = useState("");
   const [filterPerson, setFilterPerson] = useState("");
@@ -55,10 +59,16 @@ export function Gastos({ code, session, members, trip, darkMode }: { code: strin
   function addExpense() {
     setErr("");
     if (!form.description.trim()) { setErr("Escribe una descripción."); return; }
-    const amount = parseFloat(form.amount.replace(",", "."));
-    if (isNaN(amount) || amount <= 0) { setErr("Importe inválido."); return; }
+    const rawAmount = parseFloat(form.amount.replace(",", "."));
+    if (isNaN(rawAmount) || rawAmount <= 0) { setErr("Importe inválido."); return; }
     if (!form.paidBy) { setErr("¿Quién pagó?"); return; }
-    persist([...expenses, { id: uid(), description: form.description.trim(), amount, paidBy: form.paidBy, splitWith: form.splitWith, category: form.category, date: form.date || new Date().toISOString().slice(0, 10) }]);
+    const currency = premium ? CURRENCIES.find(c => c.code === form.currency) : undefined;
+    const amount = currency ? Math.round((rawAmount / currency.rate) * 100) / 100 : rawAmount;
+    persist([...expenses, {
+      id: uid(), description: form.description.trim(), amount, paidBy: form.paidBy, splitWith: form.splitWith,
+      category: form.category, date: form.date || new Date().toISOString().slice(0, 10),
+      ...(currency ? { origCurrency: currency.code, origAmount: rawAmount } : {}),
+    }]);
     setForm(f => ({ ...f, description: "", amount: "", date: "" }));
   }
 
@@ -116,9 +126,30 @@ export function Gastos({ code, session, members, trip, darkMode }: { code: strin
               onKeyDown={e => e.key === "Enter" && addExpense()} style={{ ...inputStyle, flex: "2 1 160px" }} />
             <div style={{ position: "relative", width: 110 }}>
               <input placeholder="0,00" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} style={{ ...inputStyle, fontFamily: F.mono, paddingRight: 22 }} />
-              <Euro size={11} style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", color: C.inkSoft }} />
+              {form.currency === "EUR" && <Euro size={11} style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", color: C.inkSoft }} />}
             </div>
+            {premium ? (
+              <select value={form.currency} onChange={e => setForm({ ...form, currency: e.target.value })} title="Divisa" style={{ ...inputStyle, flex: "0 1 90px", fontFamily: F.mono, appearance: "none" }}>
+                <option value="EUR">EUR €</option>
+                {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.code} {c.symbol}</option>)}
+              </select>
+            ) : (
+              <button type="button" onClick={() => setShowCurrencyUpsell(v => !v)} title="Multi-divisa es Premium"
+                style={{ ...inputStyle, flex: "0 1 90px", display: "flex", alignItems: "center", justifyContent: "center", gap: 4, color: C.inkSoft, cursor: "pointer" }}>
+                <Lock size={11} /> EUR
+              </button>
+            )}
           </div>
+          {showCurrencyUpsell && !premium && (
+            <PremiumGate code={code} trip={trip} onUnlock={onTripUpdate} feature="Registrar gastos en otras divisas" darkMode={darkMode}>
+              <></>
+            </PremiumGate>
+          )}
+          {premium && form.currency !== "EUR" && form.amount && !isNaN(parseFloat(form.amount.replace(",", "."))) && (
+            <p style={{ fontFamily: F.mono, fontSize: 11, color: C.inkSoft }}>
+              ≈ {(parseFloat(form.amount.replace(",", ".")) / (CURRENCIES.find(c => c.code === form.currency)?.rate ?? 1)).toFixed(2)} €
+            </p>
+          )}
           <div className="flex flex-wrap gap-2">
             <select value={form.paidBy} onChange={e => setForm({ ...form, paidBy: e.target.value })} style={{ ...inputStyle, flex: "1 1 120px", appearance: "none" }}>
               {members.length > 0 ? members.map(m => <option key={m} value={m}>{m}</option>) : <option value={session.name}>{session.name}</option>}
@@ -257,7 +288,14 @@ export function Gastos({ code, session, members, trip, darkMode }: { code: strin
                 Pagó {e.paidBy}{e.splitWith.length > 0 ? ` · con ${e.splitWith.join(", ")}` : " · todos"} · {e.date}
               </div>
             </div>
-            <span style={{ fontFamily: F.mono, fontSize: 14, fontWeight: 700, color: darkMode ? "#E6EDF3" : C.ink, flexShrink: 0 }}>{e.amount.toFixed(2)} €</span>
+            <span style={{ textAlign: "right", flexShrink: 0 }}>
+              <span style={{ fontFamily: F.mono, fontSize: 14, fontWeight: 700, color: darkMode ? "#E6EDF3" : C.ink, display: "block" }}>{e.amount.toFixed(2)} €</span>
+              {e.origCurrency && e.origAmount !== undefined && (
+                <span style={{ fontFamily: F.mono, fontSize: 10, color: darkMode ? "#8B949E" : C.inkSoft, display: "block" }}>
+                  {e.origAmount.toFixed(2)} {CURRENCIES.find(c => c.code === e.origCurrency)?.symbol ?? e.origCurrency}
+                </span>
+              )}
+            </span>
             <button onClick={() => persist(expenses.filter(x => x.id !== e.id))} style={{ color: darkMode ? "#8B949E" : C.inkSoft, padding: 4 }}><Trash2 size={14} /></button>
           </div>
         ))}
