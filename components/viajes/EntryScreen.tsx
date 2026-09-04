@@ -17,6 +17,7 @@ export function EntryScreen({ onEnter, externalError, prefillCode }: { onEnter: 
   const [destination, setDestination] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [planLater, setPlanLater] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const nameRef = useRef<HTMLInputElement>(null);
@@ -36,11 +37,13 @@ export function EntryScreen({ onEnter, externalError, prefillCode }: { onEnter: 
   async function handleCreate() {
     if (!name.trim()) { setError("Escribe tu nombre."); return; }
     if (!tripName.trim()) { setError("Escribe el nombre del viaje."); return; }
-    if (startDate && endDate && endDate < startDate) { setError("La fecha de fin debe ser posterior a la de inicio."); return; }
+    if (!planLater && startDate && endDate && endDate < startDate) { setError("La fecha de fin debe ser posterior a la de inicio."); return; }
     setBusy(true); setError("");
     let newCode = genTripCode(), tries = 0;
     while ((await loadShared<Trip | null>(`trip:${newCode}`, null)) !== null && tries < 10) { newCode = genTripCode(); tries++; }
-    const trip: Trip = { name: tripName.trim(), destination: destination.trim(), startDate: startDate || null, endDate: endDate || null, members: [name.trim()], createdAt: Date.now() };
+    const trip: Trip = planLater
+      ? { name: tripName.trim(), destination: "", startDate: null, endDate: null, members: [name.trim()], createdAt: Date.now(), planning: { open: true, dateOptions: [], destOptions: [] } }
+      : { name: tripName.trim(), destination: destination.trim(), startDate: startDate || null, endDate: endDate || null, members: [name.trim()], createdAt: Date.now() };
     const ok = await saveShared(`trip:${newCode}`, trip);
     if (!ok) { setError("Error al guardar el viaje. Inténtalo de nuevo."); setBusy(false); return; }
     await onEnter(newCode, name.trim(), trip);
@@ -145,13 +148,34 @@ export function EntryScreen({ onEnter, externalError, prefillCode }: { onEnter: 
                     <Field label="Nombre del viaje">
                       <input value={tripName} onChange={e => setTripName(e.target.value)} placeholder="Ej. Grecia 2027" style={inputStyle} />
                     </Field>
-                    <Field label="Destino principal (opcional)">
-                      <input value={destination} onChange={e => setDestination(e.target.value)} placeholder="Ej. Santorini, Grecia" style={inputStyle} />
-                    </Field>
-                    <div className="flex gap-3">
-                      <Field label="Inicio"><input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} style={inputStyle} /></Field>
-                      <Field label="Fin"><input type="date" value={endDate} min={startDate || undefined} onChange={e => setEndDate(e.target.value)} style={inputStyle} /></Field>
+
+                    <div className="flex gap-1.5">
+                      {([[false, "Ya lo tenemos decidido"], [true, "Decidir entre todos"]] as const).map(([v, label]) => (
+                        <button key={label} type="button" onClick={() => setPlanLater(v)} style={{
+                          flex: 1, padding: "8px 6px", borderRadius: 6, fontFamily: F.mono, fontSize: 10.5, letterSpacing: 0.2,
+                          background: planLater === v ? C.navy : C.paperDark, color: planLater === v ? "#fff" : C.inkSoft,
+                          border: `1px solid ${planLater === v ? C.navy : C.line}`, transition: "all 0.15s",
+                        }}>
+                          {label.toUpperCase()}
+                        </button>
+                      ))}
                     </div>
+
+                    {planLater ? (
+                      <p style={{ color: C.inkSoft, fontSize: 12, lineHeight: 1.5 }}>
+                        Cread el viaje sin destino ni fechas todavía — cada uno propone opciones y votáis juntos hasta confirmar.
+                      </p>
+                    ) : (
+                      <>
+                        <Field label="Destino principal (opcional)">
+                          <input value={destination} onChange={e => setDestination(e.target.value)} placeholder="Ej. Santorini, Grecia" style={inputStyle} />
+                        </Field>
+                        <div className="flex gap-3">
+                          <Field label="Inicio"><input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} style={inputStyle} /></Field>
+                          <Field label="Fin"><input type="date" value={endDate} min={startDate || undefined} onChange={e => setEndDate(e.target.value)} style={inputStyle} /></Field>
+                        </div>
+                      </>
+                    )}
                   </>
                 )}
 

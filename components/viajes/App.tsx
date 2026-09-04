@@ -27,6 +27,7 @@ import { Reservas } from "./Reservas";
 import { Diario } from "./Diario";
 import { PrintExport } from "./PrintExport";
 import { WelcomeModal } from "./WelcomeModal";
+import { Planning } from "./Planning";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -240,6 +241,7 @@ export default function App() {
     { id: "destinos",   label: "Destinos",  Icon: Globe },
   ];
   const isMoreActive = moreTabs.some(t => t.id === tab);
+  const isPlanning = !!trip.planning?.open;
 
   const dk = darkMode ? {
     bg: "#0D1117", bgCard: "#161B22", bgHeader: "linear-gradient(135deg,#0D1117 0%,#161B22 100%)",
@@ -304,23 +306,30 @@ export default function App() {
       </header>
 
       {/* Content */}
-      <main ref={contentRef as React.RefObject<HTMLElement>} className="max-w-4xl mx-auto px-4 py-6" style={{ opacity: 0, paddingBottom: "calc(1.5rem + 64px)" }}>
-        {tab === "resumen"    && <Resumen trip={trip} session={session} days={days} darkMode={darkMode} onTripUpdate={setTrip} onDuplicate={duplicateTrip} onEnterDuplicate={enterDuplicated} activePresence={activePresence} />}
-        {tab === "reservas"   && <Reservas code={session.code} session={session} trip={trip} darkMode={darkMode} onTripUpdate={setTrip} />}
-        {tab === "itinerario" && <Itinerario code={session.code} startDate={trip.startDate} trip={trip} session={session} onImportItinerary={importItinerary} />}
-        {tab === "mapa"       && <Mapa code={session.code} destination={trip.destination} trip={trip} session={session} />}
-        {tab === "fotos"      && <Fotos code={session.code} session={session} trip={trip} darkMode={darkMode} onTripUpdate={setTrip} />}
-        {tab === "diario"     && <Diario code={session.code} session={session} trip={trip} darkMode={darkMode} />}
-        {tab === "checklist"  && <Checklist code={session.code} session={session} trip={trip} />}
-        {tab === "gastos"     && <Gastos code={session.code} session={session} members={trip.members} trip={trip} darkMode={darkMode} onTripUpdate={setTrip} />}
-        {tab === "equipaje"   && <Equipaje code={session.code} session={session} trip={trip} />}
-        {tab === "ideas"      && <Ideas code={session.code} session={session} trip={trip} />}
-        {tab === "ahorro"     && <Ahorro code={session.code} members={trip.members} trip={trip} session={session} />}
-        {tab === "destinos"   && <Destinos code={session.code} startDate={trip.startDate} trip={trip} session={session} onSelect={() => setTab("itinerario")} />}
-        {tab === "asistente"  && <AsistenteIA code={session.code} trip={trip} session={session} onImportItinerary={importItinerary} />}
+      <main ref={contentRef as React.RefObject<HTMLElement>} className="max-w-4xl mx-auto px-4 py-6" style={{ opacity: 0, paddingBottom: isPlanning ? "1.5rem" : "calc(1.5rem + 64px)" }}>
+        {isPlanning ? (
+          <Planning code={session.code} trip={trip} session={session} onTripUpdate={setTrip} />
+        ) : (
+          <>
+            {tab === "resumen"    && <Resumen trip={trip} session={session} days={days} darkMode={darkMode} onTripUpdate={setTrip} onDuplicate={duplicateTrip} onEnterDuplicate={enterDuplicated} activePresence={activePresence} />}
+            {tab === "reservas"   && <Reservas code={session.code} session={session} trip={trip} darkMode={darkMode} onTripUpdate={setTrip} />}
+            {tab === "itinerario" && <Itinerario code={session.code} startDate={trip.startDate} trip={trip} session={session} onImportItinerary={importItinerary} />}
+            {tab === "mapa"       && <Mapa code={session.code} destination={trip.destination} trip={trip} session={session} />}
+            {tab === "fotos"      && <Fotos code={session.code} session={session} trip={trip} darkMode={darkMode} onTripUpdate={setTrip} />}
+            {tab === "diario"     && <Diario code={session.code} session={session} trip={trip} darkMode={darkMode} />}
+            {tab === "checklist"  && <Checklist code={session.code} session={session} trip={trip} />}
+            {tab === "gastos"     && <Gastos code={session.code} session={session} members={trip.members} trip={trip} darkMode={darkMode} onTripUpdate={setTrip} />}
+            {tab === "equipaje"   && <Equipaje code={session.code} session={session} trip={trip} />}
+            {tab === "ideas"      && <Ideas code={session.code} session={session} trip={trip} />}
+            {tab === "ahorro"     && <Ahorro code={session.code} members={trip.members} trip={trip} session={session} />}
+            {tab === "destinos"   && <Destinos code={session.code} startDate={trip.startDate} trip={trip} session={session} onSelect={() => setTab("itinerario")} />}
+            {tab === "asistente"  && <AsistenteIA code={session.code} trip={trip} session={session} onImportItinerary={importItinerary} />}
+          </>
+        )}
       </main>
 
       {/* Fixed bottom navigation */}
+      {!isPlanning && (
       <nav className="no-print" style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: dk ? "#0D1117" : "#fff", borderTop: `1px solid ${dk ? "#21262D" : C.line}`, zIndex: 100, paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
         <div className="max-w-4xl mx-auto flex">
           {primaryTabs.map(({ id, label, Icon }) => {
@@ -342,9 +351,10 @@ export default function App() {
           </button>
         </div>
       </nav>
+      )}
 
       {/* "Más" bottom drawer */}
-      {showMore && (
+      {!isPlanning && showMore && (
         <>
           <div onClick={() => setShowMore(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 200 }} className="fade-in" />
           <div className="fade-in" style={{ position: "fixed", bottom: 64, left: 0, right: 0, background: dk ? "#161B22" : "#fff", borderRadius: "20px 20px 0 0", padding: "16px 20px 20px", zIndex: 201, boxShadow: "0 -8px 40px rgba(0,0,0,0.22)" }}>

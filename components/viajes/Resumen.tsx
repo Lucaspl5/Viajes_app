@@ -13,6 +13,8 @@ import { InvitePanel } from "./InvitePanel";
 import { isPremium } from "./premium";
 import { PremiumGate } from "./PremiumGate";
 import { getPushSubscriptionStatus, subscribeToPush, unsubscribeFromPush } from "./push";
+import { ICSExport } from "./ICSExport";
+import { RecapCard } from "./RecapCard";
 
 
 export function Resumen({ trip, session, days, darkMode, onTripUpdate, onDuplicate, onEnterDuplicate, activePresence }: {
@@ -178,6 +180,12 @@ export function Resumen({ trip, session, days, darkMode, onTripUpdate, onDuplica
 
       {/* Invite + Print */}
       <InvitePanel code={session.code} trip={trip} darkMode={darkMode} onTripUpdate={onTripUpdate} />
+
+      {/* Calendar export */}
+      <ICSExport code={session.code} tripName={trip.name} darkMode={darkMode} />
+
+      {/* Shareable recap */}
+      <RecapCard code={session.code} trip={trip} darkMode={darkMode} />
 
       {/* Push notifications */}
       {pushStatus !== "unsupported" && (

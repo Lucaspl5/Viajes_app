@@ -6,7 +6,11 @@ export interface Trip {
   members: string[];
   createdAt: number;
   premium?: boolean;
+  planning?: TripPlanning;
 }
+export interface DateOption { id: string; startDate: string; endDate: string; votes: string[]; }
+export interface DestOption { id: string; name: string; votes: string[]; }
+export interface TripPlanning { open: boolean; dateOptions: DateOption[]; destOptions: DestOption[]; }
 export interface Session { code: string; name: string; }
 export interface ItineraryDay { id: string; date: string; title: string; items: ItineraryItem[]; }
 export interface ItineraryItem { id: string; time: string; text: string; }

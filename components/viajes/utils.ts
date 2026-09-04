@@ -1,5 +1,7 @@
 "use client";
 
+import type { ItineraryDay, Booking } from "./types";
+
 function uid() { return Math.random().toString(36).slice(2, 9); }
 
 function genTripCode() {
@@ -161,4 +163,72 @@ function monthsBetween(start: string, end: string): number {
   return Math.max(1, (ey - sy) * 12 + (em - sm) + 1);
 }
 
-export { uid, genTripCode, formatDate, formatDateFull, tripDuration, isValidUrl, loadShared, saveShared, flushDirtyKeys, peekShared, loadPersonal, savePersonal, formatMonth, monthsBetween };
+// ─── Calendar export (.ics) ────────────────────────────────────────────────
+
+function pad2(n: number) { return String(n).padStart(2, "0"); }
+
+function addHour(time: string) {
+  const [h, m] = time.split(":").map(Number);
+  const d = new Date(2000, 0, 1, h || 9, m || 0);
+  d.setHours(d.getHours() + 1);
+  return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+}
+
+// Floating local time (no timezone/Z suffix) — good enough since the app
+// itself has no timezone concept, and calendar apps interpret it as local.
+function toICSDateTime(dateStr: string, timeStr?: string) {
+  const [y, m, d] = dateStr.split("-");
+  const [hh, mm] = (timeStr || "09:00").split(":");
+  return `${y}${m}${d}T${pad2(Number(hh))}${pad2(Number(mm))}00`;
+}
+
+function escapeICS(s: string) {
+  return s.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
+}
+
+function buildICS(tripName: string, days: ItineraryDay[], bookings: Booking[]): string {
+  const lines: string[] = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Bitacora de Viaje//ES", "CALSCALE:GREGORIAN"];
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+
+  for (const day of days) {
+    if (!day.date) continue;
+    for (const item of day.items) {
+      if (!item.text.trim()) continue;
+      const start = toICSDateTime(day.date, item.time);
+      const end = toICSDateTime(day.date, addHour(item.time || "09:00"));
+      lines.push(
+        "BEGIN:VEVENT", `UID:itin-${item.id}@bitacoradeviaje`, `DTSTAMP:${stamp}`,
+        `DTSTART:${start}`, `DTEND:${end}`, `SUMMARY:${escapeICS(item.text)}`,
+        `DESCRIPTION:${escapeICS(`${tripName} — ${day.title}`)}`, "END:VEVENT"
+      );
+    }
+  }
+
+  for (const b of bookings) {
+    if (!b.startDate) continue;
+    const start = toICSDateTime(b.startDate, b.startTime);
+    const end = b.endDate ? toICSDateTime(b.endDate, b.endTime || b.startTime) : toICSDateTime(b.startDate, addHour(b.startTime || "09:00"));
+    const desc = [b.location, b.confirmationCode ? `Confirmación: ${b.confirmationCode}` : "", b.notes].filter(Boolean).join(" — ");
+    lines.push(
+      "BEGIN:VEVENT", `UID:booking-${b.id}@bitacoradeviaje`, `DTSTAMP:${stamp}`,
+      `DTSTART:${start}`, `DTEND:${end}`, `SUMMARY:${escapeICS(b.title)}`
+    );
+    if (desc) lines.push(`DESCRIPTION:${escapeICS(desc)}`);
+    if (b.location) lines.push(`LOCATION:${escapeICS(b.location)}`);
+    lines.push("END:VEVENT");
+  }
+
+  lines.push("END:VCALENDAR");
+  return lines.join("\r\n");
+}
+
+function downloadTextFile(filename: string, content: string, mime = "text/calendar") {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+export { uid, genTripCode, formatDate, formatDateFull, tripDuration, isValidUrl, loadShared, saveShared, flushDirtyKeys, peekShared, loadPersonal, savePersonal, formatMonth, monthsBetween, buildICS, downloadTextFile };

@@ -13,6 +13,10 @@ import { PremiumGate } from "./PremiumGate";
 import { useAnimeStagger, AnimatedIn } from "./animation";
 
 
+// Above this, adding an expense fires an instant push to the trip's
+// subscribers instead of waiting for the next daily digest.
+const BIG_EXPENSE_THRESHOLD_EUR = 150;
+
 export function calculateSettlements(expenses: Expense[], members: string[]) {
   if (members.length === 0) return [];
   const balances: Record<string, number> = {};
@@ -72,6 +76,17 @@ export function Gastos({ code, session, members, trip, darkMode, onTripUpdate }:
       category: form.category, date: form.date || new Date().toISOString().slice(0, 10),
       ...(currency ? { origCurrency: currency.code, origAmount: rawAmount } : {}),
     }]);
+    if (amount >= BIG_EXPENSE_THRESHOLD_EUR) {
+      fetch("/api/push/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code,
+          title: `💶 ${trip.name}`,
+          body: `${form.paidBy} pagó ${amount.toFixed(2)} € en "${form.description.trim()}".`,
+        }),
+      }).catch(() => {});
+    }
     setForm(f => ({ ...f, description: "", amount: "", date: "" }));
   }
 
