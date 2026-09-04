@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { X, ChevronDown, Luggage, CheckCircle2, Circle } from "lucide-react";
+import { X, ChevronDown, Luggage, CheckCircle2, Circle, Briefcase } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, EmptyState, SkeletonCards } from "./ui";
 import { uid, loadShared, saveShared, peekShared } from "./utils";
@@ -25,7 +25,10 @@ export function Equipaje({ code, session, trip }: { code: string; session: Sessi
   const [loading, setLoading] = useState(() => peekShared<PackingItem[]>(key) === undefined);
   const [activeCategory, setActiveCategory] = useState<string>(PACKING_CATEGORIES[0]);
   const [text, setText] = useState("");
+  const [bag, setBag] = useState("");
+  const [groupBy, setGroupBy] = useState<"categoria" | "bolsa">("categoria");
   const [expanded, setExpanded] = useState<Set<string>>(new Set(PACKING_CATEGORIES));
+  const [collapsedBags, setCollapsedBags] = useState<Set<string>>(new Set());
   const sectionRef = useRef<HTMLDivElement>(null);
   useAnimeStagger(sectionRef);
   useEffect(() => { loadShared<PackingItem[]>(key, []).then(it => { setItems(it); setLoading(false); }); }, [key]);
@@ -33,7 +36,7 @@ export function Equipaje({ code, session, trip }: { code: string; session: Sessi
 
   function addItem() {
     if (!text.trim()) return;
-    persist([...items, { id: uid(), text: text.trim(), category: activeCategory, checkedBy: [] }]);
+    persist([...items, { id: uid(), text: text.trim(), category: activeCategory, checkedBy: [], bag: bag.trim() }]);
     setText("");
   }
 
@@ -54,6 +57,17 @@ export function Equipaje({ code, session, trip }: { code: string; session: Sessi
   function toggleCategory(cat: string) {
     setExpanded(prev => { const n = new Set(prev); n.has(cat) ? n.delete(cat) : n.add(cat); return n; });
   }
+
+  function toggleBagGroup(b: string) {
+    setCollapsedBags(prev => { const n = new Set(prev); n.has(b) ? n.delete(b) : n.add(b); return n; });
+  }
+
+  function setItemBag(id: string, newBag: string) {
+    persist(items.map(it => it.id === id ? { ...it, bag: newBag.trim() } : it));
+  }
+
+  const existingBags = Array.from(new Set(items.map(i => i.bag).filter((b): b is string => !!b))).sort();
+  const UNASSIGNED_BAG = "Sin bolsa asignada";
 
   const totalItems = items.length;
   const checkedItems = items.filter(it => it.checkedBy.length > 0).length;
@@ -91,6 +105,11 @@ export function Equipaje({ code, session, trip }: { code: string; session: Sessi
             {PACKING_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
           <input placeholder="Qué llevar…" value={text} onChange={e => setText(e.target.value)} onKeyDown={e => e.key === "Enter" && addItem()} style={{ ...inputStyle, flex: "2 1 160px" }} />
+          <input placeholder="Bolsa (opcional, p. ej. Maleta 1)" list="bag-suggestions" value={bag} onChange={e => setBag(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && addItem()} style={{ ...inputStyle, flex: "1 1 160px" }} />
+          <datalist id="bag-suggestions">
+            {existingBags.map(b => <option key={b} value={b} />)}
+          </datalist>
           <button onClick={addItem} style={{ background: C.navy, color: C.paper, borderRadius: 5, padding: "0 18px", fontFamily: F.mono, fontSize: 12, height: 39 }}>AÑADIR</button>
         </div>
         <div className="flex flex-wrap gap-2 mt-3">
@@ -102,8 +121,63 @@ export function Equipaje({ code, session, trip }: { code: string; session: Sessi
         </div>
       </Card>
 
+      {/* View toggle */}
+      {totalItems > 0 && (
+        <div className="flex items-center gap-2">
+          <SectionLabel>Agrupar por</SectionLabel>
+          <div className="flex gap-1">
+            <button onClick={() => setGroupBy("categoria")} style={{ padding: "4px 12px", borderRadius: 999, fontSize: 11, fontFamily: F.mono, background: groupBy === "categoria" ? C.navy : C.paperDark, color: groupBy === "categoria" ? C.paper : C.inkSoft, border: `1px solid ${C.line}` }}>
+              Categoría
+            </button>
+            <button onClick={() => setGroupBy("bolsa")} style={{ padding: "4px 12px", borderRadius: 999, fontSize: 11, fontFamily: F.mono, background: groupBy === "bolsa" ? C.navy : C.paperDark, color: groupBy === "bolsa" ? C.paper : C.inkSoft, border: `1px solid ${C.line}` }}>
+              Bolsa
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* By bag */}
+      {groupBy === "bolsa" && [...existingBags, ...(items.some(i => !i.bag) ? [UNASSIGNED_BAG] : [])].map(b => {
+        const bagItems = items.filter(it => (it.bag || UNASSIGNED_BAG) === b);
+        if (bagItems.length === 0) return null;
+        const isExpanded = !collapsedBags.has(b);
+        const doneCount = bagItems.filter(it => it.checkedBy.length > 0).length;
+        return (
+          <Card key={b} style={{ padding: 0, overflow: "hidden" }}>
+            <button onClick={() => toggleBagGroup(b)} className="w-full flex items-center justify-between px-4 py-3"
+              style={{ borderBottom: isExpanded ? `1px solid ${C.line}` : "none" }}>
+              <div className="flex items-center gap-2">
+                <Briefcase size={14} color={C.inkSoft} />
+                <span style={{ fontFamily: F.mono, fontSize: 12, color: C.ink, fontWeight: 600 }}>{b}</span>
+                <span style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft }}>({doneCount}/{bagItems.length})</span>
+              </div>
+              <ChevronDown size={14} color={C.inkSoft} style={{ transform: isExpanded ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />
+            </button>
+            {isExpanded && (
+              <div className="flex flex-col">
+                {bagItems.map(it => {
+                  const isMeChecked = it.checkedBy.includes(session.name);
+                  return (
+                    <div key={it.id} className="flex items-center gap-3 px-4 py-2" style={{ borderBottom: `1px solid ${C.paperDark}` }}>
+                      <button onClick={() => toggleCheck(it.id)} style={{ flexShrink: 0 }}>
+                        {isMeChecked ? <CheckCircle2 size={20} color={C.teal} /> : <Circle size={20} color={C.line} />}
+                      </button>
+                      <span style={{ flex: 1, fontSize: 14, textDecoration: isMeChecked ? "line-through" : "none", color: isMeChecked ? C.inkSoft : C.ink }}>{it.text}</span>
+                      <input defaultValue={it.bag || ""} list="bag-suggestions" placeholder="Sin bolsa"
+                        onBlur={e => e.target.value.trim() !== (it.bag || "") && setItemBag(it.id, e.target.value)}
+                        onKeyDown={e => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
+                        style={{ ...inputStyle, width: 110, height: 28, fontSize: 11, padding: "0 8px" }} />
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </Card>
+        );
+      })}
+
       {/* By category */}
-      {PACKING_CATEGORIES.map(cat => {
+      {groupBy === "categoria" && PACKING_CATEGORIES.map(cat => {
         const catItems = items.filter(it => it.category === cat);
         if (catItems.length === 0) return null;
         const isExpanded = expanded.has(cat);

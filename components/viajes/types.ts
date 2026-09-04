@@ -20,7 +20,7 @@ export interface Expense {
   // these two are set only when the expense was entered in another currency.
   origCurrency?: string; origAmount?: number;
 }
-export interface PackingItem { id: string; text: string; category: string; checkedBy: string[]; }
+export interface PackingItem { id: string; text: string; category: string; checkedBy: string[]; bag?: string; }
 export interface Idea {
   id: string; text: string; author: string; note: string;
   votes: Record<string, 1 | -1>; addedAt: number;
