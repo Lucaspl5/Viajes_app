@@ -19,6 +19,7 @@ export function Mapa({ code, destination, trip, session }: { code: string; desti
   const [pendingLatLon, setPendingLatLon] = useState<{ lat: number; lon: number } | null>(null);
   const [form, setForm] = useState({ name: "", note: "" });
   const [err, setErr] = useState("");
+  const [searching, setSearching] = useState(false);
   const [initialCenter, setInitialCenter] = useState<{ lat: number; lon: number; zoom: number } | null>(null);
   useEffect(() => { loadShared<MapPlace[]>(key, []).then(p => { setPlaces(p); setLoading(false); }); }, [key]);
   const persist = useCallback(async (next: MapPlace[]) => { setPlaces(next); await saveShared(key, next); }, [key]);
@@ -44,13 +45,36 @@ export function Mapa({ code, destination, trip, session }: { code: string; desti
     setErr("");
   }
 
-  function addPlace() {
+  async function addPlace() {
     setErr("");
-    if (!form.name.trim()) { setErr("Escribe un nombre para el lugar."); return; }
-    if (!pendingLatLon) { setErr("Haz clic en el mapa para marcar la ubicación."); return; }
-    persist([...places, { id: uid(), name: form.name.trim(), lat: pendingLatLon.lat, lon: pendingLatLon.lon, note: form.note.trim() }]);
-    setForm({ name: "", note: "" });
-    setPendingLatLon(null);
+    const name = form.name.trim();
+    if (!name) { setErr("Escribe un nombre para el lugar."); return; }
+
+    // If the user manually pinned a spot on the map, use those coordinates.
+    if (pendingLatLon) {
+      persist([...places, { id: uid(), name, lat: pendingLatLon.lat, lon: pendingLatLon.lon, note: form.note.trim() }]);
+      setForm({ name: "", note: "" });
+      setPendingLatLon(null);
+      return;
+    }
+
+    // Otherwise, geocode the typed name and add it directly.
+    setSearching(true);
+    try {
+      const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=1&language=es&format=json`);
+      const geo = await r.json();
+      if (!geo.results?.length) {
+        setErr(`No se encontró "${name}". Prueba con otro nombre o haz clic en el mapa.`);
+        return;
+      }
+      const { latitude: lat, longitude: lon } = geo.results[0];
+      persist([...places, { id: uid(), name, lat, lon, note: form.note.trim() }]);
+      setForm({ name: "", note: "" });
+    } catch {
+      setErr("Error buscando el lugar. Prueba haciendo clic en el mapa.");
+    } finally {
+      setSearching(false);
+    }
   }
 
   if (loading) return <SkeletonCards />;
@@ -74,7 +98,7 @@ export function Mapa({ code, destination, trip, session }: { code: string; desti
           </p>
         ) : (
           <p style={{ color: C.inkSoft, fontSize: 12, fontFamily: F.mono, marginTop: 6, textAlign: "center" }}>
-            Haz clic en el mapa para añadir un lugar · Clic en un pin para ver detalles
+            Busca un lugar abajo o haz clic en el mapa para marcarlo manualmente · Clic en un pin para ver detalles
           </p>
         )}
       </Card>
@@ -83,13 +107,14 @@ export function Mapa({ code, destination, trip, session }: { code: string; desti
       <Card>
         <SectionLabel>Añadir lugar</SectionLabel>
         <div className="flex flex-wrap gap-2 mt-3">
-          <input placeholder="Nombre del lugar" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
+          <input placeholder="Busca un lugar (p. ej. Roma)" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
+            onKeyDown={e => e.key === "Enter" && addPlace()}
             style={{ ...inputStyle, flex: "2 1 180px" }} />
           <input placeholder="Nota (opcional)" value={form.note} onChange={e => setForm({ ...form, note: e.target.value })}
             onKeyDown={e => e.key === "Enter" && addPlace()}
             style={{ ...inputStyle, flex: "2 1 180px" }} />
-          <button onClick={addPlace} style={{ background: pendingLatLon ? C.navy : C.inkSoft, color: C.paper, borderRadius: 5, padding: "0 18px", fontFamily: F.mono, fontSize: 12, height: 39, transition: "background 0.2s" }}>
-            AÑADIR
+          <button onClick={addPlace} disabled={searching} style={{ background: searching ? C.inkSoft : C.navy, color: C.paper, borderRadius: 5, padding: "0 18px", fontFamily: F.mono, fontSize: 12, height: 39, transition: "background 0.2s" }}>
+            {searching ? "BUSCANDO…" : "AÑADIR"}
           </button>
         </div>
         {err && <Banner type="error" msg={err} />}
