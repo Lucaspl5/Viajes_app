@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { MapPin, X, Globe, Heart, RefreshCw } from "lucide-react";
+import { MapPin, X, Globe, Heart, RefreshCw, Plane, Pencil } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Perf, Card, SectionLabel, EmptyState, SkeletonCards } from "./ui";
-import { uid, loadShared, saveShared, loadPersonal, savePersonal, peekShared, monthsBetween, tripDuration } from "./utils";
+import { uid, loadShared, saveShared, loadPersonal, savePersonal, peekShared, monthsBetween, tripDuration, buildFlightsUrl } from "./utils";
 import { CURRENCIES, DEST_TIPS, DEST_TYPE_FILTERS } from "./data/constants";
 import { DESTINATIONS, DESTINATION_ALTERNATIVES } from "./data/destinations";
 import type { ItineraryDay, MapPlace, SavingsConfig, DestinationTemplate, Trip, Session } from "./types";
@@ -82,8 +82,74 @@ export function DestCard({ dest, budget, onChoose, onOpen, isFavorite, onToggleF
   );
 }
 
-export function DestModal({ dest, budget, onChoose, onClose, alternatives, onOpenAlt }: {
-  dest: DestinationTemplate; budget: number; onChoose: () => void; onClose: () => void;
+function FlightSearchWidget({ code, trip, destination }: { code: string; trip: Trip; destination: string }) {
+  const [origin, setOrigin] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState("");
+
+  useEffect(() => {
+    loadShared<string>(`origen:${code}`, "").then(o => {
+      setOrigin(o || null);
+      setLoaded(true);
+      if (!o) setEditing(true);
+    });
+  }, [code]);
+
+  function save() {
+    const v = draft.trim();
+    if (!v) return;
+    setOrigin(v);
+    saveShared(`origen:${code}`, v);
+    setEditing(false);
+  }
+
+  if (!loaded) return null;
+  const hasDates = !!(trip.startDate && trip.endDate);
+
+  return (
+    <div style={{ background: "#F0F7FF", borderRadius: 10, padding: "12px 14px", border: "1px solid #C8DEFF" }}>
+      <div style={{ fontFamily: F.mono, fontSize: 10, color: C.sky, fontWeight: 700, marginBottom: 8, letterSpacing: 1 }}>✈️ VUELOS</div>
+      {!hasDates ? (
+        <p style={{ fontSize: 12, color: C.inkSoft, margin: 0 }}>Fija las fechas del viaje para poder buscar vuelos.</p>
+      ) : editing ? (
+        <div className="flex gap-2">
+          <input
+            value={draft} onChange={e => setDraft(e.target.value)} placeholder="¿Desde qué ciudad sales?"
+            style={{ ...inputStyle, flex: 1, fontSize: 13 }}
+            onKeyDown={e => e.key === "Enter" && save()}
+            autoFocus
+          />
+          <button onClick={save} style={{ background: C.sky, color: "#fff", borderRadius: 8, padding: "0 14px", fontFamily: F.mono, fontSize: 12, fontWeight: 700, flexShrink: 0 }}>OK</button>
+        </div>
+      ) : (
+        <div className="flex items-center gap-2">
+          <a
+            href={buildFlightsUrl(origin!, destination, trip.startDate!, trip.endDate!)}
+            target="_blank" rel="noopener noreferrer"
+            style={{
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 8, flex: 1,
+              background: C.sky, color: "#fff", borderRadius: 8, padding: "10px 14px",
+              fontFamily: F.mono, fontSize: 12, fontWeight: 700, textDecoration: "none",
+            }}
+          >
+            <Plane size={14} /> BUSCAR VUELOS DESDE {origin!.toUpperCase()}
+          </a>
+          <button
+            onClick={() => { setDraft(origin ?? ""); setEditing(true); }}
+            aria-label="Editar ciudad de salida"
+            style={{ background: "#fff", border: "1px solid #C8DEFF", borderRadius: 8, width: 34, height: 34, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
+          >
+            <Pencil size={13} color={C.sky} />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function DestModal({ dest, budget, code, trip, onChoose, onClose, alternatives, onOpenAlt }: {
+  dest: DestinationTemplate; budget: number; code: string; trip: Trip; onChoose: () => void; onClose: () => void;
   alternatives?: DestinationTemplate[]; onOpenAlt?: (d: DestinationTemplate) => void;
 }) {
   const withinBudget = budget === 0 || dest.costPerPerson <= budget;
@@ -188,6 +254,8 @@ export function DestModal({ dest, budget, onChoose, onClose, alternatives, onOpe
               ))}
             </div>
           </div>
+
+          <FlightSearchWidget code={code} trip={trip} destination={dest.country} />
 
           {/* Tips per destination */}
           {DEST_TIPS[dest.id] && (() => {
@@ -491,6 +559,8 @@ export function Destinos({ code, startDate, trip, session, onSelect }: { code: s
         <DestModal
           dest={preview}
           budget={budgetPerPerson}
+          code={code}
+          trip={trip}
           onChoose={() => { setChosen(preview!); setConfirming(true); setPreview(null); }}
           onClose={() => setPreview(null)}
           alternatives={(DESTINATION_ALTERNATIVES[preview.id] ?? [])

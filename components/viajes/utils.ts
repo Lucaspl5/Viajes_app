@@ -26,6 +26,10 @@ function tripDuration(s: string | null, e: string | null) {
 function isValidUrl(s: string) {
   try { const u = new URL(s); return u.protocol === "https:" || u.protocol === "http:"; } catch { return false; }
 }
+function buildFlightsUrl(origin: string, destination: string, startDate: string, endDate: string) {
+  const q = `Flights from ${origin} to ${destination} on ${startDate} through ${endDate}`;
+  return `https://www.google.com/travel/flights?q=${encodeURIComponent(q)}`;
+}
 
 // ─── Storage ─────────────────────────────────────────────────────────────────
 
@@ -231,4 +235,4 @@ function downloadTextFile(filename: string, content: string, mime = "text/calend
   URL.revokeObjectURL(url);
 }
 
-export { uid, genTripCode, formatDate, formatDateFull, tripDuration, isValidUrl, loadShared, saveShared, flushDirtyKeys, peekShared, loadPersonal, savePersonal, formatMonth, monthsBetween, buildICS, downloadTextFile };
+export { uid, genTripCode, formatDate, formatDateFull, tripDuration, isValidUrl, buildFlightsUrl, loadShared, saveShared, flushDirtyKeys, peekShared, loadPersonal, savePersonal, formatMonth, monthsBetween, buildICS, downloadTextFile };
