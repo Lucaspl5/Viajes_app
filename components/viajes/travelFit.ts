@@ -28,3 +28,25 @@ export function costForDuration(dest: DestinationTemplate, tripDays: number): nu
   const daily = (dest.costPerPerson * (1 - FIXED_COST_SHARE)) / dest.durationDays;
   return Math.round((fixed + daily * tripDays) / 5) * 5;
 }
+
+// Each template itinerary entry becomes one calendar day when applied to a
+// trip (see applyDestination in Destinos.tsx) — entries titled "Días 1-2"
+// still count as a single slot. Most templates have fewer entries than their
+// durationDays already (multi-day entries), so when the trip is shorter than
+// the entry count we sample entries evenly across the whole itinerary
+// (first, last, and evenly spaced in between) rather than just truncating
+// the tail — that keeps the destination's highlights spread across the trip
+// instead of losing everything after day N. When the trip is the same
+// length or longer, entries are left untouched (extra days stay free —
+// nothing is fabricated to fill them).
+export function adaptItinerary<T>(entries: T[], tripDays: number | null): T[] {
+  if (tripDays === null || tripDays >= entries.length || entries.length === 0) return entries;
+  if (tripDays <= 0) return [];
+  if (tripDays === 1) return [entries[0]];
+  const picked: T[] = [];
+  for (let i = 0; i < tripDays; i++) {
+    const idx = Math.round((i * (entries.length - 1)) / (tripDays - 1));
+    picked.push(entries[idx]);
+  }
+  return picked;
+}

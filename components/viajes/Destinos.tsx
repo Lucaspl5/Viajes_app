@@ -10,7 +10,7 @@ import { DESTINATIONS, DESTINATION_ALTERNATIVES } from "./data/destinations";
 import type { ItineraryDay, MapPlace, SavingsConfig, DestinationTemplate, Trip, Session } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
 import { type Season, SEASON_LABELS, seasonOfDate, inferDestinationSeasons, SEASON_PRICE_INDEX } from "./seasons";
-import { minReasonableDays, costForDuration } from "./travelFit";
+import { minReasonableDays, costForDuration, adaptItinerary } from "./travelFit";
 
 
 export const TYPE_COLORS: Record<string, string> = {
@@ -199,6 +199,8 @@ export function DestModal({ dest, budget, code, trip, onChoose, onClose, alterna
 }) {
   const withinBudget = budget === 0 || dest.costPerPerson <= budget;
   const gradient = TYPE_GRADIENTS[dest.type] ?? TYPE_GRADIENTS.aventura;
+  const tripDays = tripDuration(trip.startDate, trip.endDate);
+  const previewItinerary = adaptItinerary(dest.itinerary, tripDays);
   return (
     <div className="fade-in" style={{ position: "fixed", inset: 0, zIndex: 200, display: "flex", flexDirection: "column", background: "#000a" }} onClick={onClose}>
       <div onClick={e => e.stopPropagation()} style={{ marginTop: "auto", background: C.paper, borderRadius: "20px 20px 0 0", maxHeight: "88dvh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
@@ -266,8 +268,13 @@ export function DestModal({ dest, budget, code, trip, onChoose, onClose, alterna
 
           <div>
             <SectionLabel>Itinerario</SectionLabel>
+            {tripDays !== null && previewItinerary.length !== dest.itinerary.length && (
+              <p style={{ fontFamily: F.mono, fontSize: 10, color: C.inkSoft, marginTop: 2 }}>
+                Adaptado a tu viaje de {tripDays} días (de {dest.itinerary.length} paradas originales)
+              </p>
+            )}
             <div className="flex flex-col gap-2 mt-2">
-              {dest.itinerary.map((d, i) => (
+              {previewItinerary.map((d, i) => (
                 <div key={i} style={{ background: C.paperDark, borderRadius: 8, padding: "10px 12px" }}>
                   <div style={{ fontFamily: F.mono, fontSize: 10, color: C.gold, marginBottom: 4 }}>DÍA {i + 1}</div>
                   <div style={{ fontSize: 13, fontWeight: 600, color: C.ink, marginBottom: 6 }}>{d.title}</div>
@@ -422,7 +429,8 @@ export function Destinos({ code, startDate, trip, session, onSelect }: { code: s
   const savingsCoverage = useMemo(() => checkSavingsCoverage(savings?.phases ?? [], trip.startDate), [savings, trip.startDate]);
 
   async function applyDestination(dest: DestinationTemplate) {
-    const itinDays: ItineraryDay[] = dest.itinerary.map((d, i) => {
+    const adaptedItinerary = adaptItinerary(dest.itinerary, tripDays);
+    const itinDays: ItineraryDay[] = adaptedItinerary.map((d, i) => {
       let date = "";
       if (startDate) {
         const dt = new Date(startDate + "T12:00:00");
