@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { MapPin, Trash2 } from "lucide-react";
+import { MapPin, Trash2, Download, WifiOff } from "lucide-react";
 import dynamic from "next/dynamic";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, Banner, EmptyState, SkeletonCards } from "./ui";
 import { uid, loadShared, saveShared, peekShared } from "./utils";
+import { prefetchMapTiles, tileCountForBounds, type LatLonBounds } from "./mapOffline";
 import type { MapPlace, Trip, Session } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
 
@@ -21,8 +22,39 @@ export function Mapa({ code, destination, trip, session }: { code: string; desti
   const [err, setErr] = useState("");
   const [searching, setSearching] = useState(false);
   const [initialCenter, setInitialCenter] = useState<{ lat: number; lon: number; zoom: number } | null>(null);
+  const [offlineStatus, setOfflineStatus] = useState<"idle" | "downloading" | "done" | "error">("idle");
+  const [offlineProgress, setOfflineProgress] = useState({ done: 0, total: 0 });
   useEffect(() => { loadShared<MapPlace[]>(key, []).then(p => { setPlaces(p); setLoading(false); }); }, [key]);
   const persist = useCallback(async (next: MapPlace[]) => { setPlaces(next); await saveShared(key, next); }, [key]);
+
+  const offlineBounds: LatLonBounds | null = places.length > 0
+    ? {
+        minLat: Math.min(...places.map(p => p.lat)) - 0.03, maxLat: Math.max(...places.map(p => p.lat)) + 0.03,
+        minLon: Math.min(...places.map(p => p.lon)) - 0.03, maxLon: Math.max(...places.map(p => p.lon)) + 0.03,
+      }
+    : initialCenter
+      ? { minLat: initialCenter.lat - 0.12, maxLat: initialCenter.lat + 0.12, minLon: initialCenter.lon - 0.12, maxLon: initialCenter.lon + 0.12 }
+      : null;
+
+  const offlineZooms = (() => {
+    if (!offlineBounds) return [];
+    const zooms = [12, 13, 14, 15];
+    while (zooms.length > 1 && tileCountForBounds(offlineBounds, zooms) > 1500) zooms.pop();
+    return zooms;
+  })();
+  const offlineEstimate = offlineBounds ? tileCountForBounds(offlineBounds, offlineZooms) : 0;
+
+  async function downloadOffline() {
+    if (!offlineBounds) return;
+    setOfflineStatus("downloading");
+    setOfflineProgress({ done: 0, total: offlineEstimate });
+    try {
+      await prefetchMapTiles(offlineBounds, offlineZooms, (done, total) => setOfflineProgress({ done, total }));
+      setOfflineStatus("done");
+    } catch {
+      setOfflineStatus("error");
+    }
+  }
 
   // Center the map on the trip's destination when there are no saved places yet.
   useEffect(() => {
@@ -102,6 +134,34 @@ export function Mapa({ code, destination, trip, session }: { code: string; desti
           </p>
         )}
       </Card>
+
+      {/* Offline map download */}
+      {offlineBounds && (
+        <Card>
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-start gap-2" style={{ flex: "1 1 200px" }}>
+              <WifiOff size={15} color={C.sky} style={{ flexShrink: 0, marginTop: 2 }} />
+              <div>
+                <SectionLabel>Mapa offline</SectionLabel>
+                <p style={{ fontSize: 12, color: C.inkSoft, marginTop: 4, lineHeight: 1.5 }}>
+                  Descarga esta zona para poder ver el mapa sin conexión durante el viaje (~{offlineEstimate} tiles, ~{((offlineEstimate * 15) / 1024).toFixed(1)} MB).
+                </p>
+              </div>
+            </div>
+            <button onClick={downloadOffline} disabled={offlineStatus === "downloading"} className="flex items-center gap-2"
+              style={{
+                flexShrink: 0, background: offlineStatus === "done" ? C.green : C.navy, color: "#fff",
+                borderRadius: 8, padding: "10px 16px", fontFamily: F.mono, fontSize: 11, fontWeight: 700,
+                opacity: offlineStatus === "downloading" ? 0.7 : 1,
+              }}>
+              <Download size={13} />
+              {offlineStatus === "downloading" ? `DESCARGANDO ${offlineProgress.done}/${offlineProgress.total}` :
+               offlineStatus === "done" ? "✓ DISPONIBLE OFFLINE" :
+               offlineStatus === "error" ? "REINTENTAR" : "DESCARGAR"}
+            </button>
+          </div>
+        </Card>
+      )}
 
       {/* Add place form */}
       <Card>

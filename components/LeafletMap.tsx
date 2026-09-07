@@ -66,7 +66,9 @@ export default function LeafletMap({
         scrollWheelZoom: false,
       });
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      // Fixed to a single tile subdomain (no {s} round-robin) so tiles
+      // pre-downloaded for offline use always match what the live map requests.
+      L.tileLayer("https://a.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution:
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         maxZoom: 19,
