@@ -9,6 +9,7 @@ import { CURRENCIES, DEST_TIPS, DEST_TYPE_FILTERS } from "./data/constants";
 import { DESTINATIONS, DESTINATION_ALTERNATIVES } from "./data/destinations";
 import type { ItineraryDay, MapPlace, SavingsConfig, DestinationTemplate, Trip, Session } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
+import { type Season, SEASON_LABELS, seasonOfDate, inferDestinationSeasons, SEASON_PRICE_INDEX } from "./seasons";
 
 
 export const TYPE_COLORS: Record<string, string> = {
@@ -385,6 +386,7 @@ export function Destinos({ code, startDate, trip, session, onSelect }: { code: s
   const [savings, setSavings] = useState<SavingsConfig | null>(() => cachedSavings ?? null);
   const [loading, setLoading] = useState(() => cachedSavings === undefined);
   const [filter, setFilter] = useState("todos");
+  const [seasonFilter, setSeasonFilter] = useState<Season | "todas">("todas");
   const [search, setSearch] = useState("");
   const [preview, setPreview] = useState<DestinationTemplate | null>(null);
   const [chosen, setChosen] = useState<DestinationTemplate | null>(null);
@@ -434,15 +436,26 @@ export function Destinos({ code, startDate, trip, session, onSelect }: { code: s
 
   const tripDays = useMemo(() => tripDuration(trip.startDate, trip.endDate), [trip.startDate, trip.endDate]);
 
+  const tripSeason = useMemo(() => trip.startDate ? seasonOfDate(trip.startDate) : null, [trip.startDate]);
+  const seasonMultiplier = tripSeason ? SEASON_PRICE_INDEX[tripSeason] : 1;
+
+  // Prices adjusted to the trip's season, estimated from the average cost of
+  // destinations tagged for that season vs. the overall average — not real
+  // market fares, just a data-driven approximation.
+  const seasonAdjusted = useMemo(() =>
+    DESTINATIONS.map(d => ({ ...d, costPerPerson: Math.round((d.costPerPerson * seasonMultiplier) / 5) * 5 })),
+    [seasonMultiplier]);
+
   const visibleDests = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return DESTINATIONS.filter(d =>
+    return seasonAdjusted.filter(d =>
       (filter === "todos" || d.type === filter || (filter === "favoritos" && favorites.has(d.id))) &&
       (filter !== "favoritos" || favorites.has(d.id)) &&
+      (seasonFilter === "todas" || inferDestinationSeasons(d).includes(seasonFilter)) &&
       (tripDays === null || d.durationDays <= tripDays) &&
       (!q || d.name.toLowerCase().includes(q) || d.country.toLowerCase().includes(q) || d.highlights.some(h => h.toLowerCase().includes(q)))
     );
-  }, [filter, search, favorites, tripDays]);
+  }, [seasonAdjusted, filter, seasonFilter, search, favorites, tripDays]);
 
   const withinBudget = useMemo(() =>
     visibleDests.filter(d => budgetPerPerson === 0 || d.costPerPerson <= budgetPerPerson),
@@ -512,6 +525,12 @@ export function Destinos({ code, startDate, trip, session, onSelect }: { code: s
             Mostrando solo destinos que caben en tu viaje de <strong style={{ color: C.goldLight }}>{tripDays} días</strong>
           </p>
         )}
+        {tripSeason && (
+          <p style={{ fontFamily: F.mono, fontSize: 11, color: "#9FAEC4", marginTop: 4 }}>
+            Precios ajustados a temporada de <strong style={{ color: C.goldLight }}>{SEASON_LABELS[tripSeason].label.toLowerCase()}</strong>
+            {" "}({seasonMultiplier >= 1 ? "+" : ""}{((seasonMultiplier - 1) * 100).toFixed(0)}% vs. media anual — estimación, no tarifa real)
+          </p>
+        )}
         {budgetPerPerson > 0 && (
           <div className="mt-3 flex gap-3" style={{ fontFamily: F.mono, fontSize: 11 }}>
             <span style={{ color: C.goldLight }}>✓ {withinBudget.length} alcanzables</span>
@@ -565,6 +584,30 @@ export function Destinos({ code, startDate, trip, session, onSelect }: { code: s
         </button>
       </div>
 
+      {/* Season filter pills */}
+      <div className="flex flex-wrap gap-2">
+        <button onClick={() => setSeasonFilter("todas")} style={{
+          padding: "6px 12px", borderRadius: 999, fontSize: 11, fontFamily: F.mono,
+          background: seasonFilter === "todas" ? C.teal : C.paperDark,
+          color: seasonFilter === "todas" ? "#fff" : C.inkSoft,
+          border: `1px solid ${seasonFilter === "todas" ? C.teal : C.line}`,
+          transition: "all 0.15s", fontWeight: seasonFilter === "todas" ? 700 : 400,
+        }}>
+          Cualquier temporada
+        </button>
+        {(Object.keys(SEASON_LABELS) as Season[]).map(s => (
+          <button key={s} onClick={() => setSeasonFilter(s)} style={{
+            padding: "6px 12px", borderRadius: 999, fontSize: 11, fontFamily: F.mono,
+            background: seasonFilter === s ? C.teal : C.paperDark,
+            color: seasonFilter === s ? "#fff" : C.inkSoft,
+            border: `1px solid ${seasonFilter === s ? C.teal : C.line}`,
+            transition: "all 0.15s", fontWeight: seasonFilter === s ? 700 : 400,
+          }}>
+            {SEASON_LABELS[s].emoji} {SEASON_LABELS[s].label}{tripSeason === s ? " (tu viaje)" : ""}
+          </button>
+        ))}
+      </div>
+
       {/* Within budget */}
       {withinBudget.length > 0 && (
         <div className="flex flex-col gap-3">
@@ -608,7 +651,7 @@ export function Destinos({ code, startDate, trip, session, onSelect }: { code: s
           onChoose={() => { setChosen(preview!); setConfirming(true); setPreview(null); }}
           onClose={() => setPreview(null)}
           alternatives={(DESTINATION_ALTERNATIVES[preview.id] ?? [])
-            .map(id => DESTINATIONS.find(d => d.id === id))
+            .map(id => seasonAdjusted.find(d => d.id === id))
             .filter((d): d is DestinationTemplate => !!d && (tripDays === null || d.durationDays <= tripDays))}
           onOpenAlt={d => setPreview(d)}
         />
