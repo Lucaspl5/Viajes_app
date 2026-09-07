@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import { ListChecks, Check, Trash2, Euro, ChevronDown } from "lucide-react";
+import { ListChecks, Check, Trash2, Euro, ChevronDown, UserCircle2 } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, EmptyState, SkeletonCards } from "./ui";
 import { uid, loadShared, saveShared, peekShared } from "./utils";
@@ -17,16 +17,26 @@ export function Checklist({ code, session, trip }: { code: string; session: Sess
   const sectionRef = useRef<HTMLDivElement>(null);
   useAnimeStagger(sectionRef);
   const [text, setText] = useState(""); const [cost, setCost] = useState("");
+  const [assignInput, setAssignInput] = useState("");
   const [showBreak, setShowBreak] = useState(false);
+  const [onlyMine, setOnlyMine] = useState(false);
   useEffect(() => { loadShared<ChecklistItem[]>(key, []).then(it => { setItems(it); setLoading(false); }); }, [key]);
   const persist = useCallback(async (next: ChecklistItem[]) => { setItems(next); await saveShared(key, next); }, [key]);
 
   function addItem() {
     if (!text.trim()) return;
     const c = parseFloat(cost.replace(",", "."));
-    persist([...items, { id: uid(), text: text.trim(), done: false, cost: isNaN(c) || c < 0 ? 0 : c, by: session.name, addedAt: Date.now() }]);
-    setText(""); setCost("");
+    persist([...items, { id: uid(), text: text.trim(), done: false, cost: isNaN(c) || c < 0 ? 0 : c, by: session.name, addedAt: Date.now(), assignee: assignInput || undefined }]);
+    setText(""); setCost(""); setAssignInput("");
   }
+
+  function reassign(id: string, assignee: string) {
+    persist(items.map(x => x.id === id ? { ...x, assignee: assignee || undefined } : x));
+  }
+
+  const visibleItems = useMemo(() =>
+    onlyMine ? items.filter(it => it.assignee?.toLowerCase() === session.name.toLowerCase()) : items,
+    [items, onlyMine, session.name]);
 
   const total = useMemo(() => items.reduce((s, it) => s + (it.cost || 0), 0), [items]);
   const done  = useMemo(() => items.filter(it => it.done).reduce((s, it) => s + (it.cost || 0), 0), [items]);
@@ -53,6 +63,10 @@ export function Checklist({ code, session, trip }: { code: string; session: Sess
             <input placeholder="0,00" value={cost} onChange={e => setCost(e.target.value)} onKeyDown={e => e.key === "Enter" && addItem()} style={{ ...inputStyle, fontFamily: F.mono, paddingRight: 22 }} />
             <Euro size={11} style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", color: C.inkSoft }} />
           </div>
+          <select value={assignInput} onChange={e => setAssignInput(e.target.value)} style={{ ...inputStyle, flex: "1 1 130px", appearance: "none" }}>
+            <option value="">Sin asignar</option>
+            {trip.members.map(m => <option key={m} value={m}>{m}</option>)}
+          </select>
           <button onClick={addItem} style={{ background: C.navy, color: C.paper, borderRadius: 5, padding: "0 18px", fontFamily: F.mono, fontSize: 12, height: 39 }}>AÑADIR</button>
         </div>
       </Card>
@@ -86,8 +100,24 @@ export function Checklist({ code, session, trip }: { code: string; session: Sess
           </>
         )}
       </Card>
+      <div className="flex items-center gap-2">
+        <button onClick={() => setOnlyMine(false)} style={{
+          padding: "6px 12px", borderRadius: 999, fontSize: 12, fontFamily: F.mono,
+          background: !onlyMine ? C.navy : C.paperDark, color: !onlyMine ? C.paper : C.inkSoft,
+          border: `1px solid ${!onlyMine ? C.navy : C.line}`, fontWeight: !onlyMine ? 700 : 400,
+        }}>
+          TODAS ({items.length})
+        </button>
+        <button onClick={() => setOnlyMine(true)} style={{
+          padding: "6px 12px", borderRadius: 999, fontSize: 12, fontFamily: F.mono,
+          background: onlyMine ? C.navy : C.paperDark, color: onlyMine ? C.paper : C.inkSoft,
+          border: `1px solid ${onlyMine ? C.navy : C.line}`, fontWeight: onlyMine ? 700 : 400,
+        }}>
+          MIS TAREAS ({items.filter(it => it.assignee?.toLowerCase() === session.name.toLowerCase()).length})
+        </button>
+      </div>
       <div className="flex flex-col gap-2">
-        {items.map(it => (
+        {visibleItems.map(it => (
           <AnimatedIn key={it.id}>
             <div className="flex items-center gap-3 px-3 py-2" style={{ background: "#fff", border: `1px solid ${C.line}`, borderRadius: 6 }}>
               <button onClick={() => persist(items.map(x => x.id === it.id ? { ...x, done: !x.done } : x))} style={{ flexShrink: 0 }}>
@@ -97,12 +127,29 @@ export function Checklist({ code, session, trip }: { code: string; session: Sess
               </button>
               <div className="flex-1 min-w-0">
                 <span style={{ fontSize: 14, textDecoration: it.done ? "line-through" : "none", color: it.done ? C.inkSoft : C.ink }}>{it.text}</span>
-                <div style={{ fontFamily: F.mono, fontSize: 11, color: C.inkSoft, marginTop: 1 }}>{it.cost > 0 ? `${it.cost.toFixed(2)} € · ` : ""}{it.by}</div>
+                <div style={{ fontFamily: F.mono, fontSize: 11, color: C.inkSoft, marginTop: 1 }}>{it.cost > 0 ? `${it.cost.toFixed(2)} € · ` : ""}añadido por {it.by}</div>
+              </div>
+              <div className="flex items-center gap-1" style={{ flexShrink: 0 }}>
+                <UserCircle2 size={13} color={it.assignee ? C.teal : C.inkSoft} />
+                <select
+                  value={it.assignee ?? ""} onChange={e => reassign(it.id, e.target.value)}
+                  style={{
+                    fontFamily: F.mono, fontSize: 11, color: it.assignee ? C.ink : C.inkSoft,
+                    background: it.assignee ? C.paperDark : "transparent", border: `1px solid ${C.line}`,
+                    borderRadius: 999, padding: "3px 6px", appearance: "none", maxWidth: 90,
+                  }}
+                >
+                  <option value="">Sin asignar</option>
+                  {trip.members.map(m => <option key={m} value={m}>{m}</option>)}
+                </select>
               </div>
               <button onClick={() => persist(items.filter(x => x.id !== it.id))} style={{ color: C.inkSoft, padding: 4 }}><Trash2 size={14} /></button>
             </div>
           </AnimatedIn>
         ))}
+        {visibleItems.length === 0 && items.length > 0 && (
+          <EmptyState icon={<ListChecks size={28} color={C.line} />} text="No tienes tareas asignadas." />
+        )}
         {items.length === 0 && <EmptyState icon={<ListChecks size={28} color={C.line} />} text="Lista vacía — añade la primera tarea." />}
       </div>
     </div>

@@ -16,7 +16,7 @@ export interface ItineraryDay { id: string; date: string; title: string; items: 
 export interface ItineraryItem { id: string; time: string; text: string; }
 export interface MapPlace { id: string; name: string; lat: number; lon: number; note: string; }
 export interface Photo { id: string; url: string; caption: string; author: string; addedAt: number; }
-export interface ChecklistItem { id: string; text: string; done: boolean; cost: number; by: string; addedAt: number; }
+export interface ChecklistItem { id: string; text: string; done: boolean; cost: number; by: string; addedAt: number; assignee?: string; }
 export interface Expense {
   id: string; description: string; amount: number;
   paidBy: string; splitWith: string[]; category: string; date: string;
