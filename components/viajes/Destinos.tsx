@@ -10,6 +10,7 @@ import { DESTINATIONS, DESTINATION_ALTERNATIVES } from "./data/destinations";
 import type { ItineraryDay, MapPlace, SavingsConfig, DestinationTemplate, Trip, Session } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
 import { type Season, SEASON_LABELS, seasonOfDate, inferDestinationSeasons, SEASON_PRICE_INDEX } from "./seasons";
+import { minReasonableDays, costForDuration } from "./travelFit";
 
 
 export const TYPE_COLORS: Record<string, string> = {
@@ -441,12 +442,16 @@ export function Destinos({ code, startDate, trip, session, onSelect }: { code: s
   const tripSeason = useMemo(() => trip.startDate ? seasonOfDate(trip.startDate) : null, [trip.startDate]);
   const seasonMultiplier = tripSeason ? SEASON_PRICE_INDEX[tripSeason] : 1;
 
-  // Prices adjusted to the trip's season, estimated from the average cost of
-  // destinations tagged for that season vs. the overall average — not real
-  // market fares, just a data-driven approximation.
+  // Prices adjusted to the trip's actual length (not the template's fixed
+  // itinerary length) and to the trip's season — both estimates, not real
+  // market fares. The displayed "días" also switches to the trip's real
+  // length once it's known, so cost and duration shown stay consistent.
   const seasonAdjusted = useMemo(() =>
-    DESTINATIONS.map(d => ({ ...d, costPerPerson: Math.round((d.costPerPerson * seasonMultiplier) / 5) * 5 })),
-    [seasonMultiplier]);
+    DESTINATIONS.map(d => {
+      const cost = tripDays !== null ? costForDuration(d, tripDays) : d.costPerPerson;
+      return { ...d, durationDays: tripDays ?? d.durationDays, costPerPerson: Math.round((cost * seasonMultiplier) / 5) * 5 };
+    }),
+    [seasonMultiplier, tripDays]);
 
   const visibleDests = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -454,7 +459,7 @@ export function Destinos({ code, startDate, trip, session, onSelect }: { code: s
       (filter === "todos" || d.type === filter || (filter === "favoritos" && favorites.has(d.id))) &&
       (filter !== "favoritos" || favorites.has(d.id)) &&
       (seasonFilter === "todas" || inferDestinationSeasons(d).includes(seasonFilter)) &&
-      (tripDays === null || d.durationDays <= tripDays) &&
+      (tripDays === null || tripDays >= minReasonableDays(d)) &&
       (!q || d.name.toLowerCase().includes(q) || d.country.toLowerCase().includes(q) || d.highlights.some(h => h.toLowerCase().includes(q)))
     );
   }, [seasonAdjusted, filter, seasonFilter, search, favorites, tripDays]);
@@ -466,6 +471,21 @@ export function Destinos({ code, startDate, trip, session, onSelect }: { code: s
   const overBudget = useMemo(() =>
     visibleDests.filter(d => budgetPerPerson > 0 && d.costPerPerson > budgetPerPerson),
     [visibleDests, budgetPerPerson]);
+
+  // How many destinations WOULD fit the budget if the trip were long enough
+  // to be worth flying there — used only to tell the user when trip length,
+  // not budget, is ruling out long-haul options (e.g. a 2-day trip).
+  const withinBudgetIgnoringMinDays = useMemo(() => {
+    if (tripDays === null || budgetPerPerson === 0) return null;
+    const q = search.trim().toLowerCase();
+    return DESTINATIONS.filter(d =>
+      (filter === "todos" || d.type === filter || (filter === "favoritos" && favorites.has(d.id))) &&
+      (filter !== "favoritos" || favorites.has(d.id)) &&
+      (seasonFilter === "todas" || inferDestinationSeasons(d).includes(seasonFilter)) &&
+      (!q || d.name.toLowerCase().includes(q) || d.country.toLowerCase().includes(q) || d.highlights.some(h => h.toLowerCase().includes(q))) &&
+      costForDuration(d, tripDays) * seasonMultiplier <= budgetPerPerson
+    ).length;
+  }, [filter, seasonFilter, search, favorites, tripDays, budgetPerPerson, seasonMultiplier]);
 
   if (loading) return <SkeletonCards />;
 
@@ -524,7 +544,12 @@ export function Destinos({ code, startDate, trip, session, onSelect }: { code: s
         )}
         {tripDays !== null && (
           <p style={{ fontFamily: F.mono, fontSize: 11, color: "#9FAEC4", marginTop: 4 }}>
-            Mostrando solo destinos que caben en tu viaje de <strong style={{ color: C.goldLight }}>{tripDays} días</strong>
+            Precios estimados para tu viaje de <strong style={{ color: C.goldLight }}>{tripDays} días</strong> (destinos muy lejanos ocultos si el viaje es demasiado corto para compensar el vuelo)
+          </p>
+        )}
+        {withinBudgetIgnoringMinDays !== null && withinBudgetIgnoringMinDays > withinBudget.length && (
+          <p style={{ fontFamily: F.mono, fontSize: 11, color: C.coral, marginTop: 4 }}>
+            ⚠ Tu presupuesto por sí solo permitiría <strong style={{ color: "#fff" }}>{withinBudgetIgnoringMinDays}</strong> destinos — algunos quedan ocultos por ser demasiado lejanos para un viaje de {tripDays} días, no por precio.
           </p>
         )}
         {tripSeason && (
@@ -647,7 +672,7 @@ export function Destinos({ code, startDate, trip, session, onSelect }: { code: s
 
       {visibleDests.length === 0 && filter === "favoritos" && <EmptyState icon={<Heart size={28} color={C.line} />} text="Aún no tienes favoritos. Pulsa el corazón en cualquier destino." />}
       {visibleDests.length === 0 && filter !== "favoritos" && tripDays !== null && (
-        <EmptyState icon={<Globe size={28} color={C.line} />} text={`Ninguna plantilla encaja en un viaje de ${tripDays} días. Prueba a ampliar las fechas o elige un destino y ajusta el itinerario a mano.`} />
+        <EmptyState icon={<Globe size={28} color={C.line} />} text={`Ningún destino encaja con un viaje de ${tripDays} días con ese filtro. Prueba a quitar el filtro de tipo/temporada o ampliar las fechas.`} />
       )}
       {visibleDests.length === 0 && filter !== "favoritos" && tripDays === null && <EmptyState icon={<Globe size={28} color={C.line} />} text="Sin destinos con ese filtro." />}
 
