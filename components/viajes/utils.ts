@@ -30,6 +30,18 @@ function buildFlightsUrl(origin: string, destination: string, startDate: string,
   const q = `Flights from ${origin} to ${destination} on ${startDate} through ${endDate}`;
   return `https://www.google.com/travel/flights?q=${encodeURIComponent(q)}`;
 }
+function buildHotelsUrl(destination: string, startDate: string, endDate: string) {
+  return `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(destination)}&checkin=${startDate}&checkout=${endDate}`;
+}
+function buildCarRentalUrl(destination: string, startDate: string, endDate: string) {
+  return `https://www.booking.com/cars/index.html?ss=${encodeURIComponent(destination)}&pickupDate=${startDate}&dropoffDate=${endDate}`;
+}
+function buildActivitiesUrl(destination: string) {
+  return `https://www.getyourguide.com/s/?q=${encodeURIComponent(destination)}`;
+}
+function buildWebSearchUrl(query: string) {
+  return `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+}
 
 // ─── Storage ─────────────────────────────────────────────────────────────────
 
@@ -235,4 +247,4 @@ function downloadTextFile(filename: string, content: string, mime = "text/calend
   URL.revokeObjectURL(url);
 }
 
-export { uid, genTripCode, formatDate, formatDateFull, tripDuration, isValidUrl, buildFlightsUrl, loadShared, saveShared, flushDirtyKeys, peekShared, loadPersonal, savePersonal, formatMonth, monthsBetween, buildICS, downloadTextFile };
+export { uid, genTripCode, formatDate, formatDateFull, tripDuration, isValidUrl, buildFlightsUrl, buildHotelsUrl, buildCarRentalUrl, buildActivitiesUrl, buildWebSearchUrl, loadShared, saveShared, flushDirtyKeys, peekShared, loadPersonal, savePersonal, formatMonth, monthsBetween, buildICS, downloadTextFile };

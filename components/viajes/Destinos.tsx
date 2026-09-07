@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { MapPin, X, Globe, Heart, RefreshCw, Plane, Pencil } from "lucide-react";
+import { MapPin, X, Globe, Heart, RefreshCw, Plane, Pencil, Bed, Car, Compass, Wifi, ShieldCheck } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Perf, Card, SectionLabel, EmptyState, SkeletonCards } from "./ui";
-import { uid, loadShared, saveShared, loadPersonal, savePersonal, peekShared, monthsBetween, tripDuration, buildFlightsUrl } from "./utils";
+import { uid, loadShared, saveShared, loadPersonal, savePersonal, peekShared, monthsBetween, tripDuration, buildFlightsUrl, buildHotelsUrl, buildCarRentalUrl, buildActivitiesUrl, buildWebSearchUrl } from "./utils";
 import { CURRENCIES, DEST_TIPS, DEST_TYPE_FILTERS } from "./data/constants";
 import { DESTINATIONS, DESTINATION_ALTERNATIVES } from "./data/destinations";
 import type { ItineraryDay, MapPlace, SavingsConfig, DestinationTemplate, Trip, Session } from "./types";
@@ -148,6 +148,49 @@ function FlightSearchWidget({ code, trip, destination }: { code: string; trip: T
   );
 }
 
+function QuickLinksGrid({ destination, trip }: { destination: string; trip: Trip }) {
+  const hasDates = !!(trip.startDate && trip.endDate);
+  const links = [
+    {
+      key: "alojamiento", label: "Alojamiento", Icon: Bed,
+      url: hasDates ? buildHotelsUrl(destination, trip.startDate!, trip.endDate!) : null,
+    },
+    {
+      key: "coche", label: "Coche de alquiler", Icon: Car,
+      url: hasDates ? buildCarRentalUrl(destination, trip.startDate!, trip.endDate!) : null,
+    },
+    { key: "actividades", label: "Actividades", Icon: Compass, url: buildActivitiesUrl(destination) },
+    { key: "esim", label: "eSIM datos", Icon: Wifi, url: buildWebSearchUrl(`esim ${destination}`) },
+    { key: "seguro", label: "Seguro de viaje", Icon: ShieldCheck, url: buildWebSearchUrl(`seguro de viaje ${destination}`) },
+  ];
+  return (
+    <div>
+      <SectionLabel>Enlaces útiles</SectionLabel>
+      <div className="flex flex-wrap gap-2 mt-2">
+        {links.map(({ key, label, Icon, url }) => (
+          <a
+            key={key}
+            href={url ?? undefined}
+            target={url ? "_blank" : undefined}
+            rel={url ? "noopener noreferrer" : undefined}
+            aria-disabled={!url}
+            title={url ? undefined : "Fija las fechas del viaje primero"}
+            style={{
+              display: "flex", alignItems: "center", gap: 6, padding: "8px 12px", borderRadius: 999,
+              background: url ? C.paperDark : `${C.paperDark}80`, color: url ? C.ink : C.inkSoft,
+              fontFamily: F.mono, fontSize: 11, textDecoration: "none",
+              border: `1px solid ${C.line}`, cursor: url ? "pointer" : "default",
+              opacity: url ? 1 : 0.55, pointerEvents: url ? "auto" : "none",
+            }}
+          >
+            <Icon size={13} /> {label}
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function DestModal({ dest, budget, code, trip, onChoose, onClose, alternatives, onOpenAlt }: {
   dest: DestinationTemplate; budget: number; code: string; trip: Trip; onChoose: () => void; onClose: () => void;
   alternatives?: DestinationTemplate[]; onOpenAlt?: (d: DestinationTemplate) => void;
@@ -256,6 +299,7 @@ export function DestModal({ dest, budget, code, trip, onChoose, onClose, alterna
           </div>
 
           <FlightSearchWidget code={code} trip={trip} destination={dest.country} />
+          <QuickLinksGrid destination={dest.country} trip={trip} />
 
           {/* Tips per destination */}
           {DEST_TIPS[dest.id] && (() => {
