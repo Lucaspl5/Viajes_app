@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import { Trash2, X, Euro, ChevronDown, Wallet, Filter, Lock } from "lucide-react";
+import { Trash2, X, Euro, ChevronDown, Wallet, Filter, Lock, Check, Undo2 } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, Banner, EmptyState, SkeletonCards } from "./ui";
 import { uid, loadShared, saveShared, peekShared } from "./utils";
 import { EXPENSE_CATEGORIES, CURRENCIES } from "./data/constants";
-import type { Session, Expense, Trip } from "./types";
+import type { Session, Expense, Trip, Settlement } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
 import { isPremium } from "./premium";
 import { PremiumGate } from "./PremiumGate";
@@ -17,7 +17,15 @@ import { useAnimeStagger, AnimatedIn } from "./animation";
 // subscribers instead of waiting for the next daily digest.
 const BIG_EXPENSE_THRESHOLD_EUR = 150;
 
-export function calculateSettlements(expenses: Expense[], members: string[]) {
+export function applyPayments(balances: Record<string, number>, payments: Settlement[]) {
+  for (const p of payments) {
+    balances[p.from] = (balances[p.from] || 0) + p.amount;
+    balances[p.to] = (balances[p.to] || 0) - p.amount;
+  }
+  return balances;
+}
+
+export function calculateSettlements(expenses: Expense[], members: string[], payments: Settlement[] = []) {
   if (members.length === 0) return [];
   const balances: Record<string, number> = {};
   members.forEach(m => (balances[m] = 0));
@@ -28,6 +36,7 @@ export function calculateSettlements(expenses: Expense[], members: string[]) {
     balances[exp.paidBy] = (balances[exp.paidBy] || 0) + exp.amount - share;
     involved.forEach(m => { if (m !== exp.paidBy) balances[m] = (balances[m] || 0) - share; });
   }
+  applyPayments(balances, payments);
 
   const debtors = Object.entries(balances).filter(([, b]) => b < -0.01).map(([n, b]) => ({ name: n, amount: Math.abs(b) })).sort((a, b) => b.amount - a.amount);
   const creditors = Object.entries(balances).filter(([, b]) => b > 0.01).map(([n, b]) => ({ name: n, amount: b })).sort((a, b) => b.amount - a.amount);
@@ -46,7 +55,10 @@ export function calculateSettlements(expenses: Expense[], members: string[]) {
 
 export function Gastos({ code, session, members, trip, darkMode, onTripUpdate }: { code: string; session: Session; members: string[]; trip: Trip; darkMode: boolean; onTripUpdate: (t: Trip) => void }) {
   const key = `gastos:${code}`;
+  const paymentsKey = `liquidaciones:${code}`;
   const [expenses, setExpenses] = useState<Expense[]>(() => peekShared<Expense[]>(key) ?? []);
+  const [payments, setPayments] = useState<Settlement[]>(() => peekShared<Settlement[]>(paymentsKey) ?? []);
+  const [showPayments, setShowPayments] = useState(false);
   const [loading, setLoading] = useState(() => peekShared<Expense[]>(key) === undefined);
   const [form, setForm] = useState({ description: "", amount: "", currency: "EUR", paidBy: session.name, category: EXPENSE_CATEGORIES[0], date: "", splitWith: [] as string[] });
   const [err, setErr] = useState("");
@@ -61,7 +73,13 @@ export function Gastos({ code, session, members, trip, darkMode, onTripUpdate }:
   const [filterFrom, setFilterFrom] = useState("");
   const [filterTo, setFilterTo] = useState("");
   useEffect(() => { loadShared<Expense[]>(key, []).then(e => { setExpenses(e); setLoading(false); }); }, [key]);
+  useEffect(() => { loadShared<Settlement[]>(paymentsKey, []).then(setPayments); }, [paymentsKey]);
   const persist = useCallback(async (next: Expense[]) => { setExpenses(next); await saveShared(key, next); }, [key]);
+  const persistPayments = useCallback(async (next: Settlement[]) => { setPayments(next); await saveShared(paymentsKey, next); }, [paymentsKey]);
+
+  function markPaid(from: string, to: string, amount: number) {
+    persistPayments([...payments, { id: uid(), from, to, amount, date: new Date().toISOString().slice(0, 10) }]);
+  }
 
   function addExpense() {
     setErr("");
@@ -112,10 +130,10 @@ export function Gastos({ code, session, members, trip, darkMode, onTripUpdate }:
       m[e.paidBy] = (m[e.paidBy] || 0) + e.amount;
       involved.forEach(mb => (m[mb] = (m[mb] || 0) - share));
     });
-    return m;
-  }, [expenses, members]);
+    return applyPayments(m, payments);
+  }, [expenses, members, payments]);
 
-  const settlements = useMemo(() => calculateSettlements(expenses, members), [expenses, members]);
+  const settlements = useMemo(() => calculateSettlements(expenses, members, payments), [expenses, members, payments]);
 
   const byCategory = useMemo(() => {
     const m: Record<string, number> = {};
@@ -241,11 +259,15 @@ export function Gastos({ code, session, members, trip, darkMode, onTripUpdate }:
             {showSettle && (
               <div className="flex flex-col gap-2 mt-3">
                 {settlements.map((s, i) => (
-                  <div key={i} className="flex items-center gap-2 px-3 py-2 rounded" style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", fontSize: 13 }}>
+                  <div key={i} className="flex items-center gap-2 px-3 py-2 rounded flex-wrap" style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", fontSize: 13 }}>
                     <span style={{ fontWeight: 600 }}>{s.from}</span>
                     <span style={{ color: C.inkSoft }}>le paga</span>
                     <span style={{ fontWeight: 600 }}>{s.to}</span>
                     <span style={{ marginLeft: "auto", fontFamily: F.mono, fontWeight: 700, color: C.green }}>{s.amount.toFixed(2)} €</span>
+                    <button onClick={() => markPaid(s.from, s.to, s.amount)} className="flex items-center gap-1"
+                      style={{ background: C.green, color: "#fff", borderRadius: 999, padding: "4px 10px", fontFamily: F.mono, fontSize: 10, fontWeight: 700 }}>
+                      <Check size={11} /> MARCAR PAGADO
+                    </button>
                   </div>
                 ))}
               </div>
@@ -254,6 +276,26 @@ export function Gastos({ code, session, members, trip, darkMode, onTripUpdate }:
         )}
         {expenses.length > 0 && settlements.length === 0 && (
           <p style={{ fontSize: 13, color: C.green, fontFamily: F.mono }}>✓ TODO SALDADO</p>
+        )}
+
+        {payments.length > 0 && (
+          <>
+            <button onClick={() => setShowPayments(v => !v)} className="flex items-center gap-1 mt-3" style={{ fontFamily: F.mono, fontSize: 11, color: C.inkSoft }}>
+              <ChevronDown size={13} style={{ transform: showPayments ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} /> LIQUIDACIONES REGISTRADAS ({payments.length})
+            </button>
+            {showPayments && (
+              <div className="flex flex-col gap-2 mt-3">
+                {payments.map(p => (
+                  <div key={p.id} className="flex items-center gap-2 px-3 py-2 rounded" style={{ background: C.paperDark, fontSize: 12 }}>
+                    <span>{p.from} → {p.to}</span>
+                    <span style={{ fontFamily: F.mono, fontSize: 11, color: C.inkSoft }}>{p.date}</span>
+                    <span style={{ marginLeft: "auto", fontFamily: F.mono, fontWeight: 700 }}>{p.amount.toFixed(2)} €</span>
+                    <button onClick={() => persistPayments(payments.filter(x => x.id !== p.id))} title="Deshacer" style={{ color: C.inkSoft, padding: 2 }}><Undo2 size={13} /></button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </Card>
 

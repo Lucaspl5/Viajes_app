@@ -45,6 +45,7 @@ export interface Booking {
   location: string; bookingUrl: string; notes: string;
   amount: number;
 }
+export interface Settlement { id: string; from: string; to: string; amount: number; date: string; }
 export interface DocScan {
   id: string; type: "pasaporte" | "dni" | "seguro" | "visado" | "vacuna" | "otro";
   owner: string; label: string; imageUrl: string; notes: string; addedAt: number;
