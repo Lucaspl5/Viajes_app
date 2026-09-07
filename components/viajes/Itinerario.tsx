@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Plane, Plus, Trash2, X } from "lucide-react";
+import { Plane, Plus, Trash2, X, AlertTriangle } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Perf, Card, EmptyState, SkeletonCards } from "./ui";
 import { uid, formatDateFull, loadShared, saveShared, peekShared } from "./utils";
@@ -10,6 +10,12 @@ import { AiQuickButton } from "./AiQuickButton";
 
 function sortItems(items: ItineraryItem[]) {
   return [...items].sort((a, b) => (a.time || "99:99").localeCompare(b.time || "99:99"));
+}
+
+function clashingTimes(items: ItineraryItem[]): Set<string> {
+  const counts: Record<string, number> = {};
+  items.forEach(it => { if (it.time.trim()) counts[it.time] = (counts[it.time] || 0) + 1; });
+  return new Set(Object.entries(counts).filter(([, n]) => n > 1).map(([t]) => t));
 }
 
 export function Itinerario({ code, startDate, trip, session, onImportItinerary }: {
@@ -70,17 +76,31 @@ export function Itinerario({ code, startDate, trip, session, onImportItinerary }
             {d.items.length > 1 && (
               <div style={{ position: "absolute", left: 35, top: 8, bottom: 8, width: 1, background: C.line }} />
             )}
-            {d.items.map(it => (
-              <div key={it.id} className="flex items-center gap-2" style={{ position: "relative" }}>
-                <span style={{ position: "absolute", left: 34, width: 5, height: 5, borderRadius: 999, background: C.teal, zIndex: 1 }} />
-                <input value={it.time} onChange={e => updateItem(d.id, it.id, { time: e.target.value })}
-                  onBlur={() => sortDayItems(d.id)} placeholder="10:00" maxLength={5}
-                  style={{ ...inputStyle, width: 72, fontFamily: F.mono, fontSize: 12 }} />
-                <input value={it.text} onChange={e => updateItem(d.id, it.id, { text: e.target.value })}
-                  onKeyDown={e => e.key === "Enter" && addItem(d.id)} placeholder="Ej. Visita al museo…" style={{ ...inputStyle, flex: 1 }} />
-                <button onClick={() => removeItem(d.id, it.id)} style={{ color: C.inkSoft, padding: 4 }} aria-label="Eliminar"><X size={15} /></button>
-              </div>
-            ))}
+            {(() => {
+              const clashes = clashingTimes(d.items);
+              return d.items.map(it => {
+                const clashing = it.time.trim() && clashes.has(it.time);
+                return (
+                  <div key={it.id}>
+                    <div className="flex items-center gap-2" style={{ position: "relative" }}>
+                      <span style={{ position: "absolute", left: 34, width: 5, height: 5, borderRadius: 999, background: clashing ? C.coral : C.teal, zIndex: 1 }} />
+                      <input value={it.time} onChange={e => updateItem(d.id, it.id, { time: e.target.value })}
+                        onBlur={() => sortDayItems(d.id)} placeholder="10:00" maxLength={5}
+                        style={{ ...inputStyle, width: 72, fontFamily: F.mono, fontSize: 12, border: clashing ? `1px solid ${C.coral}` : inputStyle.border }} />
+                      <input value={it.text} onChange={e => updateItem(d.id, it.id, { text: e.target.value })}
+                        onKeyDown={e => e.key === "Enter" && addItem(d.id)} placeholder="Ej. Visita al museo…" style={{ ...inputStyle, flex: 1 }} />
+                      <button onClick={() => removeItem(d.id, it.id)} style={{ color: C.inkSoft, padding: 4 }} aria-label="Eliminar"><X size={15} /></button>
+                    </div>
+                    {clashing && (
+                      <div className="flex items-center gap-1" style={{ marginLeft: 84, marginTop: 2 }}>
+                        <AlertTriangle size={11} color={C.coral} />
+                        <span style={{ fontFamily: F.mono, fontSize: 10, color: C.coral }}>Coincide en horario con otra parada de este día</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              });
+            })()}
             {d.items.length === 0 && <p style={{ color: C.inkSoft, fontSize: 13 }}>Sin paradas todavía.</p>}
           </div>
           <button onClick={() => addItem(d.id)} className="flex items-center gap-1 mt-3" style={{ fontFamily: F.mono, fontSize: 12, color: C.teal }}>
