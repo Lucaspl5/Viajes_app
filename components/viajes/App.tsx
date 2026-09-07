@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Plane, MapPin, Camera, ListChecks, Copy, Check, X, ArrowLeft, Luggage, Lightbulb, Wallet, Sunrise, PiggyBank, Globe, BookOpen, Moon, Sun, Ticket, Sparkles, MoreHorizontal } from "lucide-react";
+import { Plane, MapPin, Camera, ListChecks, Copy, Check, X, ArrowLeft, Luggage, Lightbulb, Wallet, Sunrise, PiggyBank, Globe, BookOpen, Moon, Sun, Ticket, Sparkles, MoreHorizontal, Wallet2 } from "lucide-react";
 import { animate } from "animejs";
 import { C, F } from "./theme";
 import { useCountdown } from "./ui";
@@ -24,6 +24,7 @@ import { Ideas } from "./Ideas";
 import { Ahorro } from "./Ahorro";
 import { Destinos } from "./Destinos";
 import { Reservas } from "./Reservas";
+import { Cartera } from "./Cartera";
 import { Diario } from "./Diario";
 import { PrintExport } from "./PrintExport";
 import { WelcomeModal } from "./WelcomeModal";
@@ -239,6 +240,7 @@ export default function App() {
     { id: "ideas",      label: "Ideas",     Icon: Lightbulb },
     { id: "ahorro",     label: "Ahorro",    Icon: PiggyBank },
     { id: "destinos",   label: "Destinos",  Icon: Globe },
+    { id: "cartera",    label: "Cartera",   Icon: Wallet2 },
   ];
   const isMoreActive = moreTabs.some(t => t.id === tab);
   const isPlanning = !!trip.planning?.open;
@@ -320,6 +322,7 @@ export default function App() {
             {tab === "checklist"  && <Checklist code={session.code} session={session} trip={trip} />}
             {tab === "gastos"     && <Gastos code={session.code} session={session} members={trip.members} trip={trip} darkMode={darkMode} onTripUpdate={setTrip} />}
             {tab === "equipaje"   && <Equipaje code={session.code} session={session} trip={trip} />}
+            {tab === "cartera"    && <Cartera code={session.code} session={session} trip={trip} />}
             {tab === "ideas"      && <Ideas code={session.code} session={session} trip={trip} />}
             {tab === "ahorro"     && <Ahorro code={session.code} members={trip.members} trip={trip} session={session} />}
             {tab === "destinos"   && <Destinos code={session.code} startDate={trip.startDate} trip={trip} session={session} onSelect={() => setTab("itinerario")} />}

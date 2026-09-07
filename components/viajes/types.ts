@@ -45,6 +45,10 @@ export interface Booking {
   location: string; bookingUrl: string; notes: string;
   amount: number;
 }
+export interface DocScan {
+  id: string; type: "pasaporte" | "dni" | "seguro" | "visado" | "vacuna" | "otro";
+  owner: string; label: string; imageUrl: string; notes: string; addedAt: number;
+}
 export interface DiaryEntry {
   id: string; date: string; text: string;
   author: string; mood: string; addedAt: number;
@@ -65,4 +69,4 @@ export interface TravelDocument {
   dueDate: string;
   notes: string;
 }
-export type TabId = "resumen" | "itinerario" | "mapa" | "fotos" | "checklist" | "gastos" | "equipaje" | "ideas" | "ahorro" | "destinos" | "reservas" | "diario" | "asistente";
+export type TabId = "resumen" | "itinerario" | "mapa" | "fotos" | "checklist" | "gastos" | "equipaje" | "ideas" | "ahorro" | "destinos" | "reservas" | "diario" | "asistente" | "cartera";
