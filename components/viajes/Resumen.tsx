@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Camera, X, Edit2, Copy, Check, PlusSquare, Bell, BellOff } from "lucide-react";
+import { Camera, X, Edit2, Copy, Check, PlusSquare, Bell, BellOff, Lightbulb } from "lucide-react";
 import { animate, spring } from "animejs";
 import { C, F, inputStyle } from "./theme";
 import { useAnimeStagger } from "./animation";
 import { Card, SectionLabel } from "./ui";
-import { formatDate, tripDuration, loadShared, saveShared } from "./utils";
+import { formatDate, tripDuration, loadShared, saveShared, loadPersonal, savePersonal } from "./utils";
 import type { Trip, Session } from "./types";
 import { WeatherWidget } from "./WeatherWidget";
 import { InvitePanel } from "./InvitePanel";
@@ -33,6 +33,15 @@ export function Resumen({ trip, session, days, darkMode, onTripUpdate, onDuplica
   useEffect(() => {
     loadShared<string>(coverKey, "").then(u => { setCoverUrl(u); setCoverInput(u); });
   }, [coverKey]);
+
+  const [showSearchHint, setShowSearchHint] = useState(false);
+  useEffect(() => {
+    loadPersonal<boolean>("dismissedSearchHint", false).then(dismissed => setShowSearchHint(!dismissed));
+  }, []);
+  function dismissSearchHint() {
+    setShowSearchHint(false);
+    savePersonal("dismissedSearchHint", true);
+  }
 
   async function saveCover() {
     await saveShared(coverKey, coverInput.trim());
@@ -94,6 +103,20 @@ export function Resumen({ trip, session, days, darkMode, onTripUpdate, onDuplica
 
   return (
     <div ref={sectionRef} className="flex flex-col gap-4">
+      {/* Search links disclaimer */}
+      {showSearchHint && (
+        <div className="flex items-start gap-2" style={{
+          background: darkMode ? "#1F2937" : "#FFF9E8", border: `1px solid ${darkMode ? "#374151" : "#F0DFA0"}`,
+          borderRadius: 10, padding: "10px 14px",
+        }}>
+          <Lightbulb size={14} color={C.gold} style={{ flexShrink: 0, marginTop: 2 }} />
+          <p style={{ flex: 1, fontSize: 12, color: softColor, lineHeight: 1.5, margin: 0 }}>
+            Los enlaces de búsqueda en <strong style={{ color: textColor }}>Destinos</strong> (vuelos, alojamiento, actividades…) son un punto de partida para comparar, no la oferta más barata garantizada. Compara siempre por tu cuenta antes de reservar.
+          </p>
+          <button onClick={dismissSearchHint} aria-label="Cerrar aviso" style={{ color: softColor, flexShrink: 0 }}><X size={13} /></button>
+        </div>
+      )}
+
       {/* Cover photo hero */}
       {(coverUrl || showCoverEdit) && (
         <div style={{ borderRadius: 14, overflow: "hidden", position: "relative" }}>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { Check, Trash2, X, Euro, Circle, PiggyBank, Edit2 } from "lucide-react";
+import { Check, Trash2, X, Euro, Circle, PiggyBank, Edit2, HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, Field, Banner, EmptyState, SkeletonCards } from "./ui";
 import { uid, loadShared, saveShared, peekShared, formatMonth, monthsBetween } from "./utils";
@@ -20,6 +20,7 @@ export function Ahorro({ code, members, trip, session }: { code: string; members
   const [phaseForm, setPhaseForm] = useState({ name: "", startDate: "", endDate: "", amountPerPerson: "" });
   const [phaseErr, setPhaseErr] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [helpOpen, setHelpOpen] = useState(() => (cachedConfig?.phases.length ?? 0) === 0);
 
   const defaultN = Math.max(members.length, 1);
   const n = config.numPersonas != null ? config.numPersonas : defaultN;
@@ -347,16 +348,31 @@ export function Ahorro({ code, members, trip, session }: { code: string; members
       )}
 
       {/* Help */}
-      {config.phases.length === 0 && (
-        <div style={{ border: `1px dashed ${C.line}`, borderRadius: 8, padding: "14px 16px" }}>
-          <p style={{ color: C.inkSoft, fontSize: 13, lineHeight: 1.7 }}>
-            <strong style={{ color: C.ink }}>¿Cómo funciona?</strong><br />
-            Define períodos de ahorro (ej. Fase 1: agosto → octubre, Fase 2: noviembre → diciembre).
-            En cada fase pones cuánto aporta cada persona a la cuenta conjunta del grupo.
-            La app calcula automáticamente el bote total según el número de viajeros y te muestra cuánto tenéis acumulado al final.
-          </p>
-        </div>
-      )}
+      <div style={{ border: `1px dashed ${C.line}`, borderRadius: 8, overflow: "hidden" }}>
+        <button onClick={() => setHelpOpen(v => !v)} className="flex items-center justify-between w-full"
+          style={{ padding: "12px 16px", color: C.ink, fontFamily: F.mono, fontSize: 12, fontWeight: 700 }}>
+          <span className="flex items-center gap-2"><HelpCircle size={14} color={C.teal} /> AYUDA · CÓMO AHORRAR EN GRUPO</span>
+          {helpOpen ? <ChevronUp size={14} color={C.inkSoft} /> : <ChevronDown size={14} color={C.inkSoft} />}
+        </button>
+        {helpOpen && (
+          <div style={{ padding: "0 16px 16px" }}>
+            <p style={{ color: C.inkSoft, fontSize: 13, lineHeight: 1.7 }}>
+              <strong style={{ color: C.ink }}>¿Cómo funciona esta pantalla?</strong><br />
+              Define períodos de ahorro (ej. Fase 1: agosto → octubre, Fase 2: noviembre → diciembre).
+              En cada fase pones cuánto aporta cada persona al mes a la cuenta conjunta del grupo.
+              La app calcula automáticamente el bote total según el número de viajeros y meses, y te muestra cuánto tenéis acumulado al final de cada fase.
+            </p>
+            <p style={{ color: C.ink, fontSize: 13, fontWeight: 700, marginTop: 12 }}>Consejos para ahorrar en grupo</p>
+            <ul style={{ color: C.inkSoft, fontSize: 13, lineHeight: 1.8, marginTop: 6, paddingLeft: 18 }}>
+              <li>Abrid una <strong style={{ color: C.ink }}>cuenta conjunta</strong> (o usad Bizum/una app como Splitwise o Tricount) para que el dinero esté centralizado y todos veáis lo mismo.</li>
+              <li><strong style={{ color: C.ink }}>Domiciliad una transferencia automática</strong> el día de cobro de cada uno, en lugar de depender de acordarse.</li>
+              <li>Si alguien no puede aportar lo mismo un mes, <strong style={{ color: C.ink }}>ajusta el importe por persona</strong> en esa fase en vez de forzar la misma cifra para todos.</li>
+              <li>Divide el objetivo en <strong style={{ color: C.ink }}>fases realistas</strong> ligadas a cuándo cobra cada persona, no a un único número grande y lejano.</li>
+              <li>Revisad el <strong style={{ color: C.ink }}>progreso cada mes</strong> en esta pantalla para detectar pronto si vais retrasados y poder reajustar a tiempo.</li>
+            </ul>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
