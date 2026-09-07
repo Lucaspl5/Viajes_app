@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { MapPin, X, Globe, Heart, RefreshCw, Plane, Pencil, Bed, Car, Compass, Wifi, ShieldCheck } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Perf, Card, SectionLabel, EmptyState, SkeletonCards } from "./ui";
-import { uid, loadShared, saveShared, loadPersonal, savePersonal, peekShared, monthsBetween, tripDuration, buildFlightsUrl, buildHotelsUrl, buildCarRentalUrl, buildActivitiesUrl, buildWebSearchUrl } from "./utils";
+import { uid, loadShared, saveShared, loadPersonal, savePersonal, peekShared, monthsBetween, tripDuration, buildFlightsUrl, buildHotelsUrl, buildCarRentalUrl, buildActivitiesUrl, buildWebSearchUrl, checkSavingsCoverage } from "./utils";
 import { CURRENCIES, DEST_TIPS, DEST_TYPE_FILTERS } from "./data/constants";
 import { DESTINATIONS, DESTINATION_ALTERNATIVES } from "./data/destinations";
 import type { ItineraryDay, MapPlace, SavingsConfig, DestinationTemplate, Trip, Session } from "./types";
@@ -418,6 +418,8 @@ export function Destinos({ code, startDate, trip, session, onSelect }: { code: s
     }, 0);
   }, [savings]);
 
+  const savingsCoverage = useMemo(() => checkSavingsCoverage(savings?.phases ?? [], trip.startDate), [savings, trip.startDate]);
+
   async function applyDestination(dest: DestinationTemplate) {
     const itinDays: ItineraryDay[] = dest.itinerary.map((d, i) => {
       let date = "";
@@ -529,6 +531,13 @@ export function Destinos({ code, startDate, trip, session, onSelect }: { code: s
           <p style={{ fontFamily: F.mono, fontSize: 11, color: "#9FAEC4", marginTop: 4 }}>
             Precios ajustados a temporada de <strong style={{ color: C.goldLight }}>{SEASON_LABELS[tripSeason].label.toLowerCase()}</strong>
             {" "}({seasonMultiplier >= 1 ? "+" : ""}{((seasonMultiplier - 1) * 100).toFixed(0)}% vs. media anual — estimación, no tarifa real)
+          </p>
+        )}
+        {budgetPerPerson > 0 && (savingsCoverage.status === "falta" || savingsCoverage.status === "excede") && (
+          <p style={{ fontFamily: F.mono, fontSize: 11, color: C.coral, marginTop: 4 }}>
+            ⚠ {savingsCoverage.status === "falta"
+              ? `Tu plan de ahorro no llega hasta la fecha del viaje — este presupuesto está incompleto`
+              : `Tu plan de ahorro sigue sumando después de que empiece el viaje — este presupuesto puede estar inflado`}. Revísalo en <strong style={{ color: C.goldLight }}>AHORRO</strong>.
           </p>
         )}
         {budgetPerPerson > 0 && (

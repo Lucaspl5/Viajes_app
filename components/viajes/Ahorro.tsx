@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { Check, Trash2, X, Euro, Circle, PiggyBank, Edit2, HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { Check, Trash2, X, Euro, Circle, PiggyBank, Edit2, HelpCircle, ChevronDown, ChevronUp, AlertTriangle } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Card, SectionLabel, Field, Banner, EmptyState, SkeletonCards } from "./ui";
-import { uid, loadShared, saveShared, peekShared, formatMonth, monthsBetween } from "./utils";
+import { uid, loadShared, saveShared, peekShared, formatMonth, monthsBetween, checkSavingsCoverage } from "./utils";
 import type { SavingsPhase, SavingsConfig, Trip, Session } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
 
@@ -98,6 +98,18 @@ export function Ahorro({ code, members, trip, session }: { code: string; members
   const target         = config.targetBudget;
   const covered        = target > 0 ? Math.min((totalGroup / target) * 100, 100) : 0;
 
+  const coverage = useMemo(() => checkSavingsCoverage(config.phases, trip.startDate), [config.phases, trip.startDate]);
+  const tripMonthLabel = trip.startDate ? formatMonth(trip.startDate.slice(0, 7)) : "";
+
+  // Suggest the trip's month as the end date for the very first phase, so
+  // the plan starts life pointed at the actual trip instead of a blank field.
+  useEffect(() => {
+    if (config.phases.length === 0 && trip.startDate && !editingId && !phaseForm.endDate) {
+      setPhaseForm(f => ({ ...f, endDate: trip.startDate!.slice(0, 7) }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [config.phases.length, trip.startDate]);
+
   if (loading) return <SkeletonCards />;
 
   return (
@@ -188,6 +200,31 @@ export function Ahorro({ code, members, trip, session }: { code: string; members
           </p>
         )}
       </div>
+
+      {/* Coverage vs. trip date */}
+      {trip.startDate && coverage.status !== "cubierto" && coverage.status !== "sin-viaje" && (
+        <div className="flex items-start gap-2" style={{
+          background: coverage.status === "sin-fases" ? "#F0F7FF" : "#FFF5F0",
+          border: `1px solid ${coverage.status === "sin-fases" ? "#C8DEFF" : "#FDDCCC"}`,
+          borderRadius: 10, padding: "10px 14px",
+        }}>
+          <AlertTriangle size={14} color={coverage.status === "sin-fases" ? C.sky : C.coral} style={{ flexShrink: 0, marginTop: 2 }} />
+          <p style={{ flex: 1, fontSize: 12, color: C.inkSoft, lineHeight: 1.5, margin: 0 }}>
+            {coverage.status === "sin-fases" && (
+              <>Tu viaje es en <strong style={{ color: C.ink }}>{tripMonthLabel}</strong> — crea una fase de ahorro que llegue hasta esa fecha.</>
+            )}
+            {coverage.status === "falta" && (
+              <>Tus fases de ahorro terminan antes de que empiece el viaje ({tripMonthLabel}) — quedan <strong style={{ color: C.ink }}>{coverage.months} {coverage.months === 1 ? "mes" : "meses"}</strong> sin fase planificada. Añade otra fase o alarga la última.</>
+            )}
+            {coverage.status === "excede" && (
+              <>La última fase de ahorro termina <strong style={{ color: C.ink }}>{coverage.months} {coverage.months === 1 ? "mes" : "meses"}</strong> después de que empiece el viaje ({tripMonthLabel}) — revisa las fechas.</>
+            )}
+          </p>
+        </div>
+      )}
+      {trip.startDate && coverage.status === "cubierto" && (
+        <p style={{ fontFamily: F.mono, fontSize: 11, color: C.green }}>✓ Tu plan de ahorro llega hasta la fecha del viaje ({tripMonthLabel})</p>
+      )}
 
       {/* Add / Edit phase form */}
       <Card>

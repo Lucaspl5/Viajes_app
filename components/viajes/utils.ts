@@ -1,6 +1,6 @@
 "use client";
 
-import type { ItineraryDay, Booking } from "./types";
+import type { ItineraryDay, Booking, SavingsPhase } from "./types";
 
 function uid() { return Math.random().toString(36).slice(2, 9); }
 
@@ -23,6 +23,23 @@ function tripDuration(s: string | null, e: string | null) {
   if (!s || !e) return null;
   return Math.round((new Date(e + "T12:00:00").getTime() - new Date(s + "T12:00:00").getTime()) / 86_400_000) + 1;
 }
+// Checks whether the Ahorro savings phases actually reach the trip's start
+// date — phases are set up by hand and don't auto-follow trip.startDate, so
+// this is the only signal that they've drifted out of sync with each other.
+export type SavingsCoverage =
+  | { status: "sin-viaje" | "sin-fases" | "cubierto"; months: 0 }
+  | { status: "falta" | "excede"; months: number };
+
+function checkSavingsCoverage(phases: SavingsPhase[], tripStartDate: string | null): SavingsCoverage {
+  if (!tripStartDate) return { status: "sin-viaje", months: 0 };
+  if (phases.length === 0) return { status: "sin-fases", months: 0 };
+  const tripMonth = tripStartDate.slice(0, 7);
+  const lastEnd = phases.reduce((max, p) => (p.endDate > max ? p.endDate : max), phases[0].endDate);
+  if (lastEnd < tripMonth) return { status: "falta", months: Math.max(0, monthsBetween(lastEnd, tripMonth) - 1) };
+  if (lastEnd > tripMonth) return { status: "excede", months: Math.max(0, monthsBetween(tripMonth, lastEnd) - 1) };
+  return { status: "cubierto", months: 0 };
+}
+
 function isValidUrl(s: string) {
   try { const u = new URL(s); return u.protocol === "https:" || u.protocol === "http:"; } catch { return false; }
 }
@@ -247,4 +264,4 @@ function downloadTextFile(filename: string, content: string, mime = "text/calend
   URL.revokeObjectURL(url);
 }
 
-export { uid, genTripCode, formatDate, formatDateFull, tripDuration, isValidUrl, buildFlightsUrl, buildHotelsUrl, buildCarRentalUrl, buildActivitiesUrl, buildWebSearchUrl, loadShared, saveShared, flushDirtyKeys, peekShared, loadPersonal, savePersonal, formatMonth, monthsBetween, buildICS, downloadTextFile };
+export { uid, genTripCode, formatDate, formatDateFull, tripDuration, isValidUrl, buildFlightsUrl, buildHotelsUrl, buildCarRentalUrl, buildActivitiesUrl, buildWebSearchUrl, checkSavingsCoverage, loadShared, saveShared, flushDirtyKeys, peekShared, loadPersonal, savePersonal, formatMonth, monthsBetween, buildICS, downloadTextFile };
