@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { MapPin, X, Globe, Heart, RefreshCw } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Perf, Card, SectionLabel, EmptyState, SkeletonCards } from "./ui";
-import { uid, loadShared, saveShared, loadPersonal, savePersonal, peekShared, monthsBetween } from "./utils";
+import { uid, loadShared, saveShared, loadPersonal, savePersonal, peekShared, monthsBetween, tripDuration } from "./utils";
 import { CURRENCIES, DEST_TIPS, DEST_TYPE_FILTERS } from "./data/constants";
 import { DESTINATIONS, DESTINATION_ALTERNATIVES } from "./data/destinations";
 import type { ItineraryDay, MapPlace, SavingsConfig, DestinationTemplate, Trip, Session } from "./types";
@@ -320,14 +320,17 @@ export function Destinos({ code, startDate, trip, session, onSelect }: { code: s
     onSelect();
   }
 
+  const tripDays = useMemo(() => tripDuration(trip.startDate, trip.endDate), [trip.startDate, trip.endDate]);
+
   const visibleDests = useMemo(() => {
     const q = search.trim().toLowerCase();
     return DESTINATIONS.filter(d =>
       (filter === "todos" || d.type === filter || (filter === "favoritos" && favorites.has(d.id))) &&
       (filter !== "favoritos" || favorites.has(d.id)) &&
+      (tripDays === null || d.durationDays <= tripDays) &&
       (!q || d.name.toLowerCase().includes(q) || d.country.toLowerCase().includes(q) || d.highlights.some(h => h.toLowerCase().includes(q)))
     );
-  }, [filter, search, favorites]);
+  }, [filter, search, favorites, tripDays]);
 
   const withinBudget = useMemo(() =>
     visibleDests.filter(d => budgetPerPerson === 0 || d.costPerPerson <= budgetPerPerson),
@@ -390,6 +393,11 @@ export function Destinos({ code, startDate, trip, session, onSelect }: { code: s
         ) : (
           <p style={{ fontFamily: F.mono, fontSize: 11, color: "#9FAEC4", marginTop: 6 }}>
             Configura tu plan en <strong style={{ color: C.goldLight }}>AHORRO</strong> para filtrar por presupuesto
+          </p>
+        )}
+        {tripDays !== null && (
+          <p style={{ fontFamily: F.mono, fontSize: 11, color: "#9FAEC4", marginTop: 4 }}>
+            Mostrando solo destinos que caben en tu viaje de <strong style={{ color: C.goldLight }}>{tripDays} días</strong>
           </p>
         )}
         {budgetPerPerson > 0 && (
@@ -474,7 +482,10 @@ export function Destinos({ code, startDate, trip, session, onSelect }: { code: s
       {budgetPerPerson === 0 && <DestGrid dests={visibleDests} />}
 
       {visibleDests.length === 0 && filter === "favoritos" && <EmptyState icon={<Heart size={28} color={C.line} />} text="Aún no tienes favoritos. Pulsa el corazón en cualquier destino." />}
-      {visibleDests.length === 0 && filter !== "favoritos" && <EmptyState icon={<Globe size={28} color={C.line} />} text="Sin destinos con ese filtro." />}
+      {visibleDests.length === 0 && filter !== "favoritos" && tripDays !== null && (
+        <EmptyState icon={<Globe size={28} color={C.line} />} text={`Ninguna plantilla encaja en un viaje de ${tripDays} días. Prueba a ampliar las fechas o elige un destino y ajusta el itinerario a mano.`} />
+      )}
+      {visibleDests.length === 0 && filter !== "favoritos" && tripDays === null && <EmptyState icon={<Globe size={28} color={C.line} />} text="Sin destinos con ese filtro." />}
 
       {preview && (
         <DestModal
@@ -482,7 +493,9 @@ export function Destinos({ code, startDate, trip, session, onSelect }: { code: s
           budget={budgetPerPerson}
           onChoose={() => { setChosen(preview!); setConfirming(true); setPreview(null); }}
           onClose={() => setPreview(null)}
-          alternatives={(DESTINATION_ALTERNATIVES[preview.id] ?? []).map(id => DESTINATIONS.find(d => d.id === id)).filter(Boolean) as DestinationTemplate[]}
+          alternatives={(DESTINATION_ALTERNATIVES[preview.id] ?? [])
+            .map(id => DESTINATIONS.find(d => d.id === id))
+            .filter((d): d is DestinationTemplate => !!d && (tripDays === null || d.durationDays <= tripDays))}
           onOpenAlt={d => setPreview(d)}
         />
       )}
