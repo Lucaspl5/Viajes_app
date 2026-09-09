@@ -44,6 +44,14 @@ input, textarea, select { outline: none; }
   50%       { opacity: 0.9; }
 }
 
+.loading-dot {
+  animation: loadingDot 1.1s ease-in-out infinite;
+}
+@keyframes loadingDot {
+  0%, 100% { opacity: 0.25; transform: translateY(0); }
+  50%       { opacity: 1;    transform: translateY(-3px); }
+}
+
 /* Skeleton */
 .skeleton {
   background: linear-gradient(90deg, #E8E3DA 25%, #F2EDE4 50%, #E8E3DA 75%);
@@ -126,11 +134,10 @@ input, textarea, select { outline: none; }
 .hover-underline:hover::after { width: 100%; }
 
 /* Print / PDF export */
+.print-export { display: none; }
 @media print {
-  header nav { display: none !important; }
-  button { display: none !important; }
-  .no-print { display: none !important; }
   body { background: #fff !important; color: #000 !important; }
-  main { padding: 0 !important; }
   * { box-shadow: none !important; }
+  .app-shell > *:not(.print-export) { display: none !important; }
+  .print-export { display: block !important; }
 }
