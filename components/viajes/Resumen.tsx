@@ -30,6 +30,12 @@ export function Resumen({ trip, session, days, darkMode, onTripUpdate, onDuplica
   const [showCoverEdit, setShowCoverEdit] = useState(false);
   const coverKey = `cover:${session.code}`;
 
+  const [showDateEdit, setShowDateEdit] = useState(false);
+  const [dateStart, setDateStart] = useState(trip.startDate ?? "");
+  const [dateEnd, setDateEnd] = useState(trip.endDate ?? "");
+  const [dateError, setDateError] = useState("");
+  useEffect(() => { setDateStart(trip.startDate ?? ""); setDateEnd(trip.endDate ?? ""); }, [trip.startDate, trip.endDate]);
+
   useEffect(() => {
     loadShared<string>(coverKey, "").then(u => { setCoverUrl(u); setCoverInput(u); });
   }, [coverKey]);
@@ -47,6 +53,15 @@ export function Resumen({ trip, session, days, darkMode, onTripUpdate, onDuplica
     await saveShared(coverKey, coverInput.trim());
     setCoverUrl(coverInput.trim());
     setShowCoverEdit(false);
+  }
+
+  async function saveDates() {
+    if (dateStart && dateEnd && dateEnd < dateStart) { setDateError("La fecha de fin debe ser posterior a la de inicio."); return; }
+    setDateError("");
+    const next = { ...trip, startDate: dateStart || null, endDate: dateEnd || null };
+    await saveShared(`trip:${session.code}`, next);
+    onTripUpdate(next);
+    setShowDateEdit(false);
   }
 
   const cardBg = darkMode ? "#161B22" : "#fff";
@@ -157,9 +172,30 @@ export function Resumen({ trip, session, days, darkMode, onTripUpdate, onDuplica
             {days > 0 ? days : days === 0 ? "¡HOY!" : "¡EN MARCHA!"}
           </div>
           {days > 0 && <div style={{ fontFamily: F.mono, fontSize: 12, color: "#8BAFD4", marginTop: 4 }}>días para {trip.destination || trip.name}</div>}
-          {trip.startDate && (
-            <div style={{ marginTop: 12, fontFamily: F.mono, fontSize: 11, color: "#6080A4" }}>
-              {formatDate(trip.startDate)}{trip.endDate ? ` → ${formatDate(trip.endDate)}` : ""}{dur ? ` · ${dur} días` : ""}
+          {!showDateEdit && (
+            <div style={{ marginTop: 12, fontFamily: F.mono, fontSize: 11, color: "#6080A4", display: "flex", alignItems: "center", gap: 8 }}>
+              {trip.startDate
+                ? <span>{formatDate(trip.startDate)}{trip.endDate ? ` → ${formatDate(trip.endDate)}` : ""}{dur ? ` · ${dur} días` : ""}</span>
+                : <span>Fechas sin decidir</span>}
+              <button onClick={() => setShowDateEdit(true)} style={{ color: "#8BAFD4", display: "flex", alignItems: "center", gap: 3 }}>
+                <Edit2 size={10} /> EDITAR
+              </button>
+            </div>
+          )}
+          {showDateEdit && (
+            <div style={{ marginTop: 12 }} className="flex flex-col gap-2">
+              <div className="flex gap-2">
+                <input type="date" value={dateStart} onChange={e => setDateStart(e.target.value)}
+                  style={{ ...inputStyle, background: "rgba(255,255,255,0.9)" }} />
+                <input type="date" value={dateEnd} min={dateStart || undefined} onChange={e => setDateEnd(e.target.value)}
+                  style={{ ...inputStyle, background: "rgba(255,255,255,0.9)" }} />
+              </div>
+              {dateError && <div style={{ color: C.red, fontFamily: F.mono, fontSize: 10 }}>{dateError}</div>}
+              <div className="flex gap-2">
+                <button onClick={saveDates} style={{ background: C.teal, color: "#fff", borderRadius: 6, padding: "6px 14px", fontFamily: F.mono, fontSize: 11 }}>GUARDAR</button>
+                <button onClick={() => { setDateStart(trip.startDate ?? ""); setDateEnd(trip.endDate ?? ""); setDateError(""); setShowDateEdit(false); }}
+                  style={{ color: "#8BAFD4", padding: "6px 10px", fontFamily: F.mono, fontSize: 11 }}>CANCELAR</button>
+              </div>
             </div>
           )}
         </div>
