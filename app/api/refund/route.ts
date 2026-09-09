@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { stripe } from "@/lib/payments/stripe";
+import { getStripe } from "@/lib/payments/stripe";
 import { mapStripeError } from "@/lib/payments/errors";
 
 export const runtime = "nodejs";
@@ -30,6 +30,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    const stripe = getStripe();
     const refund = await stripe.refunds.create({ payment_intent: paymentIntentId });
     // Premium is revoked by the charge.refunded webhook, not here — keeps
     // one source of truth for state changes instead of two paths to the same effect.

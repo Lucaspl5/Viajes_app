@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
-import { stripe, PREMIUM_UNLOCK_PRICE_CENTS, PREMIUM_UNLOCK_CURRENCY } from "@/lib/payments/stripe";
+import { getStripe, PREMIUM_UNLOCK_PRICE_CENTS, PREMIUM_UNLOCK_CURRENCY } from "@/lib/payments/stripe";
 import { isValidTripCode } from "@/lib/payments/store";
 import { checkRateLimit, clientIp } from "@/lib/redis";
 
@@ -28,6 +28,7 @@ export async function POST(req: NextRequest) {
   const idempotencyKey = randomUUID(); // Rule 4
 
   try {
+    const stripe = getStripe();
     const session = await stripe.checkout.sessions.create(
       {
         mode: "payment",

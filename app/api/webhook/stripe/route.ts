@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { stripe } from "@/lib/payments/stripe";
+import { getStripe } from "@/lib/payments/stripe";
 import { markEventProcessedOnce, recordPayment, setTripPremium, getPaymentByIntentId } from "@/lib/payments/store";
 
 export const runtime = "nodejs"; // Rule 5
@@ -16,6 +16,7 @@ export async function POST(request: Request) {
 
   let event: Stripe.Event;
   try {
+    const stripe = getStripe();
     event = stripe.webhooks.constructEvent( // Rule 3 + Rule 9 (Stripe enforces its own timestamp window)
       rawBody,
       signature,
