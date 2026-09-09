@@ -4,6 +4,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "oporto", name: "Oporto", country: "Portugal", flag: "🇵🇹",
     costPerPerson: 340, durationDays: 3, type: "ciudad",
+    transport: ["avion", "coche", "autobus"],
     description: "Vino de Oporto, azulejos azules y el río Duero entre bodegas históricas. Un fin de semana perfecto.",
     highlights: ["Livraria Lello", "Bodegas de Gaia", "Puente Luis I", "Ribeira"],
     itinerary: [
@@ -22,6 +23,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "lisboa", name: "Lisboa", country: "Portugal", flag: "🇵🇹",
     costPerPerson: 420, durationDays: 4, type: "ciudad",
+    transport: ["avion", "coche", "autobus"],
     description: "Fado, pastéis de nata y tranvías históricos por colinas con vistas al Tejo. La capital más acogedora de Europa.",
     highlights: ["Alfama", "Torre de Belém", "Castillo de San Jorge", "Sintra"],
     itinerary: [
@@ -41,6 +43,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "marrakech", name: "Marrakech", country: "Marruecos", flag: "🇲🇦",
     costPerPerson: 500, durationDays: 5, type: "cultura",
+    transport: ["avion", "barco", "autobus"],
     description: "La ciudad roja: medinas laberínticas, riads y la Djemaa el-Fna. Solo a 3 horas de vuelo de España.",
     highlights: ["Djemaa el-Fna", "Zocos", "Jardines Majorelle", "Palacio Bahía"],
     itinerary: [
@@ -61,6 +64,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "estambul", name: "Estambul", country: "Turquía", flag: "🇹🇷",
     costPerPerson: 750, durationDays: 6, type: "cultura",
+    transport: ["avion"],
     description: "Donde Europa se encuentra con Asia: mezquitas, el Gran Bazar y el Bósforo. Una ciudad de contrastes absolutos.",
     highlights: ["Hagia Sofía", "Mezquita Azul", "Gran Bazar", "Bósforo"],
     itinerary: [
@@ -82,6 +86,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "amsterdam", name: "Ámsterdam", country: "Países Bajos", flag: "🇳🇱",
     costPerPerson: 800, durationDays: 4, type: "ciudad",
+    transport: ["avion", "tren", "coche", "autobus"],
     description: "Canales, bicicletas y los mejores museos de Europa. La ciudad más liberal y acogedora del norte.",
     highlights: ["Rijksmuseum", "Casa de Ana Frank", "Vondelpark", "Molinos Zaanse Schans"],
     itinerary: [
@@ -101,6 +106,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "paris", name: "París", country: "Francia", flag: "🇫🇷",
     costPerPerson: 950, durationDays: 5, type: "ciudad",
+    transport: ["avion", "tren", "coche", "autobus"],
     description: "La Ciudad de la Luz: Torre Eiffel, Louvre, croissants y el Sena. El viaje que todo el mundo tiene que hacer.",
     highlights: ["Torre Eiffel", "Louvre", "Montmartre", "Versalles"],
     itinerary: [
@@ -121,6 +127,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "estambul-dubai", name: "Dubái", country: "EAU", flag: "🇦🇪",
     costPerPerson: 1500, durationDays: 5, type: "ciudad",
+    transport: ["avion"],
     description: "El futuro hecho realidad: el rascacielos más alto del mundo, desierto dorado y malls de lujo.",
     highlights: ["Burj Khalifa", "Desert Safari", "Palm Jumeirah", "Dubai Frame"],
     itinerary: [
@@ -141,6 +148,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "bangkok", name: "Bangkok + Islas", country: "Tailandia", flag: "🇹🇭",
     costPerPerson: 1400, durationDays: 10, type: "cultura",
+    transport: ["avion"],
     description: "Templos dorados, tuk-tuks, street food increíble y las playas más paradisíacas de Asia.",
     highlights: ["Gran Palacio", "Wat Pho", "Islas Phi Phi", "Street food"],
     itinerary: [
@@ -162,6 +170,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "islandia", name: "Islandia", country: "Islandia", flag: "🇮🇸",
     costPerPerson: 2000, durationDays: 7, type: "naturaleza",
+    transport: ["avion"],
     description: "El país de fuego y hielo: auroras boreales, géiseres, cascadas imposibles y ballenas. Naturaleza en estado puro.",
     highlights: ["Aurora boreal", "Geysir", "Gullfoss", "Jökulsárlón"],
     itinerary: [
@@ -183,6 +192,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "japon", name: "Tokio + Kioto", country: "Japón", flag: "🇯🇵",
     costPerPerson: 2500, durationDays: 10, type: "cultura",
+    transport: ["avion"],
     description: "El país del sol naciente: entre rascacielos futuristas y templos de 1.000 años. Sushi, sándwiches y el Monte Fuji.",
     highlights: ["Shibuya", "Fushimi Inari", "Monte Fuji", "Shinkansen"],
     itinerary: [
@@ -204,6 +214,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "nueva-york", name: "Nueva York", country: "Estados Unidos", flag: "🇺🇸",
     costPerPerson: 2700, durationDays: 7, type: "ciudad",
+    transport: ["avion"],
     description: "La ciudad que nunca duerme: Central Park, Brooklyn Bridge, Broadway y la skyline más icónica del mundo.",
     highlights: ["Empire State", "Central Park", "Brooklyn Bridge", "Times Square"],
     itinerary: [
@@ -225,6 +236,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "maldivas", name: "Maldivas", country: "Maldivas", flag: "🇲🇻",
     costPerPerson: 3800, durationDays: 7, type: "playa",
+    transport: ["avion"],
     description: "El paraíso en la tierra: bungalows sobre el agua, arrecifes de coral, rayas manta y aguas turquesas cristalinas.",
     highlights: ["Overwater bungalows", "Snorkel con mantas", "Sunset cruise", "Aguas turquesas"],
     itinerary: [
@@ -244,6 +256,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "mallorca", name: "Mallorca", country: "España", flag: "🇪🇸",
     costPerPerson: 380, durationDays: 5, type: "playa",
+    transport: ["avion", "barco"],
     description: "La isla más grande de Baleares: calas escondidas de agua cristalina, Palma medieval, Serra de Tramuntana y gastronomía mallorquina.",
     highlights: ["Cala Mondragó", "Catedral de Palma", "Serra de Tramuntana", "Sóller"],
     itinerary: [
@@ -262,6 +275,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "fuerteventura", name: "Fuerteventura", country: "España", flag: "🇪🇸",
     costPerPerson: 420, durationDays: 6, type: "playa",
+    transport: ["avion", "barco"],
     description: "Las mejores playas de Europa: dunas de Corralejo, kitesurf en Sotavento, playas de arena blanca infinitas y ambiente relajado.",
     highlights: ["Dunas de Corralejo", "Kitesurf Sotavento", "Cofete", "Isla de Lobos"],
     itinerary: [
@@ -281,6 +295,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "budapest", name: "Budapest", country: "Hungría", flag: "🇭🇺",
     costPerPerson: 490, durationDays: 5, type: "ciudad",
+    transport: ["avion", "tren", "coche", "autobus"],
     description: "La perla del Danubio: Parlamento neogótico, baños termales romanos, ruin bars y la gastronomía del Este más sorprendente de Europa.",
     highlights: ["Parlamento", "Baños Széchenyi", "Ruin bars", "Bastión de los Pescadores"],
     itinerary: [
@@ -299,6 +314,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "malta", name: "Malta", country: "Malta", flag: "🇲🇹",
     costPerPerson: 460, durationDays: 5, type: "cultura",
+    transport: ["avion"],
     description: "La isla mediterránea donde conviven fenicios, romanos, cruzados y barrocos: megálitos prehistóricos, Valletta barroca y aguas turquesas.",
     highlights: ["Valletta", "Mdina", "Templos megalíticos", "Gozo"],
     itinerary: [
@@ -317,6 +333,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "viena", name: "Viena", country: "Austria", flag: "🇦🇹",
     costPerPerson: 750, durationDays: 5, type: "cultura",
+    transport: ["avion", "tren", "coche", "autobus"],
     description: "La ciudad de los valses y Klimt: Schönbrunn, la Ópera, Prater y los cafés históricos donde Einstein y Freud tomaban su melange.",
     highlights: ["Schönbrunn", "Museo de Arte KHM", "Ópera Estatal", "Café Central"],
     itinerary: [
@@ -335,6 +352,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "berlin", name: "Berlín", country: "Alemania", flag: "🇩🇪",
     costPerPerson: 680, durationDays: 6, type: "ciudad",
+    transport: ["avion", "tren", "coche", "autobus"],
     description: "Historia, street art y vida nocturna: el Muro, Checkpoint Charlie, Pergamón, los museos de la isla y la capital del techno mundial.",
     highlights: ["Muro de Berlín", "Puerta de Brandeburgo", "Isla de los Museos", "Techno clubs"],
     itinerary: [
@@ -353,6 +371,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "edimburgo", name: "Edimburgo", country: "Escocia (UK)", flag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
     costPerPerson: 720, durationDays: 5, type: "cultura",
+    transport: ["avion"],
     description: "La ciudad más romántica de Gran Bretaña: castillo medieval sobre roca volcánica, Royal Mile, whisky escocés y los Highlands a un paso.",
     highlights: ["Castillo de Edimburgo", "Royal Mile", "Arthur's Seat", "Whisky tours"],
     itinerary: [
@@ -371,6 +390,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "florencia", name: "Florencia", country: "Italia", flag: "🇮🇹",
     costPerPerson: 850, durationDays: 5, type: "cultura",
+    transport: ["avion", "barco", "tren", "coche", "autobus"],
     description: "La cuna del Renacimiento: los Uffizi con Botticelli, el David de Miguel Ángel, il Duomo, vino Chianti y bistecca alla fiorentina.",
     highlights: ["Galería Uffizi", "David de Miguel Ángel", "il Duomo", "Ponte Vecchio"],
     itinerary: [
@@ -389,6 +409,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "atenas", name: "Atenas", country: "Grecia", flag: "🇬🇷",
     costPerPerson: 780, durationDays: 6, type: "cultura",
+    transport: ["avion"],
     description: "La cuna de la democracia occidental: la Acrópolis iluminada de noche, el Partenón, el ágora antigua, el barrio de Monastiraki y el mejor souvlaki del mundo.",
     highlights: ["Acrópolis", "Partenón", "Museo Nacional", "Monastiraki"],
     itinerary: [
@@ -407,6 +428,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "croacia", name: "Split & Dubrovnik", country: "Croacia", flag: "🇭🇷",
     costPerPerson: 920, durationDays: 7, type: "playa",
+    transport: ["avion"],
     description: "La Dalmacia croata: el palacio romano de Diocleciano en Split, las murallas medievales de Dubrovnik (Desembarco de Reyes), islas de Hvar y Brač.",
     highlights: ["Murallas de Dubrovnik", "Palacio de Diocleciano", "Isla de Hvar", "Plitvice"],
     itinerary: [
@@ -424,6 +446,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "egipto", name: "Egipto", country: "Egipto", flag: "🇪🇬",
     costPerPerson: 1100, durationDays: 8, type: "cultura",
+    transport: ["avion"],
     description: "Las maravillas del mundo antiguo: las pirámides de Giza, la Esfinge, el Valle de los Reyes, el templo de Karnak y el crucero por el Nilo.",
     highlights: ["Pirámides de Giza", "Valle de los Reyes", "Karnak", "Crucero por el Nilo"],
     itinerary: [
@@ -442,6 +465,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "mexico", name: "Riviera Maya", country: "México", flag: "🇲🇽",
     costPerPerson: 1350, durationDays: 9, type: "playa",
+    transport: ["avion"],
     description: "Playas caribeñas infinitas con aguas turquesas, cenotes mayas, Chichén Itzá, Tulum y la gastronomía mexicana más vibrante.",
     highlights: ["Chichén Itzá", "Cenotes", "Tulum", "Playas de Cancún"],
     itinerary: [
@@ -460,6 +484,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "cuba", name: "Cuba", country: "Cuba", flag: "🇨🇺",
     costPerPerson: 1200, durationDays: 9, type: "cultura",
+    transport: ["avion"],
     description: "La isla del tiempo detenido: La Habana Vieja colonial, coches americanos de los 50, música salsa en cada esquina, Varadero y Trinidad.",
     highlights: ["La Habana Vieja", "Coches clásicos", "Trinidad", "Varadero"],
     itinerary: [
@@ -478,6 +503,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "vietnam", name: "Vietnam", country: "Vietnam", flag: "🇻🇳",
     costPerPerson: 1450, durationDays: 11, type: "aventura",
+    transport: ["avion"],
     description: "Del norte al sur: Hanói colonial, la bahía de Halong entre 2.000 islas kársticas, Hội An encantadora y la vibrante Ciudad Ho Chi Minh.",
     highlights: ["Bahía de Halong", "Hội An", "Hanói", "Mekong"],
     itinerary: [
@@ -496,6 +522,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "costa-rica", name: "Costa Rica", country: "Costa Rica", flag: "🇨🇷",
     costPerPerson: 1600, durationDays: 10, type: "naturaleza",
+    transport: ["avion"],
     description: "La 'Pura Vida': volcán Arenal en erupción, jungla amazónica, tortugas marinas, playas del Pacífico y biodiversidad que concentra el 5% mundial.",
     highlights: ["Volcán Arenal", "Tortugas marinas", "Monteverde", "Playas del Pacífico"],
     itinerary: [
@@ -514,6 +541,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "colombia", name: "Colombia", country: "Colombia", flag: "🇨🇴",
     costPerPerson: 1300, durationDays: 10, type: "cultura",
+    transport: ["avion"],
     description: "El país de la eterna primavera: Cartagena de Indias colonial y caribeña, Medellín la ciudad más innovadora de Latinoamérica, café del Eje Cafetero y la laguna de Guatavita.",
     highlights: ["Cartagena de Indias", "Medellín", "Eje Cafetero", "Ciudad Perdida"],
     itinerary: [
@@ -532,6 +560,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "peru", name: "Perú & Machu Picchu", country: "Perú", flag: "🇵🇪",
     costPerPerson: 1700, durationDays: 10, type: "cultura",
+    transport: ["avion"],
     description: "La ciudadela inca sobre las nubes, el Camino del Inca, el Lago Titicaca, Lima gastronómica y las líneas de Nazca.",
     highlights: ["Machu Picchu", "Camino del Inca", "Lago Titicaca", "Lima"],
     itinerary: [
@@ -550,6 +579,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "sri-lanka", name: "Sri Lanka", country: "Sri Lanka", flag: "🇱🇰",
     costPerPerson: 1850, durationDays: 10, type: "cultura",
+    transport: ["avion"],
     description: "La perla del Índico: templos budistas de Kandy, la roca fortaleza de Sigiriya, té de Nuwara Eliya, elefantes salvajes y playas doradas del sur.",
     highlights: ["Sigiriya", "Kandy (Templo del Diente)", "Safaris elefantes", "Playas del sur"],
     itinerary: [
@@ -568,6 +598,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "nepal", name: "Nepal & Himalaya", country: "Nepal", flag: "🇳🇵",
     costPerPerson: 1950, durationDays: 12, type: "aventura",
+    transport: ["avion"],
     description: "El techo del mundo: Katmandú con sus estupas y templos, el trek al Campamento Base del Everest o el circuito de Annapurna, y el lago Pokhara.",
     highlights: ["Everest Base Camp trek", "Katmandú", "Pokhara", "Annapurna"],
     itinerary: [
@@ -586,6 +617,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "sudafrica", name: "Sudáfrica & Cape Town", country: "Sudáfrica", flag: "🇿🇦",
     costPerPerson: 2200, durationDays: 11, type: "naturaleza",
+    transport: ["avion"],
     description: "Mesa Mountain sobre el Atlántico, los pingüinos de Boulders Beach, la Garden Route, la Ruta de los Vinos y el safari en Kruger.",
     highlights: ["Table Mountain", "Safari Kruger", "Garden Route", "Boulders Beach"],
     itinerary: [
@@ -604,6 +636,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "tanzania", name: "Tanzania & Safari", country: "Tanzania", flag: "🇹🇿",
     costPerPerson: 3200, durationDays: 10, type: "naturaleza",
+    transport: ["avion"],
     description: "La Gran Migración del Serengueti, el Ngorongoro (el mayor cráter del mundo habitado), el Kilimanjaro y las playas blancas de Zanzíbar.",
     highlights: ["Gran Migración", "Ngorongoro", "Kilimanjaro", "Zanzíbar"],
     itinerary: [
@@ -622,6 +655,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "seychelles", name: "Seychelles", country: "Seychelles", flag: "🇸🇨",
     costPerPerson: 3500, durationDays: 8, type: "playa",
+    transport: ["avion"],
     description: "El destino de lujo más exclusivo del mundo: rocas de granito rosa, palmeras cocos de mer, tortugas gigantes y playas que no parecen reales.",
     highlights: ["Anse Source d'Argent", "Vallee de Mai (coco de mer)", "Tortugas gigantes", "Praslin"],
     itinerary: [
@@ -640,6 +674,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "jordania", name: "Jordania & Petra", country: "Jordania", flag: "🇯🇴",
     costPerPerson: 1400, durationDays: 8, type: "cultura",
+    transport: ["avion"],
     description: "Petra excavada en roca rosa, Wadi Rum el desierto de Marte, el Mar Muerto a -430m y la Ciudad Romana de Jerash — el Indiana Jones de los viajes.",
     highlights: ["Petra", "Wadi Rum", "Mar Muerto", "Jerash"],
     itinerary: [
@@ -658,6 +693,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "hawaii", name: "Hawaii", country: "Estados Unidos", flag: "🇺🇸",
     costPerPerson: 3400, durationDays: 10, type: "naturaleza",
+    transport: ["avion"],
     description: "El paraíso del Pacífico: volcanes activos en la Big Island, olas legendarias de la North Shore, Napali Coast en Kauai y la magia de Maui.",
     highlights: ["Volcán Kilauea", "North Shore (surf)", "Napali Coast (Kauai)", "Camino de Hana"],
     itinerary: [
@@ -676,6 +712,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "argentina", name: "Argentina & Patagonia", country: "Argentina", flag: "🇦🇷",
     costPerPerson: 2500, durationDays: 12, type: "naturaleza",
+    transport: ["avion"],
     description: "Buenos Aires tanguera y apasionada, las Cataratas del Iguazú (las más impresionantes del mundo), la Patagonia con glaciares y el Perito Moreno.",
     highlights: ["Cataratas del Iguazú", "Perito Moreno", "Buenos Aires", "Bariloche"],
     itinerary: [
@@ -695,6 +732,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "dubai", name: "Dubai", country: "Emiratos Árabes", flag: "🇦🇪",
     costPerPerson: 1600, durationDays: 6, type: "ciudad",
+    transport: ["avion"],
     description: "El futuro en el desierto: el Burj Khalifa (el edificio más alto del mundo), playas artificiales, zocos de oro y oro, safaris en dunas y lujo sin límites.",
     highlights: ["Burj Khalifa", "Palm Jumeirah", "Desierto en 4x4", "Zoco del Oro"],
     itinerary: [
@@ -714,6 +752,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "singapur", name: "Singapur", country: "Singapur", flag: "🇸🇬",
     costPerPerson: 1900, durationDays: 6, type: "ciudad",
+    transport: ["avion"],
     description: "La ciudad-estado más futurista del mundo: Gardens by the Bay con sus supertrees, Chinatown, Little India, la calle Hawker y el mejor street food de Asia.",
     highlights: ["Gardens by the Bay", "Marina Bay Sands", "Hawker centres", "Sentosa"],
     itinerary: [
@@ -733,6 +772,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "turquia", name: "Turquía: Estambul & Capadocia", country: "Turquía", flag: "🇹🇷",
     costPerPerson: 980, durationDays: 9, type: "cultura",
+    transport: ["avion"],
     description: "Dos mundos en uno: Estambul donde Europa se funde con Asia, el bazar de las especias, Santa Sofía — y Capadocia con globos aerostáticos sobre chimeneas de hadas.",
     highlights: ["Santa Sofía", "Gran Bazar", "Globos en Capadocia", "Pamukkale"],
     itinerary: [
@@ -751,6 +791,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "santorini", name: "Santorini", country: "Grecia", flag: "🇬🇷",
     costPerPerson: 1100, durationDays: 6, type: "playa",
+    transport: ["avion"],
     description: "La postal más icónica del Mediterráneo: cúpulas azules de Oia, atardeceres que paran el corazón, vino Assyrtiko volcánico y aguas turquesas de la caldera.",
     highlights: ["Atardecer de Oia", "Caldera", "Playa de Perissa", "Vino volcánico"],
     itinerary: [
@@ -768,6 +809,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "praga", name: "Praga", country: "República Checa", flag: "🇨🇿",
     costPerPerson: 580, durationDays: 4, type: "ciudad",
+    transport: ["avion", "tren", "coche", "autobus"],
     description: "La ciudad de las cien torres: el casco medieval mejor conservado de Europa, el Puente de Carlos, el barrio judío y la cerveza más barata y buena del mundo.",
     highlights: ["Puente de Carlos", "Castillo de Praga", "Barrio Judío", "Cerveza Pilsner"],
     itinerary: [
@@ -785,6 +827,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "roma", name: "Roma", country: "Italia", flag: "🇮🇹",
     costPerPerson: 870, durationDays: 5, type: "cultura",
+    transport: ["avion", "barco", "tren", "coche", "autobus"],
     description: "La Ciudad Eterna: el Coliseo donde rugían los leones, el Vaticano con la Capilla Sixtina, la Fontana di Trevi, el Panteón y la mejor pasta del mundo.",
     highlights: ["Coliseo", "Vaticano & Capilla Sixtina", "Fontana di Trevi", "Panteón"],
     itinerary: [
@@ -803,6 +846,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "tenerife", name: "Tenerife", country: "España", flag: "🇪🇸",
     costPerPerson: 450, durationDays: 6, type: "naturaleza",
+    transport: ["avion", "barco"],
     description: "La isla grande de Canarias: el Teide (el volcán más alto de España), Masca entre barrancos, playas de Playa de las Américas y el bosque de laurisilva.",
     highlights: ["Teide", "Masca", "Anaga", "Playa de las Américas"],
     itinerary: [
@@ -822,6 +866,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "islas-feroe", name: "Islas Feroe", country: "Islas Feroe (Dinamarca)", flag: "🇫🇴",
     costPerPerson: 1400, durationDays: 6, type: "naturaleza",
+    transport: ["avion"],
     description: "El secreto mejor guardado de Europa: acantilados de 400m sobre el Atlántico Norte, pueblos de tejado de hierba, cascadas que caen al mar y ovejas por todas partes.",
     highlights: ["Múlafossur", "Lago Sørvágsvatn", "Gasadalur", "Saksun"],
     itinerary: [
@@ -839,6 +884,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "albania", name: "Albania", country: "Albania", flag: "🇦🇱",
     costPerPerson: 490, durationDays: 7, type: "playa",
+    transport: ["avion"],
     description: "El secreto más barato del Mediterráneo: costa albanesa con aguas rivalizando con Grecia, Berat la ciudad de las mil ventanas, Gjirokastër medieval — y todo por la mitad de precio.",
     highlights: ["Riviera albanesa", "Berat", "Gjirokastër", "Lago Ohrid"],
     itinerary: [
@@ -856,6 +902,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "georgia", name: "Georgia (el país)", country: "Georgia", flag: "🇬🇪",
     costPerPerson: 720, durationDays: 8, type: "aventura",
+    transport: ["avion"],
     description: "La cuna del vino (8.000 años de viticultura), la Kazbegi con el monte Kazbeji entre nubes, Tbilisi bohemia y llena de arte, y los monasterios de roca del s. VI.",
     highlights: ["Kazbegi", "Tbilisi", "Bodega en qvevri", "Vardzia rupestre"],
     itinerary: [
@@ -874,6 +921,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "eslovenia", name: "Eslovenia", country: "Eslovenia", flag: "🇸🇮",
     costPerPerson: 650, durationDays: 5, type: "naturaleza",
+    transport: ["avion"],
     description: "El país más verde de Europa: el lago Bled con el castillo en el acantilado, las grutas de Postojna con dragones de cueva, Triglav nevado y Liubliana encantadora.",
     highlights: ["Lago Bled", "Grutas Postojna", "Liubliana", "Triglav"],
     itinerary: [
@@ -891,6 +939,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "bosnia", name: "Bosnia: Sarajevo & Mostar", country: "Bosnia-Herzegovina", flag: "🇧🇦",
     costPerPerson: 430, durationDays: 5, type: "cultura",
+    transport: ["avion"],
     description: "Donde Oriente se funde con Occidente: Sarajevo la ciudad del Puente entre religiones, el puente Stari Most de Mostar que data del s. XVI y la historia del siglo XX más impactante.",
     highlights: ["Stari Most (Mostar)", "Sarajevo", "Blagaj", "Kravice"],
     itinerary: [
@@ -908,6 +957,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "tallinn", name: "Tallin & Estonia", country: "Estonia", flag: "🇪🇪",
     costPerPerson: 560, durationDays: 4, type: "cultura",
+    transport: ["avion"],
     description: "El casco medieval mejor conservado del Báltico, el país más digital del mundo (e-residency, votación online), la bahía de Tallin y la isla de Saaremaa.",
     highlights: ["Old Town medieval", "Toompea Hill", "Kadriorg", "Isla Saaremaa"],
     itinerary: [
@@ -925,6 +975,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "montenegro", name: "Montenegro", country: "Montenegro", flag: "🇲🇪",
     costPerPerson: 550, durationDays: 6, type: "playa",
+    transport: ["avion"],
     description: "El mini-país que lo tiene todo: la bahía de Kotor (el más impresionante fiord mediterráneo), Budva con sus playas, el lago Škoder y el Parque Nacional de Durmitor.",
     highlights: ["Bahía de Kotor", "Budva", "Durmitor", "Lago Škoder"],
     itinerary: [
@@ -943,6 +994,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "uzbekistan", name: "Uzbekistán: Ruta de la Seda", country: "Uzbekistán", flag: "🇺🇿",
     costPerPerson: 980, durationDays: 9, type: "cultura",
+    transport: ["avion"],
     description: "Las ciudades más antiguas del mundo: Samarcanda con sus cúpulas azules de Tamerlán, Bujará con 140 monumentos medievales y Jiva la ciudad museo intacta.",
     highlights: ["Registán (Samarcanda)", "Bujará", "Jiva", "Camello en el desierto"],
     itinerary: [
@@ -961,6 +1013,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "cambodia", name: "Camboya & Angkor Wat", country: "Camboya", flag: "🇰🇭",
     costPerPerson: 1050, durationDays: 8, type: "cultura",
+    transport: ["avion"],
     description: "El templo más grande del mundo: Angkor Wat al amanecer cuando la silueta emerge de la niebla, Ta Prohm con raíces gigantes, Phnom Penh y las playas del sur.",
     highlights: ["Angkor Wat al amanecer", "Ta Prohm (Tomb Raider)", "Phnom Penh", "Koh Rong"],
     itinerary: [
@@ -978,6 +1031,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "indonesia-bali", name: "Indonesia: Bali & Komodo", country: "Indonesia", flag: "🇮🇩",
     costPerPerson: 1550, durationDays: 11, type: "naturaleza",
+    transport: ["avion"],
     description: "La isla de los dioses: arrozales escalonados de Tegalalang, templos sobre el agua, surf en Uluwatu y los dragones de Komodo — los lagartos más grandes del mundo.",
     highlights: ["Arrozales Tegalalang", "Templo Tanah Lot", "Dragones de Komodo", "Ubud"],
     itinerary: [
@@ -996,6 +1050,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "filipinas", name: "Filipinas: Palawan", country: "Filipinas", flag: "🇵🇭",
     costPerPerson: 1400, durationDays: 10, type: "playa",
+    transport: ["avion"],
     description: "La mejor isla del mundo según Condé Nast: El Nido con sus lagunas turquesas entre karst, Coron con naufragios de la WWII para bucear, y el río subterráneo más largo del mundo.",
     highlights: ["El Nido", "Coron (buceo en naufragios)", "Puerto Princesa", "Bacuit Bay"],
     itinerary: [
@@ -1014,6 +1069,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "laos", name: "Laos", country: "Laos", flag: "🇱🇦",
     costPerPerson: 890, durationDays: 9, type: "naturaleza",
+    transport: ["avion"],
     description: "El país más tranquilo del Sudeste Asiático: Luang Prabang Patrimonio UNESCO con monjes al amanecer, las cascadas de Kuang Si de color turquesa y el Mekong.",
     highlights: ["Luang Prabang", "Cascadas Kuang Si", "Monjes al amanecer", "Vang Vieng"],
     itinerary: [
@@ -1033,6 +1089,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "marruecos-norte", name: "Marruecos: Fez & Sahara", country: "Marruecos", flag: "🇲🇦",
     costPerPerson: 850, durationDays: 9, type: "cultura",
+    transport: ["avion", "barco", "coche", "autobus"],
     description: "Más allá de Marrakech: Fez la medina más grande del mundo medieval, el desierto del Sahara con noches de millones de estrellas, Chefchaouen la ciudad azul y las gargantas del Todra.",
     highlights: ["Fez Medina", "Desierto Merzouga", "Chefchaouen azul", "Gargantas Todra"],
     itinerary: [
@@ -1051,6 +1108,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "etiopia", name: "Etiopía", country: "Etiopía", flag: "🇪🇹",
     costPerPerson: 1600, durationDays: 11, type: "cultura",
+    transport: ["avion"],
     description: "El origen de la humanidad: Lucy y los australopitecos en el museo, las iglesias rupestres de Lalibela (el octavo milagro del mundo), el Valle del Rift y la tribu Mursi.",
     highlights: ["Iglesias de Lalibela", "Valle del Rift", "Tribu Mursi", "Danakil (el infierno)"],
     itinerary: [
@@ -1069,6 +1127,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "namibia", name: "Namibia", country: "Namibia", flag: "🇳🇦",
     costPerPerson: 2400, durationDays: 11, type: "naturaleza",
+    transport: ["avion"],
     description: "El país más despoblado de África: las dunas rojas de Sossusvlei (las más altas del mundo), los elefantes de Etosha, Swakopmund alemana en el desierto y esqueletos de ballenas.",
     highlights: ["Dunes Sossusvlei", "Deadvlei", "Etosha", "Skeleton Coast"],
     itinerary: [
@@ -1087,6 +1146,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "rwanda", name: "Rwanda: Gorilas de Montaña", country: "Rwanda", flag: "🇷🇼",
     costPerPerson: 3100, durationDays: 7, type: "naturaleza",
+    transport: ["avion"],
     description: "La experiencia más emocionante de la vida: sentarse a 1 metro de una familia de gorilas de montaña en los Virunga, la Kigali más limpia de África y el lago Kivu.",
     highlights: ["Trekking gorilas", "Volcanoes NP", "Kigali", "Lago Kivu"],
     itinerary: [
@@ -1104,6 +1164,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "madagascar", name: "Madagascar", country: "Madagascar", flag: "🇲🇬",
     costPerPerson: 2100, durationDays: 12, type: "naturaleza",
+    transport: ["avion"],
     description: "El continente perdido: el 90% de su fauna no existe en ningún otro lugar. Baobabs gigantes al atardecer, lémures en la nariz, chamelones cambiando de color y playas de cuento.",
     highlights: ["Avenida de los Baobabs", "Lémures", "Tsingy de Bemaraha", "Playas Nosy Be"],
     itinerary: [
@@ -1123,6 +1184,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "bolivia", name: "Bolivia: Salar de Uyuni", country: "Bolivia", flag: "🇧🇴",
     costPerPerson: 1100, durationDays: 9, type: "naturaleza",
+    transport: ["avion"],
     description: "El espejo más grande del mundo: el Salar de Uyuni, la laguna roja con flamencos, la ciudad más alta del mundo (Potosí), el Lago Titicaca boliviano y La Paz.",
     highlights: ["Salar de Uyuni", "Laguna Colorada", "Potosí", "La Paz"],
     itinerary: [
@@ -1141,6 +1203,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "ecuador-galapagos", name: "Ecuador & Galápagos", country: "Ecuador", flag: "🇪🇨",
     costPerPerson: 2600, durationDays: 10, type: "naturaleza",
+    transport: ["avion"],
     description: "El laboratorio de Darwin: las islas donde los animales nunca aprendieron a tener miedo a los humanos. Iguanas marinas, tortugas gigantes centenarias, lobos marinos y pingüinos en el Ecuador.",
     highlights: ["Galápagos (lobos marinos)", "Tortugas gigantes", "Quito colonial", "Volcán Cotopaxi"],
     itinerary: [
@@ -1158,6 +1221,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "brasil", name: "Brasil: Río & Amazonia", country: "Brasil", flag: "🇧🇷",
     costPerPerson: 1800, durationDays: 11, type: "aventura",
+    transport: ["avion"],
     description: "Rio de Janeiro con el Cristo Redentor y el Carnaval, la selva amazónica más virgen del mundo, las cataratas de Iguazú y las playas de Florianópolis.",
     highlights: ["Cristo Redentor", "Amazonia", "Cataratas Iguazú", "Carnaval"],
     itinerary: [
@@ -1176,6 +1240,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "chile", name: "Chile: Atacama & Torres del Paine", country: "Chile", flag: "🇨🇱",
     costPerPerson: 2300, durationDays: 11, type: "naturaleza",
+    transport: ["avion"],
     description: "El país más largo del mundo: el desierto de Atacama (el más árido de la Tierra) con géiseres y flamencos, y Torres del Paine en el fin del mundo.",
     highlights: ["Valle de la Luna", "Torres del Paine", "Géiseres Tatio", "San Pedro de Atacama"],
     itinerary: [
@@ -1194,6 +1259,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "svalbard", name: "Svalbard", country: "Noruega (Ártico)", flag: "🇸🇯",
     costPerPerson: 2800, durationDays: 7, type: "aventura",
+    transport: ["avion"],
     description: "El archipiélago más septentrional del mundo: osos polares superan en número a las personas, auroras boreales todo el invierno, sol de medianoche en verano y glaciares que llegan al mar.",
     highlights: ["Osos polares", "Auroras boreales", "Glaciar Nordenskiöld", "Longyearbyen"],
     itinerary: [
@@ -1211,6 +1277,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "mongolia", name: "Mongolia", country: "Mongolia", flag: "🇲🇳",
     costPerPerson: 1700, durationDays: 10, type: "aventura",
+    transport: ["avion"],
     description: "El país menos densamente poblado del mundo: stepas infinitas, desierto de Gobi con dinosaurios, los descendientes de Gengis Kan y una noche en yurta bajo el cielo más oscuro del planeta.",
     highlights: ["Desierto del Gobi", "Noche en yurta", "Stepas infinitas", "Festival Naadam"],
     itinerary: [
@@ -1229,6 +1296,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "kirguistan", name: "Kirguistán", country: "Kirguistán", flag: "🇰🇬",
     costPerPerson: 980, durationDays: 9, type: "aventura",
+    transport: ["avion"],
     description: "La Suiza de Asia Central: nieve perpetua en las cimas del Tian Shan, el lago Son Kul a 3.000m entre yurtas y caballos, el épico cañón de Skazka y hospitalidad nómada sin igual.",
     highlights: ["Lago Son Kul", "Cañón Skazka", "Ala-Archa", "Yurtas nómadas"],
     itinerary: [
@@ -1247,6 +1315,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "bhutan", name: "Bután", country: "Bután", flag: "🇧🇹",
     costPerPerson: 3200, durationDays: 9, type: "cultura",
+    transport: ["avion"],
     description: "El único país que mide la Felicidad Nacional Bruta: el monasterio de Tigres Nest colgado en el acantilado a 3.120m, valles sagrados protegidos del turismo masivo y el último reino budista del Himalaya.",
     highlights: ["Tigres Nest (Paro Taktsang)", "Punakha Dzong", "Senderismo himalayo", "Archery"],
     itinerary: [
@@ -1265,6 +1334,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "iran", name: "Irán: Persia Eterna", country: "Irán", flag: "🇮🇷",
     costPerPerson: 1100, durationDays: 10, type: "cultura",
+    transport: ["avion"],
     description: "El gran incomprendido del turismo: Isfahán con sus mezquitas de mosaico azul que quitan el habla, Persépolis la capital del Imperio Persa, Shiraz y los jardines persas — y la hospitalidad más cálida del mundo.",
     highlights: ["Mezquita Imam (Isfahán)", "Persépolis", "Bazar de Teherán", "Shiraz"],
     itinerary: [
@@ -1283,6 +1353,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "groenlandia", name: "Groenlandia", country: "Groenlandia (Dinamarca)", flag: "🇬🇱",
     costPerPerson: 3500, durationDays: 8, type: "aventura",
+    transport: ["avion"],
     description: "La isla más grande del mundo: 80% cubierta de hielo, icebergs del tamaño de rascacielos, auroras boreales todo el invierno, ballenas jorobadas y los últimos inuit.",
     highlights: ["Glaciar Sermeq (Ilulissat)", "Auroras boreales", "Icebergs gigantes", "Kayak ártico"],
     itinerary: [
@@ -1300,6 +1371,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "cabo-verde", name: "Cabo Verde", country: "Cabo Verde", flag: "🇨🇻",
     costPerPerson: 850, durationDays: 7, type: "playa",
+    transport: ["avion"],
     description: "El archipiélago africano con alma latinoamericana: Sal con sus playas de arena blanca y kitesurf, Fogo con el volcán que destruyó todo en 2014, Santiago y la música morna de Cesária Évora.",
     highlights: ["Playa Santa Maria (Sal)", "Volcán Fogo", "Mindelo (São Vicente)", "Kitesurf"],
     itinerary: [
@@ -1317,6 +1389,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "mozambique", name: "Mozambique", country: "Mozambique", flag: "🇲🇿",
     costPerPerson: 1800, durationDays: 10, type: "playa",
+    transport: ["avion"],
     description: "Las playas más vírgenes de África: el archipiélago de Quirimbas sin turistas, las islas de coral del Bazaruto, las tortugas marinas de Tofo y la arquitectura colonial portuguesa de Ilha de Moçambique.",
     highlights: ["Archipiélago Quirimbas", "Isla de Moçambique (UNESCO)", "Buceo Tofo", "Bazaruto"],
     itinerary: [
@@ -1335,6 +1408,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "libano", name: "Líbano", country: "Líbano", flag: "🇱🇧",
     costPerPerson: 890, durationDays: 6, type: "cultura",
+    transport: ["avion"],
     description: "La joya incomprendida del Mediterráneo Oriental: Beirut resurge entre escombros con la escena gastronómica más vibrante del mundo árabe, Baalbek con los templos romanos más grandes jamás construidos y las nieves del Líbano.",
     highlights: ["Baalbek (Roma)", "Beirut Hamra", "Cedros del Líbano", "Jbeil (Biblos)"],
     itinerary: [
@@ -1354,6 +1428,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "japon-tokio", name: "Japón: Solo Tokio", country: "Japón", flag: "🇯🇵",
     costPerPerson: 1550, durationDays: 7, type: "cultura",
+    transport: ["avion"],
     description: "Tokio sin diluciones: la megaciudad que vive en el futuro. 7 días inmerso en la capital japonesa, de los barrios electrónicos de Akihabara a los templos milenarios de Asakusa, con escapada al mítico Monte Fuji. El viaje a Japón más accesible.",
     highlights: ["Shibuya Crossing", "Templo Senso-ji", "Akihabara", "Monte Fuji", "Comida callejera"],
     itinerary: [
@@ -1374,6 +1449,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "islandia-express", name: "Islandia Express", country: "Islandia", flag: "🇮🇸",
     costPerPerson: 1350, durationDays: 5, type: "naturaleza",
+    transport: ["avion"],
     description: "El Círculo Dorado y la costa sur islandesa en 5 días compactos: el géiser que erupciona cada 5 minutos, la cascada doble de Gullfoss, la laguna de icebergs azules de Jökulsárlón y la playa de arena negra volcánica. Islandia esencial sin quitar dos semanas.",
     highlights: ["Strokkur (géiser cada 5 min)", "Gullfoss", "Jökulsárlón", "Playa negra Reynisfjara", "Aurora boreal"],
     itinerary: [
@@ -1393,6 +1469,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "dolomitas", name: "Dolomitas", country: "Italia", flag: "🇮🇹",
     costPerPerson: 750, durationDays: 6, type: "aventura",
+    transport: ["avion", "barco", "tren", "coche", "autobus"],
     description: "Las montañas más espectaculares de Europa: agujas de roca que se tiñen de naranja al amanecer (el Enrosadira), lagos esmeralda de postal perfecta y vías ferratas sobre precipicios. A solo 2h de Venecia, sin necesitar ser alpinista.",
     highlights: ["Tre Cime di Lavaredo", "Lago di Braies", "Cortina d'Ampezzo", "Via ferrata", "Alpe di Siusi"],
     itinerary: [
@@ -1412,6 +1489,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "escocia-highlands", name: "Escocia: Highlands", country: "Escocia (UK)", flag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
     costPerPerson: 980, durationDays: 6, type: "aventura",
+    transport: ["avion"],
     description: "El paisaje más dramático de Europa: páramos infinitos de brezo violeta, castillos en ruinas sobre lagos brumosos y la mítica Isla de Skye. La NC500 es el road trip más épico de Europa, comparable a la Route 1 de Alaska.",
     highlights: ["Isla de Skye (Fairy Pools)", "Glencoe", "Ben Nevis", "NC500", "Whisky en Speyside"],
     itinerary: [
@@ -1431,6 +1509,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "borneo", name: "Borneo: Selva & Orangutanes", country: "Malasia/Indonesia", flag: "🇲🇾",
     costPerPerson: 1750, durationDays: 10, type: "aventura",
+    transport: ["avion"],
     description: "La selva tropical más antigua de la Tierra (140 millones de años) y los únicos orangutanes salvajes de Asia. Buceo de primer nivel mundial en Sipadan, cuevas colosales en Mulu y río arriba hacia las tribus dayak. Una de las aventuras más completas del planeta.",
     highlights: ["Orangutanes de Sepilok", "Sipadan (top 3 buceo)", "Gunung Mulu (cuevas)", "Río Kinabatangan", "Monte Kinabalu"],
     itinerary: [
@@ -1450,6 +1529,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "kazajistan", name: "Kazajistán", country: "Kazajistán", flag: "🇰🇿",
     costPerPerson: 1050, durationDays: 8, type: "aventura",
+    transport: ["avion"],
     description: "El destino más subestimado de Asia Central: el Cañón Charyn parece Marte, el Gran Lago Almaty es verde esmeralda puro a 2.500m, las dunas de Altyn Emel emiten un sonido propio al viento y Nur-Sultan tiene una arquitectura tan futurista que parece sacada de Blade Runner.",
     highlights: ["Cañón Charyn (el Grand Canyon de Asia)", "Gran Lago Almaty", "Dunas cantarinas Altyn Emel", "Nur-Sultan (Astana)", "Tian Shan kazajo"],
     itinerary: [
@@ -1469,6 +1549,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "alaska", name: "Alaska", country: "Estados Unidos", flag: "🇺🇸",
     costPerPerson: 3500, durationDays: 10, type: "aventura",
+    transport: ["avion"],
     description: "La última frontera americana: osos grizzly pescando salmón, auroras boreales tiñendo el cielo de verde y violeta, glaciares que se derrumban en el mar y el Denali, el pico más alto de América del Norte a 6.190m. La naturaleza más indómita del hemisferio norte.",
     highlights: ["Parque Denali", "Kenai Fjords (kayak glaciares)", "Auroras en Fairbanks", "Brooks Falls (osos grizzly)", "Glaciar Mendenhall"],
     itinerary: [
@@ -1488,6 +1569,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "peru-trek", name: "Perú: Camino Inca", country: "Perú", flag: "🇵🇪",
     costPerPerson: 1800, durationDays: 9, type: "aventura",
+    transport: ["avion"],
     description: "El trek más épico de América: 43km caminando la ruta original inca a 4.215m de altitud, atravesando orquídeas, niebla y ruinas perdidas en la selva andina para llegar al amanecer a Machu Picchu por la Puerta del Sol. Una experiencia que te transforma.",
     highlights: ["Camino Inca (4 días)", "Machu Picchu: Puerta del Sol", "Wiñay Wayna", "Cusco colonial", "Paso Warmiwañusca (4.215m)"],
     itinerary: [
@@ -1506,6 +1588,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "noruega-fjords", name: "Noruega: Fiordos", country: "Noruega", flag: "🇳🇴",
     costPerPerson: 1650, durationDays: 7, type: "naturaleza",
+    transport: ["avion"],
     description: "Los fiordos más espectaculares del planeta, esculpidos por glaciares de 2km de espesor. El recorrido Bergen-Flåm-Geirangerfjord es uno de los viajes más cinematográficos de Europa: trenes de montaña, ferris entre cascadas y pueblos de cuento pintados de colores.",
     highlights: ["Geirangerfjord (UNESCO)", "Trolltunga (1.100m sobre el fiordo)", "Bergen (Bryggen)", "Ferrocarril de Flåm", "Auroras boreales"],
     itinerary: [
@@ -1525,6 +1608,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "nueva-zelanda", name: "Nueva Zelanda", country: "Nueva Zelanda", flag: "🇳🇿",
     costPerPerson: 3100, durationDays: 12, type: "aventura",
+    transport: ["avion"],
     description: "El país más aventurero del planeta: glaciares que caen al Pacífico, fiordos en el fin del mundo, bungee de 134km/h sobre Queenstown y el paisaje que hizo posible La Tierra Media. La naturaleza más extrema y variada del mundo en dos islas perfectamente organizadas.",
     highlights: ["Milford Sound", "Queenstown (aventura extrema)", "Glaciar Franz Josef", "Hobbiton (Shire de Tolkien)", "Abel Tasman"],
     itinerary: [
@@ -1545,6 +1629,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "mauricio", name: "Isla Mauricio", country: "Mauricio", flag: "🇲🇺",
     costPerPerson: 1950, durationDays: 8, type: "playa",
+    transport: ["avion"],
     description: "La perla del Índico: lagunas de agua turquesa tan calmadas que parecen piscinas, la cascada submarina (espectacular efecto óptico desde el aire), arrecifes de coral primigenios y una gastronomía que mezcla sabores de África, India, China y Francia en la misma mesa.",
     highlights: ["Laguna azul norte", "Cascada submarina (vista aérea)", "Blue Bay Marine Park", "Chamarel (7 colores de tierra)", "Gastronomía criolla"],
     itinerary: [
@@ -1564,6 +1649,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "kenya", name: "Kenya: Safari", country: "Kenya", flag: "🇰🇪",
     costPerPerson: 2850, durationDays: 9, type: "naturaleza",
+    transport: ["avion"],
     description: "El safari definitivo: el Masái Mara en julio-octubre alberga la Gran Migración donde 1,5 millones de ñus cruzan el río Mara entre cocodrilos. Con el Kilimanjaro nevado en el horizonte desde Amboseli y las playas de Diani como remate de lujo.",
     highlights: ["Masái Mara (Gran Migración)", "Amboseli (Kilimanjaro)", "Lago Nakuru (flamencos)", "Diani Beach", "Comunidades masái"],
     itinerary: [
@@ -1584,6 +1670,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "india", name: "India: Rajastán & Delhi", country: "India", flag: "🇮🇳",
     costPerPerson: 1250, durationDays: 10, type: "cultura",
+    transport: ["avion"],
     description: "La India que siempre has imaginado: palacios de maharajás, el Taj Mahal al amanecer en niebla rosa, bazares que asaltan todos los sentidos y el Ganges sagrado en Varanasi al atardecer. Rajastán es el estado más colorido y fotogénico del mundo.",
     highlights: ["Taj Mahal (amanecer)", "Jaipur Ciudad Rosa", "Jodhpur Ciudad Azul", "Varanasi (Ganges)", "Fuerte Amber"],
     itinerary: [
@@ -1605,6 +1692,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "londres", name: "Londres", country: "Reino Unido", flag: "🇬🇧",
     costPerPerson: 1100, durationDays: 5, type: "ciudad",
+    transport: ["avion", "barco", "tren", "coche", "autobus"],
     description: "La capital más multicultural del mundo: museos gratuitos de primer nivel (el British, el V&A, la National Gallery), mercados que mezclan culturas de 150 países, arquitectura del Tower Bridge al Shard, y la mejor escena teatral del planeta fuera de Broadway.",
     highlights: ["British Museum (gratis)", "Borough Market", "West End teatro", "Tower Bridge", "Notting Hill"],
     itinerary: [
@@ -1623,6 +1711,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "barcelona", name: "Barcelona", country: "España", flag: "🇪🇸",
     costPerPerson: 680, durationDays: 5, type: "ciudad",
+    transport: ["avion", "tren", "coche", "autobus"],
     description: "La ciudad que inventó el diseño como forma de vida: la Sagrada Família en construcción desde 1882, el laberinto del Barrio Gótico, las Ramblas y los mercados más animados de Europa, la playa más accesible de cualquier gran ciudad y tapas que no se encuentran en ningún otro sitio.",
     highlights: ["Sagrada Família", "Barrio Gótico", "Park Güell", "La Boquería", "Barceloneta"],
     itinerary: [
@@ -1641,6 +1730,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "seul", name: "Seúl", country: "Corea del Sur", flag: "🇰🇷",
     costPerPerson: 1600, durationDays: 7, type: "ciudad",
+    transport: ["avion"],
     description: "La capital más futurista de Asia: K-pop, K-beauty y K-food mezclados con palacios de la dinastía Joseon del siglo XIV. Una ciudad de 10 millones donde la tecnología más avanzada y la tradición milenaria conviven en la misma manzana. La ciudad más instagrameable del mundo.",
     highlights: ["Gyeongbokgung (palacio)", "Hongdae (K-pop)", "Bukchon Hanok Village", "Mercado Gwangjang", "K-beauty en Myeong-dong"],
     itinerary: [
@@ -1659,6 +1749,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "sydney", name: "Sídney", country: "Australia", flag: "🇦🇺",
     costPerPerson: 2800, durationDays: 8, type: "ciudad",
+    transport: ["avion"],
     description: "La ciudad más hermosa del hemisferio sur: la Opera House como icono del siglo XX, el puerto más espectacular del mundo, playas de surfistas a 20 minutos del CBD y una diversidad cultural que convierte cada barrio en una experiencia diferente.",
     highlights: ["Opera House (icono)", "Bondi Beach", "Harbour Bridge", "Blue Mountains", "Manly Beach"],
     itinerary: [
@@ -1678,6 +1769,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "copenhague", name: "Copenhague", country: "Dinamarca", flag: "🇩🇰",
     costPerPerson: 960, durationDays: 5, type: "ciudad",
+    transport: ["avion", "tren", "coche"],
     description: "La ciudad más feliz del mundo tiene razones: el puerto de Nyhavn con sus casas de colores, la gastronomía que inventó el New Nordic (Noma cerró pero su legado está en todas partes), el diseño danés en cada esquina y el 62% de la ciudad se mueve en bicicleta.",
     highlights: ["Nyhavn (puerto de colores)", "Tivoli Gardens", "Gastronomía New Nordic", "Louisiana Museum", "Christiania"],
     itinerary: [
@@ -1696,6 +1788,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "estocolmo", name: "Estocolmo", country: "Suecia", flag: "🇸🇪",
     costPerPerson: 920, durationDays: 5, type: "ciudad",
+    transport: ["avion"],
     description: "La Venecia del Norte: la capital sueca se extiende sobre 14 islas donde el lago Mälaren se encuentra con el Báltico. El Gamla Stan medieval, el Museo Vasa (el barco del siglo XVII perfectamente conservado), el ABBA Museum y la gastronomía que reinventa el smörgåsbord.",
     highlights: ["Gamla Stan (ciudad medieval)", "Museo Vasa (barco s.XVII)", "ABBA Museum", "Djurgården", "Fotografiska"],
     itinerary: [
@@ -1714,6 +1807,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "hong-kong", name: "Hong Kong", country: "China (RAE)", flag: "🇭🇰",
     costPerPerson: 1850, durationDays: 6, type: "ciudad",
+    transport: ["avion"],
     description: "El skyline más denso del planeta: rascacielos sobre rascacielos vistos desde el Victoria Peak, el tranvía de dos pisos por la isla, mercados nocturnos en Mong Kok y una gastronomía cantonesa que es la más refinada de todo el sudeste asiático.",
     highlights: ["Victoria Peak (skyline nocturno)", "Temple Street Night Market", "Dim sum en Mong Kok", "Star Ferry", "Big Buddha (Lantau)"],
     itinerary: [
@@ -1732,6 +1826,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "milan", name: "Milán", country: "Italia", flag: "🇮🇹",
     costPerPerson: 830, durationDays: 4, type: "ciudad",
+    transport: ["avion", "barco", "tren", "coche", "autobus"],
     description: "La capital mundial del diseño y la moda: el Duomo más elaborado de Italia, La Última Cena de Leonardo da Vinci (reserva con meses de antelación), el Quadrilatero della Moda para mirar aunque no compres y la aperitivo más generosa del mundo como institución social.",
     highlights: ["Duomo de Milán", "La Última Cena (da Vinci)", "Quadrilatero della Moda", "Aperitivo milanés", "Lago de Como"],
     itinerary: [
@@ -1751,6 +1846,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "creta", name: "Creta", country: "Grecia", flag: "🇬🇷",
     costPerPerson: 700, durationDays: 7, type: "playa",
+    transport: ["avion"],
     description: "La isla más grande de Grecia lo tiene todo: playas de arena rosada, el Palacio de Cnosos (la civilización más antigua de Europa), el trek de la Garganta de Samaria (el más famoso de Grecia) y la cocina cretense más sabrosa del Mediterráneo oriental.",
     highlights: ["Balos Lagoon (agua turquesa)", "Garganta de Samaria", "Cnosos (palacio minoico)", "Playa Elafonisi (arena rosada)", "Gastronomía cretense"],
     itinerary: [
@@ -1770,6 +1866,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "corfu", name: "Corfú", country: "Grecia", flag: "🇬🇷",
     costPerPerson: 590, durationDays: 6, type: "playa",
+    transport: ["avion"],
     description: "La joya jónica: la isla más verde de Grecia, con playas de aguas verde esmeralda, un casco antiguo veneciano Patrimonio UNESCO y esa sensación de isla griega perfecta sin el agobio ni el precio de Mykonos. Accesible desde España por menos de 100€ de vuelo.",
     highlights: ["Ciudad Vieja de Corfú (UNESCO)", "Paleokastritsa", "Canal d'Amour", "Palacio Achilleion", "Playa Glyfada"],
     itinerary: [
@@ -1788,6 +1885,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "cerdena", name: "Cerdeña", country: "Italia", flag: "🇮🇹",
     costPerPerson: 690, durationDays: 6, type: "playa",
+    transport: ["avion", "barco"],
     description: "La segunda isla más grande del Mediterráneo tiene aguas que rivalizan con el Caribe: la Costa Smeralda en tonos verde esmeralda, las cuevas de Neptuno solo accesibles por mar, las nuraghe prehistóricas únicas en el mundo y una gastronomía tan diferente de la italiana que parece otro país.",
     highlights: ["Costa Smeralda", "Cala Goloritzé", "Cuevas de Neptuno", "Nuraghe Su Nuraxi (UNESCO)", "Gastronomía sarda"],
     itinerary: [
@@ -1806,6 +1904,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "tailandia-islas", name: "Tailandia: Islas", country: "Tailandia", flag: "🇹🇭",
     costPerPerson: 1100, durationDays: 8, type: "playa",
+    transport: ["avion"],
     description: "Las islas del sur de Tailandia son la definición de paraíso tropical: acantilados de piedra caliza emergiendo del mar turquesa, playas de arena blanca fina, snorkel entre peces de colores y el mejor street food de Asia entre sesión y sesión de playa.",
     highlights: ["Phi Phi Islands", "Railay Beach (Krabi)", "Koh Tao (buceo)", "Koh Phangan", "Snorkel en aguas turquesa"],
     itinerary: [
@@ -1825,6 +1924,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "republica-dominicana", name: "Rep. Dominicana", country: "Rep. Dominicana", flag: "🇩🇴",
     costPerPerson: 1200, durationDays: 9, type: "playa",
+    transport: ["avion"],
     description: "El Caribe clásico: Punta Cana con 48km de playa de arena blanca, la Zona Colonial de Santo Domingo (la primera ciudad europea del Nuevo Mundo, UNESCO), las ballenas jorobadas de Samaná y el ritmo de merengue y bachata como banda sonora constante.",
     highlights: ["Punta Cana (48km playa)", "Zona Colonial Santo Domingo (UNESCO)", "Samaná (ballenas jorobadas)", "Los Haitises", "Todo incluido de calidad"],
     itinerary: [
@@ -1844,6 +1944,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "mykonos", name: "Mykonos", country: "Grecia", flag: "🇬🇷",
     costPerPerson: 1350, durationDays: 6, type: "playa",
+    transport: ["avion"],
     description: "La reina de las Cícladas: calles encaladas de blanco cegador, molinos de viento que parecen pintados, las mejores fiestas de playa de Europa en Paradise y Super Paradise y la gastronomía más instagrameable del Mediterráneo. La isla que nunca duerme.",
     highlights: ["Chora (pueblo blanco)", "Molinos de viento icónicos", "Paradise Beach", "Delos (isla sagrada)", "Little Venice al atardecer"],
     itinerary: [
@@ -1862,6 +1963,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "bora-bora", name: "Bora Bora", country: "Polinesia Francesa", flag: "🇵🇫",
     costPerPerson: 4500, durationDays: 8, type: "playa",
+    transport: ["avion"],
     description: "La laguna más fotografiada del mundo: agua en 12 tonos de turquesa rodeando el volcán dormido del Monte Otemanu, bungalows sobre el agua con suelo transparente, buceo con tiburones de arrecife sin jaula y el silencio absoluto del Pacífico Sur. El lujo en su forma más natural.",
     highlights: ["Lagoon en 12 tonos de azul", "Bungalows sobre el agua", "Tiburones y mantarrayas sin jaula", "Monte Otemanu", "Puesta de sol sobre el Pacífico"],
     itinerary: [
@@ -1882,6 +1984,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "canada-rockies", name: "Canadá: Rocosas", country: "Canadá", flag: "🇨🇦",
     costPerPerson: 2900, durationDays: 10, type: "naturaleza",
+    transport: ["avion"],
     description: "Las montañas más espectaculares de Norteamérica: el Lago Louise con un color esmeralda que parece artificial, el Icefield Parkway (la carretera más bonita del mundo) con glaciares a ambos lados y osos grizzly que cruzan la carretera con total impunidad.",
     highlights: ["Lago Louise (esmeralda irreal)", "Icefield Parkway", "Banff NP", "Jasper NP", "Lago Moraine"],
     itinerary: [
@@ -1901,6 +2004,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "azores", name: "Azores", country: "Portugal", flag: "🇵🇹",
     costPerPerson: 760, durationDays: 6, type: "naturaleza",
+    transport: ["avion"],
     description: "El secreto mejor guardado de Europa: nueve islas volcánicas en el Atlántico con géiseres entre campos de hortensias, lagos de dos colores en cráteres extintos, avistamiento de 24 especies de cetáceos y baños en termas geotérmicas. A 2h30 de Lisboa.",
     highlights: ["Sete Cidades (lago bicolor)", "Avistamiento de cetáceos (24 especies)", "Cocido en la tierra (Furnas)", "Flyboard en el Atlántico", "Senderismo Pico"],
     itinerary: [
@@ -1919,6 +2023,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "madeira", name: "Madeira", country: "Portugal", flag: "🇵🇹",
     costPerPerson: 560, durationDays: 5, type: "naturaleza",
+    transport: ["avion"],
     description: "La isla de la eterna primavera: las levadas (canales de irrigación del siglo XV) forman la red de senderismo más única del mundo, los acantilados de 580m del Cabo Girão son los más altos de Europa y las flores que no conocen el invierno hacen de la isla un jardín botánico natural.",
     highlights: ["Senderismo levadas", "Cabo Girão (580m acantilado)", "Pico Ruivo (cima)", "Funchal (mercado & casino)", "Mirador Pico do Areeiro"],
     itinerary: [
@@ -1938,6 +2043,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "suiza-alpes", name: "Suiza: Alpes", country: "Suiza", flag: "🇨🇭",
     costPerPerson: 1400, durationDays: 7, type: "naturaleza",
+    transport: ["avion", "tren", "coche", "autobus"],
     description: "Los Alpes perfectamente organizados: el tren cogwheel que sube al Jungfraujoch (3.454m, el techo de Europa), el Matterhorn reflejado en el lago de Zermatt al atardecer, el Glacier Express cruzando 291 puentes entre montañas nevadas. La naturaleza más accesible del mundo.",
     highlights: ["Jungfraujoch (3.454m techo de Europa)", "Matterhorn (Zermatt)", "Glacier Express", "Lago de Lucerna", "Grindelwald"],
     itinerary: [
@@ -1957,6 +2063,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "australia", name: "Australia", country: "Australia", flag: "🇦🇺",
     costPerPerson: 3300, durationDays: 10, type: "naturaleza",
+    transport: ["avion"],
     description: "El continente-país más biodiverso: la Gran Barrera de Coral (el mayor organismo vivo de la Tierra con 2.900 arrecifes), el desierto rojo de Uluru que cambia de naranja a morado según la hora, koalas en eucaliptos y los 12 Apóstoles sobre el Índico.",
     highlights: ["Gran Barrera de Coral", "Uluru (Ayers Rock)", "Koalas & canguros", "The Great Ocean Road", "Whitsunday Islands"],
     itinerary: [
@@ -1977,6 +2084,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "china", name: "China: Pekín & Xi'an", country: "China", flag: "🇨🇳",
     costPerPerson: 1800, durationDays: 10, type: "cultura",
+    transport: ["avion"],
     description: "La civilización más antigua e ininterrumpida del mundo: la Ciudad Prohibida que albergó 24 emperadores, la Gran Muralla que serpentea 21.000km, el Ejército de Terracota (8.000 soldados enterrados hace 2.200 años) y la cocina de Pekín y Sichuan que todo lo cambia.",
     highlights: ["Gran Muralla (Mutianyu)", "Ciudad Prohibida", "Ejército de Terracota (Xi'an)", "Templo del Cielo", "Barrio Hutong"],
     itinerary: [
@@ -1997,6 +2105,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "corea-sur", name: "Corea del Sur", country: "Corea del Sur", flag: "🇰🇷",
     costPerPerson: 1550, durationDays: 8, type: "cultura",
+    transport: ["avion"],
     description: "El milagro asiático: en 60 años pasó de ser uno de los países más pobres del mundo a liderar el K-pop y la innovación tecnológica, con palacios de la dinastía Joseon del siglo XIV, una cocina (kimchi, bibimbap, galbi) cada vez más reconocida y una cultura de cafeterías de diseño inigualable.",
     highlights: ["Gyeongbokgung (palacio s.XIV)", "Jeju Island", "Templo Bulguksa", "K-food: bibimbap y BBQ", "Bukchon Hanok Village"],
     itinerary: [
@@ -2016,6 +2125,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "israel", name: "Israel & Tierra Santa", country: "Israel", flag: "🇮🇱",
     costPerPerson: 1450, durationDays: 8, type: "cultura",
+    transport: ["avion"],
     description: "El destino más concentrado de historia del mundo: Jerusalén con el Muro de las Lamentaciones, la Cúpula de la Roca y el Via Crucis en el mismo kilómetro cuadrado. Tel Aviv como capital del Mediterráneo moderno con una gastronomía que es referencia mundial.",
     highlights: ["Jerusalén (Ciudad Antigua)", "Tel Aviv (gastronomía)", "Mar Muerto (flotación)", "Masada al amanecer", "Caesarea"],
     itinerary: [
@@ -2035,6 +2145,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "mexico-df", name: "México: CDMX & Oaxaca", country: "México", flag: "🇲🇽",
     costPerPerson: 1300, durationDays: 9, type: "cultura",
+    transport: ["avion"],
     description: "Ciudad de México es la ciudad más grande de América Latina: museos de talla mundial, la mejor gastronomía de América (reconocida por la UNESCO), Teotihuacán a 50km con pirámides que rivalizan con las egipcias y Oaxaca como la capital culinaria y cultural del México profundo.",
     highlights: ["Teotihuacán (Pirámides)", "CDMX: Frida Kahlo & Bellas Artes", "Oaxaca (mole & mezcal)", "Monte Albán (zapoteca)", "Mercado de Tlacolula"],
     itinerary: [
@@ -2054,6 +2165,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "puerto-rico", name: "Puerto Rico", country: "Puerto Rico (EE.UU.)", flag: "🇵🇷",
     costPerPerson: 1100, durationDays: 7, type: "playa",
+    transport: ["avion"],
     description: "La Isla del Encanto: el colorido Viejo San Juan colonial, El Yunque el único bosque tropical lluvioso de EE.UU., playas de ensueño y la cultura boricua más vibrante del Caribe.",
     highlights: ["Viejo San Juan", "El Yunque", "Playa Flamenco (Culebra)", "Bioluminiscencia (Vieques)"],
     itinerary: [
@@ -2075,6 +2187,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "jamaica", name: "Jamaica", country: "Jamaica", flag: "🇯🇲",
     costPerPerson: 1050, durationDays: 7, type: "playa",
+    transport: ["avion"],
     description: "La isla del reggae y Bob Marley: Montego Bay, el río Negro, Dunn's River Falls, la filosofía rastafari y el mejor ron del Caribe.",
     highlights: ["Dunn's River Falls", "Bob Marley Museum", "Blue Mountains", "Seven Mile Beach"],
     itinerary: [
@@ -2093,6 +2206,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "miami", name: "Miami & Florida", country: "Estados Unidos", flag: "🇺🇸",
     costPerPerson: 1600, durationDays: 7, type: "ciudad",
+    transport: ["avion"],
     description: "La ciudad más latina de EE.UU.: Art Deco en South Beach, Little Havana, los Everglades con cocodrilos, Key West en el extremo sur y la mejor fiesta nocturna de América.",
     highlights: ["South Beach (Art Deco)", "Little Havana", "Everglades", "Key West"],
     itinerary: [
@@ -2112,6 +2226,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "nueva-orleans", name: "Nueva Orleans", country: "Estados Unidos", flag: "🇺🇸",
     costPerPerson: 1200, durationDays: 5, type: "cultura",
+    transport: ["avion"],
     description: "La ciudad más musical del mundo: jazz en cada esquina del French Quarter, carnavales Mardi Gras, vudú, cocina criolla y los cementerios más pintorescos de América.",
     highlights: ["French Quarter", "Jazz en Frenchmen Street", "Gastronomía criolla", "Garden District"],
     itinerary: [
@@ -2129,6 +2244,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "costa-amalfi", name: "Costa Amalfitana", country: "Italia", flag: "🇮🇹",
     costPerPerson: 1200, durationDays: 6, type: "playa",
+    transport: ["avion", "barco", "tren", "coche", "autobus"],
     description: "La costa más dramática de Europa: acantilados verticales con pueblos de colores colgantes, Positano, Ravello, el Vesubio y Pompeya, todo con limoncello y pizza napolitana.",
     highlights: ["Positano", "Ravello", "Pompeya", "Capri"],
     itinerary: [
@@ -2146,6 +2262,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "sevilla", name: "Sevilla", country: "España", flag: "🇪🇸",
     costPerPerson: 480, durationDays: 4, type: "cultura",
+    transport: ["avion", "tren", "coche", "autobus"],
     description: "La capital del flamenco y la pasión española: la Giralda mora, el Real Alcázar de Game of Thrones, la Plaza de España, tapas infinitas y el barrio Santa Cruz laberíntico.",
     highlights: ["Real Alcázar", "Catedral & Giralda", "Barrio de Triana", "Flamenco en vivo"],
     itinerary: [
@@ -2163,6 +2280,7 @@ export const DESTINATIONS: DestinationTemplate[] = [
   {
     id: "los-angeles", name: "Los Ángeles", country: "Estados Unidos", flag: "🇺🇸",
     costPerPerson: 2000, durationDays: 7, type: "ciudad",
+    transport: ["avion"],
     description: "La capital del entretenimiento: Hollywood, las playas de Malibú, museos de clase mundial, Santa Mónica al atardecer, Disneyland y la comida más diversa del planeta.",
     highlights: ["Hollywood & Walk of Fame", "Santa Mónica", "Malibu", "Getty Center"],
     itinerary: [
@@ -2176,6 +2294,465 @@ export const DESTINATIONS: DestinationTemplate[] = [
       { name: "Santa Mónica Pier", lat: 34.01, lon: -118.50, note: "El final de la Ruta 66 sobre el Pacífico" },
       { name: "Venice Beach", lat: 33.99, lon: -118.47, note: "La playa más excéntrica de California" },
       { name: "Getty Center", lat: 34.08, lon: -118.47, note: "Museo de arte con vistas de 360° de LA" },
+    ],
+  },
+  {
+    id: "ibiza", name: "Ibiza", country: "España", flag: "🇪🇸",
+    costPerPerson: 420, durationDays: 3, type: "playa",
+    transport: ["avion", "barco"],
+    description: "Calas de agua turquesa, pueblos blancos y las mejores puestas de sol del Mediterráneo. Fácil en ferry desde Valencia, Denia o Barcelona.",
+    highlights: ["Dalt Vila", "Cala Comte", "Es Vedrà", "Mercadillo de Las Dalias"],
+    itinerary: [
+      { date: "", title: "Día 1 — Ciudad e Ibiza vieja", items: [{ time: "12:00", text: "Llegada en ferry o avión" }, { time: "16:00", text: "Dalt Vila, la ciudad amurallada (Patrimonio UNESCO)" }, { time: "19:30", text: "Atardecer desde las murallas" }, { time: "21:00", text: "Cena en el puerto viejo" }] },
+      { date: "", title: "Día 2 — Calas del oeste", items: [{ time: "10:00", text: "Cala Comte y Cala Bassa, agua turquesa" }, { time: "14:00", text: "Almuerzo con vistas en un chiringuito" }, { time: "19:00", text: "Atardecer frente a Es Vedrà, el islote mítico" }] },
+      { date: "", title: "Día 3 — Mercadillo y regreso", items: [{ time: "09:30", text: "Mercadillo hippy de Las Dalias" }, { time: "13:00", text: "Última cala antes de irse" }, { time: "16:00", text: "Traslado al puerto o aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Dalt Vila", lat: 38.91, lon: 1.43, note: "Ciudad amurallada, Patrimonio UNESCO" },
+      { name: "Cala Comte", lat: 38.96, lon: 1.22, note: "Una de las mejores puestas de sol de Europa" },
+      { name: "Es Vedrà", lat: 38.87, lon: 1.21, note: "Islote rocoso envuelto en leyendas" },
+      { name: "Las Dalias", lat: 39.02, lon: 1.51, note: "Mercadillo hippy histórico" },
+    ],
+  },
+  {
+    id: "formentera", name: "Formentera", country: "España", flag: "🇪🇸",
+    costPerPerson: 450, durationDays: 3, type: "playa",
+    transport: ["avion", "barco"],
+    description: "La isla sin aeropuerto propio: se llega solo en ferry desde Ibiza. Las playas de aguas más cristalinas de España.",
+    highlights: ["Playa de Ses Illetes", "Cala Saona", "Far de la Mola", "Bicicleta por la isla"],
+    itinerary: [
+      { date: "", title: "Día 1 — Llegada y Ses Illetes", items: [{ time: "11:00", text: "Ferry desde Ibiza (25-40 min)" }, { time: "13:00", text: "Alquiler de bici o moto" }, { time: "15:00", text: "Playa de Ses Illetes, agua caribeña" }, { time: "20:30", text: "Cena en Es Pujols" }] },
+      { date: "", title: "Día 2 — Sur de la isla", items: [{ time: "10:00", text: "Cala Saona en bici" }, { time: "13:00", text: "Almuerzo de pescado fresco" }, { time: "16:00", text: "Playa de Migjorn" }, { time: "19:00", text: "Far de la Mola al atardecer" }] },
+      { date: "", title: "Día 3 — Última playa y regreso", items: [{ time: "10:00", text: "Última mañana en Ses Illetes" }, { time: "13:00", text: "Ferry de regreso a Ibiza" }] },
+    ],
+    mapPlaces: [
+      { name: "Ses Illetes", lat: 38.99, lon: 1.42, note: "Playa de agua turquesa, de las mejores de Europa" },
+      { name: "Cala Saona", lat: 38.69, lon: 1.42, note: "Cala protegida con acantilados rojizos" },
+      { name: "Far de la Mola", lat: 38.66, lon: 1.56, note: "Faro que inspiró a Julio Verne" },
+      { name: "Es Pujols", lat: 38.99, lon: 1.46, note: "Pueblo pesquero con ambiente nocturno" },
+    ],
+  },
+  {
+    id: "menorca", name: "Menorca", country: "España", flag: "🇪🇸",
+    costPerPerson: 380, durationDays: 3, type: "playa",
+    transport: ["avion", "barco"],
+    description: "La hermana tranquila de Baleares: calas vírgenes, yacimientos talayóticos y Reserva de la Biosfera. Ferry directo desde Barcelona y Valencia.",
+    highlights: ["Cala Macarelleta", "Ciutadella", "Naveta des Tudons", "Camí de Cavalls"],
+    itinerary: [
+      { date: "", title: "Día 1 — Ciutadella", items: [{ time: "12:00", text: "Llegada en ferry o avión" }, { time: "16:00", text: "Casco histórico de Ciutadella" }, { time: "19:00", text: "Puerto y atardecer" }, { time: "21:00", text: "Cena de caldereta de langosta" }] },
+      { date: "", title: "Día 2 — Calas vírgenes", items: [{ time: "09:30", text: "Cala Macarelleta y Macarella" }, { time: "14:00", text: "Picnic en la cala" }, { time: "17:00", text: "Tramo del Camí de Cavalls" }] },
+      { date: "", title: "Día 3 — Talayots y Maó", items: [{ time: "09:30", text: "Naveta des Tudons, monumento megalítico" }, { time: "12:00", text: "Maó, capital de la isla" }, { time: "16:00", text: "Traslado al puerto o aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Ciutadella", lat: 40.00, lon: 3.84, note: "Antigua capital, casco histórico intacto" },
+      { name: "Cala Macarelleta", lat: 39.94, lon: 3.96, note: "Una de las calas más fotografiadas de España" },
+      { name: "Naveta des Tudons", lat: 39.99, lon: 3.90, note: "Monumento funerario talayótico, 1000 a.C." },
+      { name: "Maó", lat: 39.89, lon: 4.27, note: "Capital de Menorca, puerto natural profundo" },
+    ],
+  },
+  {
+    id: "sicilia", name: "Sicilia", country: "Italia", flag: "🇮🇹",
+    costPerPerson: 480, durationDays: 4, type: "playa",
+    transport: ["avion", "barco", "tren", "coche", "autobus"],
+    description: "Templos griegos, volcanes activos y la mejor cocina del Mediterráneo. Se llega en ferry desde el continente italiano combinando con tren o coche.",
+    highlights: ["Valle de los Templos", "Etna", "Palermo", "Taormina"],
+    itinerary: [
+      { date: "", title: "Día 1 — Palermo", items: [{ time: "12:00", text: "Llegada a Palermo" }, { time: "16:00", text: "Mercado de Ballarò y centro histórico" }, { time: "19:30", text: "Cena de street food: arancini y panelle" }] },
+      { date: "", title: "Día 2 — Agrigento", items: [{ time: "09:00", text: "Valle de los Templos, Patrimonio UNESCO" }, { time: "13:00", text: "Almuerzo con vistas al mar" }, { time: "17:00", text: "Traslado a Catania" }] },
+      { date: "", title: "Día 3 — Etna y Taormina", items: [{ time: "09:00", text: "Excursión al Etna, volcán activo" }, { time: "15:00", text: "Taormina y el teatro griego" }, { time: "19:00", text: "Cena con vistas al Ionio" }] },
+      { date: "", title: "Día 4 — Regreso", items: [{ time: "10:00", text: "Última granita siciliana" }, { time: "13:00", text: "Traslado al ferry o aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Valle de los Templos", lat: 37.29, lon: 13.59, note: "Templos griegos mejor conservados fuera de Grecia" },
+      { name: "Etna", lat: 37.75, lon: 15.00, note: "El volcán activo más alto de Europa" },
+      { name: "Taormina", lat: 37.85, lon: 15.29, note: "Teatro griego con vistas al Etna y al mar" },
+      { name: "Palermo", lat: 38.12, lon: 13.36, note: "Capital siciliana, mezcla árabe-normanda" },
+    ],
+  },
+  {
+    id: "elba", name: "Isla de Elba", country: "Italia", flag: "🇮🇹",
+    costPerPerson: 460, durationDays: 4, type: "playa",
+    transport: ["avion", "barco"],
+    description: "La isla del exilio de Napoleón: playas de granito rosa, aguas transparentes y pueblos de pescadores, en ferry desde Piombino.",
+    highlights: ["Portoferraio", "Villa de Napoleón", "Playa de Sansone", "Monte Capanne"],
+    itinerary: [
+      { date: "", title: "Día 1 — Portoferraio", items: [{ time: "12:00", text: "Ferry desde Piombino (1h)" }, { time: "16:00", text: "Centro histórico y fortalezas medicis" }, { time: "20:00", text: "Cena de pescado en el puerto" }] },
+      { date: "", title: "Día 2 — Napoleón y playas", items: [{ time: "09:30", text: "Villa dei Mulini, residencia de Napoleón" }, { time: "12:00", text: "Playa de Sansone, granito rosa" }, { time: "16:00", text: "Playa de Le Ghiaie" }] },
+      { date: "", title: "Día 3 — Monte Capanne", items: [{ time: "09:00", text: "Teleférico al Monte Capanne, vistas de toda la isla" }, { time: "13:00", text: "Almuerzo en Marciana" }, { time: "17:00", text: "Pueblo de Poggio" }] },
+      { date: "", title: "Día 4 — Regreso", items: [{ time: "10:00", text: "Última playa" }, { time: "13:00", text: "Ferry de regreso a Piombino" }] },
+    ],
+    mapPlaces: [
+      { name: "Portoferraio", lat: 42.82, lon: 10.33, note: "Puerto principal, fortalezas medicis" },
+      { name: "Villa dei Mulini", lat: 42.82, lon: 10.32, note: "Residencia de Napoleón durante su exilio" },
+      { name: "Playa de Sansone", lat: 42.83, lon: 10.31, note: "Agua turquesa sobre arena de granito rosa" },
+      { name: "Monte Capanne", lat: 42.77, lon: 10.17, note: "El pico más alto de la isla, 1019 m" },
+    ],
+  },
+  {
+    id: "tanger", name: "Tánger", country: "Marruecos", flag: "🇲🇦",
+    costPerPerson: 320, durationDays: 3, type: "cultura",
+    transport: ["avion", "barco", "coche", "autobus"],
+    description: "A solo 35 minutos en ferry desde Tarifa: la puerta de África, medina blanca sobre el Estrecho y el punto donde se cruzan dos continentes.",
+    highlights: ["Medina de Tánger", "Cabo Espartel", "Cuevas de Hércules", "Gran Zoco"],
+    itinerary: [
+      { date: "", title: "Día 1 — Llegada y medina", items: [{ time: "11:00", text: "Ferry desde Tarifa o Algeciras (35-90 min)" }, { time: "14:00", text: "Medina de Tánger y Gran Zoco" }, { time: "17:00", text: "Terraza con vistas al Estrecho" }, { time: "20:00", text: "Cena de tajín en la medina" }] },
+      { date: "", title: "Día 2 — Costa atlántica", items: [{ time: "09:30", text: "Cuevas de Hércules" }, { time: "11:30", text: "Cabo Espartel, donde se unen Atlántico y Mediterráneo" }, { time: "14:00", text: "Almuerzo de pescado en Asilah" }, { time: "18:00", text: "Paseo por Asilah, pueblo de murales" }] },
+      { date: "", title: "Día 3 — Compras y regreso", items: [{ time: "09:30", text: "Zoco de las especias" }, { time: "12:00", text: "Té a la menta en un café histórico" }, { time: "15:00", text: "Ferry de regreso a España" }] },
+    ],
+    mapPlaces: [
+      { name: "Medina de Tánger", lat: 35.78, lon: -5.81, note: "Casco antiguo amurallado sobre el Estrecho" },
+      { name: "Cabo Espartel", lat: 35.79, lon: -5.92, note: "Punto donde se unen Atlántico y Mediterráneo" },
+      { name: "Cuevas de Hércules", lat: 35.78, lon: -5.93, note: "Cueva con una abertura en forma de mapa de África" },
+      { name: "Gran Zoco", lat: 35.78, lon: -5.81, note: "Plaza y mercado principal de la medina" },
+    ],
+  },
+  {
+    id: "zurich", name: "Zúrich", country: "Suiza", flag: "🇨🇭",
+    costPerPerson: 750, durationDays: 3, type: "ciudad",
+    transport: ["avion", "tren", "coche", "autobus"],
+    description: "Lago alpino, casco histórico medieval y una escena gastronómica de primer nivel. Tren directo desde Barcelona o París con transbordo.",
+    highlights: ["Altstadt", "Lago de Zúrich", "Bahnhofstrasse", "Uetliberg"],
+    itinerary: [
+      { date: "", title: "Día 1 — Casco antiguo", items: [{ time: "13:00", text: "Llegada en tren o avión" }, { time: "16:00", text: "Altstadt: Grossmünster y Fraumünster" }, { time: "19:00", text: "Paseo por el lago al atardecer" }, { time: "21:00", text: "Fondue en Niederdorf" }] },
+      { date: "", title: "Día 2 — Lago y montaña", items: [{ time: "09:30", text: "Paseo en barco por el lago de Zúrich" }, { time: "13:00", text: "Bahnhofstrasse, la calle comercial más cara de Europa" }, { time: "16:00", text: "Uetliberg, mirador de la ciudad" }] },
+      { date: "", title: "Día 3 — Regreso", items: [{ time: "10:00", text: "Museo Nacional Suizo" }, { time: "13:00", text: "Última fondue o raclette" }, { time: "16:00", text: "Traslado a la estación o aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Altstadt", lat: 47.37, lon: 8.54, note: "Casco antiguo medieval junto al río Limmat" },
+      { name: "Lago de Zúrich", lat: 47.35, lon: 8.55, note: "Paseos en barco y baño en verano" },
+      { name: "Bahnhofstrasse", lat: 47.37, lon: 8.54, note: "Una de las calles comerciales más exclusivas del mundo" },
+      { name: "Uetliberg", lat: 47.35, lon: 8.49, note: "Mirador con vistas a los Alpes" },
+    ],
+  },
+  {
+    id: "ginebra", name: "Ginebra", country: "Suiza", flag: "🇨🇭",
+    costPerPerson: 780, durationDays: 3, type: "ciudad",
+    transport: ["avion", "tren", "coche", "autobus"],
+    description: "Capital diplomática a orillas del lago Lemán, con el Jet d'Eau, el Mont Blanc de fondo y tren directo desde Francia y España.",
+    highlights: ["Jet d'Eau", "Casco antiguo", "Lago Lemán", "ONU"],
+    itinerary: [
+      { date: "", title: "Día 1 — Lago Lemán", items: [{ time: "13:00", text: "Llegada en tren o avión" }, { time: "16:00", text: "Jet d'Eau y paseo por el lago" }, { time: "19:00", text: "Casco antiguo (Vieille Ville)" }, { time: "21:00", text: "Cena de raclette" }] },
+      { date: "", title: "Día 2 — Historia y diplomacia", items: [{ time: "09:30", text: "Barrio de las Naciones y sede de la ONU" }, { time: "13:00", text: "Catedral de Saint-Pierre" }, { time: "16:00", text: "Museo Patek Philippe o CERN" }] },
+      { date: "", title: "Día 3 — Regreso", items: [{ time: "10:00", text: "Mercado de Plainpalais" }, { time: "13:00", text: "Última vista del Mont Blanc desde el lago" }, { time: "16:00", text: "Traslado a la estación o aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Jet d'Eau", lat: 46.21, lon: 6.16, note: "Chorro de agua icónico de 140 metros" },
+      { name: "Vieille Ville", lat: 46.20, lon: 6.15, note: "Casco antiguo con la catedral de Saint-Pierre" },
+      { name: "Lago Lemán", lat: 46.20, lon: 6.15, note: "Vistas al Mont Blanc en días claros" },
+      { name: "Sede de la ONU", lat: 46.22, lon: 6.14, note: "Palacio de las Naciones" },
+    ],
+  },
+  {
+    id: "niza", name: "Niza", country: "Francia", flag: "🇫🇷",
+    costPerPerson: 520, durationDays: 3, type: "ciudad",
+    transport: ["avion", "tren", "coche", "autobus"],
+    description: "La capital de la Costa Azul: paseo marítimo, casco antiguo ocre y trampolín para Mónaco y Cannes. Tren directo desde Barcelona.",
+    highlights: ["Promenade des Anglais", "Vieux Nice", "Colline du Château", "Mónaco"],
+    itinerary: [
+      { date: "", title: "Día 1 — Promenade y Vieux Nice", items: [{ time: "13:00", text: "Llegada en tren o avión" }, { time: "16:00", text: "Promenade des Anglais" }, { time: "18:00", text: "Vieux Nice, callejuelas y mercado de flores" }, { time: "21:00", text: "Cena de socca y pissaladière" }] },
+      { date: "", title: "Día 2 — Mónaco", items: [{ time: "09:30", text: "Tren a Mónaco (25 min)" }, { time: "10:30", text: "Casino de Montecarlo y palacio real" }, { time: "14:00", text: "Almuerzo con vistas al puerto" }, { time: "17:00", text: "Regreso a Niza" }] },
+      { date: "", title: "Día 3 — Colline y regreso", items: [{ time: "09:30", text: "Colline du Château, mirador de la ciudad" }, { time: "12:00", text: "Último paseo por el mercado Cours Saleya" }, { time: "15:00", text: "Traslado a la estación o aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Promenade des Anglais", lat: 43.69, lon: 7.26, note: "Paseo marítimo icónico de la Riviera francesa" },
+      { name: "Vieux Nice", lat: 43.70, lon: 7.28, note: "Casco antiguo de fachadas ocres" },
+      { name: "Colline du Château", lat: 43.70, lon: 7.28, note: "Mirador sobre la bahía de los Ángeles" },
+      { name: "Mónaco", lat: 43.73, lon: 7.42, note: "Principado con el casino de Montecarlo, 25 min en tren" },
+    ],
+  },
+  {
+    id: "san-sebastian", name: "San Sebastián", country: "España", flag: "🇪🇸",
+    costPerPerson: 300, durationDays: 3, type: "playa",
+    transport: ["avion", "tren", "coche", "autobus"],
+    description: "La bahía urbana más bonita de España, capital mundial del pintxo, a un tren o coche de casa.",
+    highlights: ["Playa de La Concha", "Parte Vieja", "Monte Igueldo", "Ruta de pintxos"],
+    itinerary: [
+      { date: "", title: "Día 1 — La Concha", items: [{ time: "13:00", text: "Llegada en tren, coche o avión" }, { time: "16:00", text: "Paseo por la playa de La Concha" }, { time: "19:00", text: "Ruta de pintxos por la Parte Vieja" }] },
+      { date: "", title: "Día 2 — Monte Igueldo y gastronomía", items: [{ time: "10:00", text: "Funicular al Monte Igueldo, vistas de la bahía" }, { time: "13:00", text: "Mercado de la Bretxa" }, { time: "16:00", text: "Playa de Zurriola, surfistas" }, { time: "21:00", text: "Cena en un restaurante con estrella Michelin (opcional)" }] },
+      { date: "", title: "Día 3 — Regreso", items: [{ time: "10:00", text: "Isla de Santa Clara en barca" }, { time: "13:00", text: "Últimos pintxos" }, { time: "16:00", text: "Traslado a la estación o aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Playa de La Concha", lat: 43.32, lon: -1.99, note: "Considerada una de las mejores bahías urbanas del mundo" },
+      { name: "Parte Vieja", lat: 43.33, lon: -1.98, note: "Casco antiguo con la mayor densidad de pintxos de España" },
+      { name: "Monte Igueldo", lat: 43.32, lon: -2.01, note: "Mirador con parque de atracciones histórico" },
+      { name: "Playa de Zurriola", lat: 43.32, lon: -1.97, note: "Playa de surfistas junto al Kursaal" },
+    ],
+  },
+  {
+    id: "burdeos", name: "Burdeos", country: "Francia", flag: "🇫🇷",
+    costPerPerson: 480, durationDays: 4, type: "ciudad",
+    transport: ["avion", "tren", "coche", "autobus"],
+    description: "Capital mundial del vino, con un centro histórico de piedra dorada Patrimonio UNESCO y viñedos a las puertas de la ciudad.",
+    highlights: ["Place de la Bourse", "Cité du Vin", "Saint-Émilion", "Miroir d'eau"],
+    itinerary: [
+      { date: "", title: "Día 1 — Centro histórico", items: [{ time: "13:00", text: "Llegada en tren, coche o avión" }, { time: "16:00", text: "Place de la Bourse y el Miroir d'eau" }, { time: "18:30", text: "Paseo por los muelles del Garona" }, { time: "21:00", text: "Cena con vino de Burdeos" }] },
+      { date: "", title: "Día 2 — Cité du Vin", items: [{ time: "09:30", text: "Cité du Vin, museo interactivo del vino" }, { time: "12:00", text: "Cata guiada" }, { time: "15:00", text: "Barrio de Saint-Pierre" }, { time: "18:00", text: "Catedral de Saint-André" }] },
+      { date: "", title: "Día 3 — Saint-Émilion", items: [{ time: "09:00", text: "Excursión de día a Saint-Émilion (40 min en tren)" }, { time: "11:00", text: "Pueblo medieval y catacumbas" }, { time: "13:00", text: "Almuerzo entre viñedos" }, { time: "16:00", text: "Visita a un château vinícola" }] },
+      { date: "", title: "Día 4 — Regreso", items: [{ time: "10:00", text: "Mercado de Capucins" }, { time: "13:00", text: "Últimas compras de vino" }, { time: "16:00", text: "Traslado a la estación o aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Place de la Bourse", lat: 44.84, lon: -0.57, note: "Plaza icónica con el espejo de agua más grande del mundo" },
+      { name: "Cité du Vin", lat: 44.86, lon: -0.55, note: "Museo interactivo dedicado al vino" },
+      { name: "Saint-Émilion", lat: 44.89, lon: -0.16, note: "Pueblo medieval entre viñedos, Patrimonio UNESCO" },
+      { name: "Catedral de Saint-André", lat: 44.84, lon: -0.58, note: "Catedral gótica del siglo XI" },
+    ],
+  },
+  {
+    id: "munich", name: "Múnich", country: "Alemania", flag: "🇩🇪",
+    costPerPerson: 550, durationDays: 3, type: "ciudad",
+    transport: ["avion", "tren", "coche", "autobus"],
+    description: "Cervecerías históricas, palacios bávaros y la puerta a los Alpes. Bien conectada por tren nocturno desde varias capitales europeas.",
+    highlights: ["Marienplatz", "Englischer Garten", "Palacio de Nymphenburg", "Hofbräuhaus"],
+    itinerary: [
+      { date: "", title: "Día 1 — Centro histórico", items: [{ time: "13:00", text: "Llegada en tren o avión" }, { time: "16:00", text: "Marienplatz y el ayuntamiento nuevo" }, { time: "19:00", text: "Cena en el Hofbräuhaus" }] },
+      { date: "", title: "Día 2 — Parques y palacios", items: [{ time: "09:30", text: "Englischer Garten, uno de los parques urbanos más grandes del mundo" }, { time: "13:00", text: "Palacio de Nymphenburg" }, { time: "17:00", text: "Biergarten junto al río Isar" }] },
+      { date: "", title: "Día 3 — Regreso", items: [{ time: "10:00", text: "Mercado Viktualienmarkt" }, { time: "13:00", text: "Última salchicha bávara" }, { time: "16:00", text: "Traslado a la estación o aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Marienplatz", lat: 48.14, lon: 11.58, note: "Plaza central con el carrillón del ayuntamiento" },
+      { name: "Englischer Garten", lat: 48.16, lon: 11.60, note: "Parque urbano más grande que Central Park" },
+      { name: "Palacio de Nymphenburg", lat: 48.16, lon: 11.50, note: "Residencia de verano de los reyes de Baviera" },
+      { name: "Hofbräuhaus", lat: 48.14, lon: 11.58, note: "La cervecería más famosa del mundo" },
+    ],
+  },
+  {
+    id: "bruselas", name: "Bruselas", country: "Bélgica", flag: "🇧🇪",
+    costPerPerson: 420, durationDays: 3, type: "ciudad",
+    transport: ["avion", "tren", "coche", "autobus"],
+    description: "La capital europea: Grand Place dorada, cómics gigantes pintados en las fachadas y las mejores patatas fritas y chocolate del continente.",
+    highlights: ["Grand Place", "Atomium", "Manneken Pis", "Barrio de los cómics"],
+    itinerary: [
+      { date: "", title: "Día 1 — Grand Place", items: [{ time: "13:00", text: "Llegada en tren, coche o avión" }, { time: "16:00", text: "Grand Place, Patrimonio UNESCO" }, { time: "18:00", text: "Manneken Pis y galerías Saint-Hubert" }, { time: "20:30", text: "Cena de moules-frites" }] },
+      { date: "", title: "Día 2 — Atomium y cómics", items: [{ time: "09:30", text: "Atomium" }, { time: "13:00", text: "Barrio europeo" }, { time: "16:00", text: "Ruta de murales de cómics" }, { time: "19:00", text: "Cata de cervezas belgas" }] },
+      { date: "", title: "Día 3 — Regreso", items: [{ time: "10:00", text: "Chocolatería en Sablon" }, { time: "13:00", text: "Últimas gofres" }, { time: "16:00", text: "Traslado a la estación o aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Grand Place", lat: 50.85, lon: 4.35, note: "Plaza dorada, Patrimonio UNESCO" },
+      { name: "Atomium", lat: 50.89, lon: 4.34, note: "Estructura de 1958, símbolo de Bruselas" },
+      { name: "Manneken Pis", lat: 50.85, lon: 4.35, note: "La estatua más famosa (y pequeña) de Bélgica" },
+      { name: "Barrio de los cómics", lat: 50.85, lon: 4.35, note: "Murales gigantes de Tintín y otros cómics belgas" },
+    ],
+  },
+  {
+    id: "provenza", name: "Provenza", country: "Francia", flag: "🇫🇷",
+    costPerPerson: 500, durationDays: 4, type: "naturaleza",
+    transport: ["avion", "tren", "coche", "autobus"],
+    description: "Campos de lavanda, pueblos encaramados en la roca y mercados provenzales. La región ideal para un road trip en coche desde España.",
+    highlights: ["Campos de lavanda", "Gordes", "Aix-en-Provence", "Les Baux-de-Provence"],
+    itinerary: [
+      { date: "", title: "Día 1 — Aix-en-Provence", items: [{ time: "12:00", text: "Llegada en coche o tren" }, { time: "16:00", text: "Cours Mirabeau y el casco histórico" }, { time: "19:00", text: "Mercado provenzal" }] },
+      { date: "", title: "Día 2 — Pueblos encaramados", items: [{ time: "09:00", text: "Gordes, pueblo de piedra sobre la colina" }, { time: "12:00", text: "Abadía de Sénanque (lavanda en temporada)" }, { time: "15:00", text: "Roussillon, acantilados de ocre" }] },
+      { date: "", title: "Día 3 — Les Baux y campos de lavanda", items: [{ time: "09:30", text: "Les Baux-de-Provence" }, { time: "13:00", text: "Ruta en coche por campos de lavanda (junio-agosto)" }, { time: "17:00", text: "Pueblo de Saint-Rémy-de-Provence" }] },
+      { date: "", title: "Día 4 — Regreso", items: [{ time: "10:00", text: "Mercado de Aix" }, { time: "13:00", text: "Última parada en un viñedo" }, { time: "16:00", text: "Regreso en coche o tren" }] },
+    ],
+    mapPlaces: [
+      { name: "Aix-en-Provence", lat: 43.53, lon: 5.45, note: "Ciudad natal de Cézanne, fuentes y mercados" },
+      { name: "Gordes", lat: 43.91, lon: 5.20, note: "Uno de los pueblos más bonitos de Francia" },
+      { name: "Roussillon", lat: 43.90, lon: 5.29, note: "Pueblo construido sobre acantilados de ocre" },
+      { name: "Les Baux-de-Provence", lat: 43.74, lon: 4.80, note: "Pueblo fortificado sobre roca caliza" },
+    ],
+  },
+  {
+    id: "toscana", name: "Toscana", country: "Italia", flag: "🇮🇹",
+    costPerPerson: 520, durationDays: 4, type: "naturaleza",
+    transport: ["avion", "tren", "coche", "autobus"],
+    description: "Colinas ondulantes, cipreses y pueblos medievales entre viñedos. La región italiana perfecta para recorrer en coche sin prisa.",
+    highlights: ["Siena", "San Gimignano", "Val d'Orcia", "Chianti"],
+    itinerary: [
+      { date: "", title: "Día 1 — Siena", items: [{ time: "12:00", text: "Llegada en coche o tren" }, { time: "16:00", text: "Piazza del Campo y la Torre del Mangia" }, { time: "19:00", text: "Cena de pappardelle al cinghiale" }] },
+      { date: "", title: "Día 2 — Val d'Orcia", items: [{ time: "09:00", text: "Ruta en coche por el Val d'Orcia, Patrimonio UNESCO" }, { time: "12:00", text: "Pienza, pueblo del queso pecorino" }, { time: "16:00", text: "Montepulciano y bodegas de Vino Nobile" }] },
+      { date: "", title: "Día 3 — San Gimignano y Chianti", items: [{ time: "09:30", text: "San Gimignano, la Manhattan medieval" }, { time: "13:00", text: "Almuerzo en el Chianti" }, { time: "16:00", text: "Cata de vino en una bodega familiar" }] },
+      { date: "", title: "Día 4 — Regreso", items: [{ time: "10:00", text: "Última parada en un pueblo del Chianti" }, { time: "14:00", text: "Regreso en coche o tren" }] },
+    ],
+    mapPlaces: [
+      { name: "Siena", lat: 43.32, lon: 11.33, note: "Piazza del Campo, una de las plazas medievales más bellas de Italia" },
+      { name: "San Gimignano", lat: 43.47, lon: 11.04, note: "Pueblo de torres medievales, Patrimonio UNESCO" },
+      { name: "Val d'Orcia", lat: 43.05, lon: 11.62, note: "Paisaje de colinas y cipreses, Patrimonio UNESCO" },
+      { name: "Montepulciano", lat: 43.10, lon: 11.79, note: "Pueblo renacentista famoso por su vino Nobile" },
+    ],
+  },
+  {
+    id: "pais-vasco-frances", name: "País Vasco Francés", country: "Francia", flag: "🇫🇷",
+    costPerPerson: 380, durationDays: 4, type: "naturaleza",
+    transport: ["avion", "tren", "coche", "autobus"],
+    description: "Biarritz, San Juan de Luz y los pueblos vascos del otro lado de la frontera: playas de surf y montaña en un mismo road trip.",
+    highlights: ["Biarritz", "San Juan de Luz", "Espelette", "Ainhoa"],
+    itinerary: [
+      { date: "", title: "Día 1 — Biarritz", items: [{ time: "12:00", text: "Llegada en coche o tren" }, { time: "16:00", text: "Grande Plage y el Rocher de la Vierge" }, { time: "19:00", text: "Cena de pescado en el puerto de los pescadores" }] },
+      { date: "", title: "Día 2 — San Juan de Luz", items: [{ time: "10:00", text: "San Juan de Luz, pueblo pesquero histórico" }, { time: "13:00", text: "Almuerzo de txipirones" }, { time: "16:00", text: "Playa protegida por la bahía" }] },
+      { date: "", title: "Día 3 — Pueblos vascos", items: [{ time: "09:30", text: "Espelette, el pueblo de los pimientos rojos" }, { time: "12:00", text: "Ainhoa, uno de los pueblos más bonitos de Francia" }, { time: "16:00", text: "Ruta panorámica por el interior vasco" }] },
+      { date: "", title: "Día 4 — Regreso", items: [{ time: "10:00", text: "Última playa en Biarritz" }, { time: "13:00", text: "Regreso en coche o tren" }] },
+    ],
+    mapPlaces: [
+      { name: "Biarritz", lat: 43.48, lon: -1.56, note: "Cuna del surf europeo, playas y acantilados" },
+      { name: "San Juan de Luz", lat: 43.39, lon: -1.66, note: "Pueblo pesquero donde se casó Luis XIV" },
+      { name: "Espelette", lat: 43.34, lon: -1.45, note: "Famoso por sus ristras de pimiento rojo" },
+      { name: "Ainhoa", lat: 43.29, lon: -1.50, note: "Pueblo de casas típicas vasco-labortanas" },
+    ],
+  },
+  {
+    id: "ruta-romantica-alemania", name: "Ruta Romántica", country: "Alemania", flag: "🇩🇪",
+    costPerPerson: 490, durationDays: 4, type: "naturaleza",
+    transport: ["avion", "tren", "coche"],
+    description: "Un clásico road trip alemán: 350 km de pueblos medievales de cuento entre Würzburg y los Alpes bávaros.",
+    highlights: ["Rothenburg ob der Tauber", "Dinkelsbühl", "Neuschwanstein", "Würzburg"],
+    itinerary: [
+      { date: "", title: "Día 1 — Würzburg", items: [{ time: "12:00", text: "Llegada en coche o tren" }, { time: "16:00", text: "Residencia de Würzburg, Patrimonio UNESCO" }, { time: "19:00", text: "Cata de vino de Franconia" }] },
+      { date: "", title: "Día 2 — Rothenburg", items: [{ time: "09:30", text: "Ruta en coche a Rothenburg ob der Tauber" }, { time: "12:00", text: "Casco medieval amurallado" }, { time: "16:00", text: "Paseo por las murallas al atardecer" }] },
+      { date: "", title: "Día 3 — Dinkelsbühl y Neuschwanstein", items: [{ time: "09:00", text: "Dinkelsbühl, pueblo de casas de colores" }, { time: "13:00", text: "Ruta hacia los Alpes bávaros" }, { time: "16:00", text: "Castillo de Neuschwanstein" }] },
+      { date: "", title: "Día 4 — Regreso", items: [{ time: "10:00", text: "Füssen y los lagos alpinos" }, { time: "14:00", text: "Regreso en coche o tren" }] },
+    ],
+    mapPlaces: [
+      { name: "Rothenburg ob der Tauber", lat: 49.38, lon: 10.18, note: "El pueblo medieval mejor conservado de Alemania" },
+      { name: "Dinkelsbühl", lat: 49.07, lon: 10.32, note: "Ciudad amurallada de casas de entramado de madera" },
+      { name: "Castillo de Neuschwanstein", lat: 47.56, lon: 10.75, note: "El castillo que inspiró a Disney" },
+      { name: "Würzburg", lat: 49.79, lon: 9.93, note: "Residencia barroca, Patrimonio UNESCO" },
+    ],
+  },
+  {
+    id: "pueblos-blancos-andalucia", name: "Pueblos Blancos", country: "España", flag: "🇪🇸",
+    costPerPerson: 280, durationDays: 4, type: "naturaleza",
+    transport: ["avion", "coche", "autobus"],
+    description: "Un road trip por Cádiz y Málaga: pueblos encalados colgados de la sierra, ideal para recorrer en coche de punta a punta.",
+    highlights: ["Ronda", "Grazalema", "Zahara de la Sierra", "Setenil de las Bodegas"],
+    itinerary: [
+      { date: "", title: "Día 1 — Ronda", items: [{ time: "12:00", text: "Llegada en coche" }, { time: "16:00", text: "Puente Nuevo y el Tajo de Ronda" }, { time: "19:00", text: "Plaza de toros, una de las más antiguas de España" }] },
+      { date: "", title: "Día 2 — Sierra de Grazalema", items: [{ time: "09:30", text: "Grazalema, pueblo blanco entre montañas" }, { time: "13:00", text: "Almuerzo de cordero a la sierrana" }, { time: "16:00", text: "Zahara de la Sierra y su embalse turquesa" }] },
+      { date: "", title: "Día 3 — Setenil y Arcos", items: [{ time: "09:30", text: "Setenil de las Bodegas, casas bajo la roca" }, { time: "13:00", text: "Arcos de la Frontera, mirador sobre el río" }, { time: "17:00", text: "Bodega de vino de Jerez" }] },
+      { date: "", title: "Día 4 — Regreso", items: [{ time: "10:00", text: "Último pueblo de la ruta" }, { time: "14:00", text: "Regreso en coche" }] },
+    ],
+    mapPlaces: [
+      { name: "Ronda", lat: 36.74, lon: -5.16, note: "Ciudad partida en dos por el Tajo de Ronda" },
+      { name: "Grazalema", lat: 36.76, lon: -5.37, note: "El pueblo más lluvioso de España, en plena sierra" },
+      { name: "Zahara de la Sierra", lat: 36.84, lon: -5.39, note: "Pueblo blanco sobre un embalse turquesa" },
+      { name: "Setenil de las Bodegas", lat: 36.86, lon: -5.18, note: "Casas excavadas bajo un enorme farallón rocoso" },
+    ],
+  },
+  {
+    id: "valle-del-loira", name: "Valle del Loira", country: "Francia", flag: "🇫🇷",
+    costPerPerson: 470, durationDays: 4, type: "cultura",
+    transport: ["avion", "tren", "coche", "autobus"],
+    description: "Los castillos renacentistas de los reyes de Francia, entre viñedos y el río más largo del país. Ideal para un road trip pausado.",
+    highlights: ["Château de Chambord", "Château de Chenonceau", "Amboise", "Tours"],
+    itinerary: [
+      { date: "", title: "Día 1 — Tours", items: [{ time: "12:00", text: "Llegada en tren o coche" }, { time: "16:00", text: "Casco histórico de Tours" }, { time: "19:00", text: "Cena con vino de Loira" }] },
+      { date: "", title: "Día 2 — Chambord y Chenonceau", items: [{ time: "09:30", text: "Château de Chambord, el más grande del Loira" }, { time: "13:00", text: "Almuerzo cerca del castillo" }, { time: "16:00", text: "Château de Chenonceau, sobre el río Cher" }] },
+      { date: "", title: "Día 3 — Amboise", items: [{ time: "09:30", text: "Château Royal d'Amboise" }, { time: "12:00", text: "Clos Lucé, última casa de Leonardo da Vinci" }, { time: "16:00", text: "Cata en un viñedo local" }] },
+      { date: "", title: "Día 4 — Regreso", items: [{ time: "10:00", text: "Último castillo de la ruta" }, { time: "14:00", text: "Regreso en tren o coche" }] },
+    ],
+    mapPlaces: [
+      { name: "Château de Chambord", lat: 47.62, lon: 1.52, note: "El castillo renacentista más grande del Loira" },
+      { name: "Château de Chenonceau", lat: 47.32, lon: 1.07, note: "Construido literalmente sobre el río Cher" },
+      { name: "Amboise", lat: 47.41, lon: 0.98, note: "Castillo real y última residencia de Leonardo da Vinci" },
+      { name: "Tours", lat: 47.39, lon: 0.69, note: "Ciudad base para explorar el valle" },
+    ],
+  },
+  {
+    id: "cracovia", name: "Cracovia", country: "Polonia", flag: "🇵🇱",
+    costPerPerson: 380, durationDays: 3, type: "cultura",
+    transport: ["avion", "tren", "coche", "autobus"],
+    description: "La antigua capital polaca: casco medieval Patrimonio UNESCO, castillo de Wawel y la memoria histórica de Auschwitz cerca.",
+    highlights: ["Rynek Główny", "Castillo de Wawel", "Barrio judío de Kazimierz", "Auschwitz-Birkenau"],
+    itinerary: [
+      { date: "", title: "Día 1 — Casco antiguo", items: [{ time: "13:00", text: "Llegada en avión, tren o autobús" }, { time: "16:00", text: "Rynek Główny, la plaza medieval más grande de Europa" }, { time: "19:00", text: "Cena de pierogi" }] },
+      { date: "", title: "Día 2 — Wawel y Kazimierz", items: [{ time: "09:30", text: "Castillo y catedral de Wawel" }, { time: "13:00", text: "Barrio judío de Kazimierz" }, { time: "17:00", text: "Fábrica de Schindler" }] },
+      { date: "", title: "Día 3 — Auschwitz y regreso", items: [{ time: "08:00", text: "Excursión a Auschwitz-Birkenau (1h30 en coche)" }, { time: "14:00", text: "Regreso a Cracovia" }, { time: "17:00", text: "Traslado a la estación o aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Rynek Główny", lat: 50.06, lon: 19.94, note: "La plaza medieval más grande de Europa" },
+      { name: "Castillo de Wawel", lat: 50.05, lon: 19.94, note: "Antigua residencia de los reyes de Polonia" },
+      { name: "Kazimierz", lat: 50.05, lon: 19.95, note: "Antiguo barrio judío, hoy zona cultural" },
+      { name: "Auschwitz-Birkenau", lat: 50.03, lon: 19.20, note: "Memorial y museo, a 1h30 de Cracovia" },
+    ],
+  },
+  {
+    id: "colonia", name: "Colonia", country: "Alemania", flag: "🇩🇪",
+    costPerPerson: 430, durationDays: 3, type: "ciudad",
+    transport: ["avion", "tren", "coche", "autobus"],
+    description: "La catedral gótica más alta de Alemania, a orillas del Rin, con buena conexión en tren de alta velocidad desde media Europa.",
+    highlights: ["Catedral de Colonia", "Casco antiguo", "Museo de Chocolate", "Puente de Hohenzollern"],
+    itinerary: [
+      { date: "", title: "Día 1 — Catedral y casco antiguo", items: [{ time: "13:00", text: "Llegada en tren o avión" }, { time: "16:00", text: "Catedral de Colonia, Patrimonio UNESCO" }, { time: "18:30", text: "Paseo por el casco antiguo" }, { time: "20:30", text: "Cerveza Kölsch en una taberna típica" }] },
+      { date: "", title: "Día 2 — Rin y museos", items: [{ time: "09:30", text: "Museo de Chocolate" }, { time: "12:00", text: "Puente de Hohenzollern y sus candados" }, { time: "16:00", text: "Paseo en barco por el Rin" }] },
+      { date: "", title: "Día 3 — Regreso", items: [{ time: "10:00", text: "Mercado de Navidad o mercado local" }, { time: "13:00", text: "Última vista de la catedral" }, { time: "16:00", text: "Traslado a la estación o aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Catedral de Colonia", lat: 50.94, lon: 6.96, note: "Catedral gótica más alta de Alemania, Patrimonio UNESCO" },
+      { name: "Casco antiguo", lat: 50.94, lon: 6.96, note: "Fachadas coloridas junto al Rin" },
+      { name: "Puente de Hohenzollern", lat: 50.94, lon: 6.97, note: "Cubierto de candados de parejas" },
+      { name: "Museo de Chocolate", lat: 50.93, lon: 6.97, note: "Historia del chocolate junto al río" },
+    ],
+  },
+  {
+    id: "lyon", name: "Lyon", country: "Francia", flag: "🇫🇷",
+    costPerPerson: 460, durationDays: 3, type: "ciudad",
+    transport: ["avion", "tren", "coche", "autobus"],
+    description: "Capital gastronómica de Francia: casco romano Patrimonio UNESCO, bouchons lyoneses y buen tren de alta velocidad desde Barcelona.",
+    highlights: ["Vieux Lyon", "Basílica de Fourvière", "Traboules", "Bouchons lyoneses"],
+    itinerary: [
+      { date: "", title: "Día 1 — Vieux Lyon", items: [{ time: "13:00", text: "Llegada en tren o avión" }, { time: "16:00", text: "Vieux Lyon, casco renacentista" }, { time: "18:00", text: "Paseo por las traboules, pasadizos secretos" }, { time: "20:30", text: "Cena en un bouchon lyonés" }] },
+      { date: "", title: "Día 2 — Fourvière y mercados", items: [{ time: "09:30", text: "Basílica de Fourvière, vistas de la ciudad" }, { time: "12:00", text: "Ruinas romanas de Fourvière" }, { time: "15:00", text: "Halles de Lyon Paul Bocuse, templo gastronómico" }] },
+      { date: "", title: "Día 3 — Regreso", items: [{ time: "10:00", text: "Presqu'île y la Place Bellecour" }, { time: "13:00", text: "Última comida lyonesa" }, { time: "16:00", text: "Traslado a la estación o aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Vieux Lyon", lat: 45.76, lon: 4.83, note: "Casco renacentista, Patrimonio UNESCO" },
+      { name: "Basílica de Fourvière", lat: 45.76, lon: 4.82, note: "Mirador sobre toda la ciudad" },
+      { name: "Halles de Lyon Paul Bocuse", lat: 45.76, lon: 4.85, note: "Mercado gastronómico de referencia en Francia" },
+      { name: "Place Bellecour", lat: 45.76, lon: 4.83, note: "Una de las plazas peatonales más grandes de Europa" },
+    ],
+  },
+  {
+    id: "salzburgo", name: "Salzburgo", country: "Austria", flag: "🇦🇹",
+    costPerPerson: 490, durationDays: 3, type: "cultura",
+    transport: ["avion", "tren", "coche", "autobus"],
+    description: "Ciudad natal de Mozart y escenario de Sonrisas y lágrimas, con un casco barroco Patrimonio UNESCO junto a los Alpes.",
+    highlights: ["Casco antiguo", "Fortaleza de Hohensalzburg", "Casa natal de Mozart", "Lagos de Salzkammergut"],
+    itinerary: [
+      { date: "", title: "Día 1 — Casco antiguo", items: [{ time: "13:00", text: "Llegada en tren o avión" }, { time: "16:00", text: "Casco antiguo barroco, Patrimonio UNESCO" }, { time: "18:00", text: "Casa natal de Mozart" }, { time: "20:30", text: "Cena típica austriaca" }] },
+      { date: "", title: "Día 2 — Fortaleza y jardines", items: [{ time: "09:30", text: "Fortaleza de Hohensalzburg" }, { time: "13:00", text: "Jardines de Mirabell" }, { time: "16:00", text: "Ruta de Sonrisas y lágrimas" }] },
+      { date: "", title: "Día 3 — Lagos y regreso", items: [{ time: "09:00", text: "Excursión a los lagos de Salzkammergut" }, { time: "15:00", text: "Regreso a Salzburgo" }, { time: "17:00", text: "Traslado a la estación o aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Fortaleza de Hohensalzburg", lat: 47.79, lon: 13.05, note: "Una de las fortalezas medievales más grandes de Europa" },
+      { name: "Casa natal de Mozart", lat: 47.80, lon: 13.04, note: "Museo en la casa donde nació el compositor" },
+      { name: "Jardines de Mirabell", lat: 47.80, lon: 13.04, note: "Escenario de Sonrisas y lágrimas" },
+      { name: "Salzkammergut", lat: 47.72, lon: 13.65, note: "Región de lagos alpinos, a 45 min en coche" },
+    ],
+  },
+  {
+    id: "gante-brujas", name: "Gante y Brujas", country: "Bélgica", flag: "🇧🇪",
+    costPerPerson: 400, durationDays: 3, type: "ciudad",
+    transport: ["avion", "tren", "coche", "autobus"],
+    description: "Canales medievales, chocolate y cerveza en dos de las ciudades mejor conservadas de Flandes, a un tren corto de Bruselas.",
+    highlights: ["Canales de Brujas", "Grote Markt de Gante", "Castillo de los Condes", "Cervecerías flamencas"],
+    itinerary: [
+      { date: "", title: "Día 1 — Gante", items: [{ time: "13:00", text: "Llegada en tren, coche o avión" }, { time: "16:00", text: "Castillo de los Condes de Flandes" }, { time: "18:00", text: "Paseo por los canales de Gante" }, { time: "20:30", text: "Cerveza trapense y waterzooi" }] },
+      { date: "", title: "Día 2 — Brujas", items: [{ time: "09:30", text: "Tren a Brujas (50 min)" }, { time: "10:30", text: "Canales y Grote Markt" }, { time: "13:00", text: "Almuerzo con vistas al canal" }, { time: "16:00", text: "Museo del chocolate" }] },
+      { date: "", title: "Día 3 — Regreso", items: [{ time: "10:00", text: "Última vuelta por los canales" }, { time: "13:00", text: "Compras de chocolate y encaje" }, { time: "16:00", text: "Traslado a la estación o aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Canales de Brujas", lat: 51.21, lon: 3.22, note: "La 'Venecia del Norte', Patrimonio UNESCO" },
+      { name: "Grote Markt (Gante)", lat: 51.05, lon: 3.72, note: "Plaza mayor rodeada de arquitectura medieval" },
+      { name: "Castillo de los Condes", lat: 51.06, lon: 3.72, note: "Fortaleza medieval en pleno centro de Gante" },
+      { name: "Grote Markt (Brujas)", lat: 51.21, lon: 3.22, note: "Plaza central con el campanario de Brujas" },
+    ],
+  },
+  {
+    id: "luxemburgo", name: "Luxemburgo", country: "Luxemburgo", flag: "🇱🇺",
+    costPerPerson: 440, durationDays: 3, type: "ciudad",
+    transport: ["avion", "tren", "coche", "autobus"],
+    description: "Un pequeño gran ducado con un casco fortificado sobre gargantas verdes, transporte público gratuito en todo el país y buena conexión ferroviaria.",
+    highlights: ["Casco antiguo fortificado", "Casamates de Bock", "Ciudad Alta", "Valle del Mosela"],
+    itinerary: [
+      { date: "", title: "Día 1 — Casco antiguo", items: [{ time: "13:00", text: "Llegada en tren, coche o avión" }, { time: "16:00", text: "Casco antiguo fortificado, Patrimonio UNESCO" }, { time: "18:00", text: "Casamates de Bock, fortificaciones subterráneas" }, { time: "20:30", text: "Cena en el barrio de Grund" }] },
+      { date: "", title: "Día 2 — Ciudad Alta y gargantas", items: [{ time: "09:30", text: "Palacio Gran Ducal" }, { time: "12:00", text: "Mirador de Chemin de la Corniche" }, { time: "16:00", text: "Paseo por las gargantas del Petrusse" }] },
+      { date: "", title: "Día 3 — Mosela y regreso", items: [{ time: "09:00", text: "Excursión al valle del Mosela y sus viñedos" }, { time: "14:00", text: "Regreso a la ciudad" }, { time: "16:00", text: "Traslado a la estación o aeropuerto" }] },
+    ],
+    mapPlaces: [
+      { name: "Casco antiguo fortificado", lat: 49.61, lon: 6.13, note: "Patrimonio UNESCO, uno de los más impresionantes de Europa" },
+      { name: "Casamates de Bock", lat: 49.61, lon: 6.14, note: "17 km de túneles y fortificaciones subterráneas" },
+      { name: "Palacio Gran Ducal", lat: 49.61, lon: 6.13, note: "Residencia oficial de la familia real luxemburguesa" },
+      { name: "Valle del Mosela", lat: 49.72, lon: 6.34, note: "Región vinícola a 30 min en coche" },
     ],
   },
 ];

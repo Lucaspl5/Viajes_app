@@ -59,6 +59,20 @@ function buildActivitiesUrl(destination: string) {
 function buildWebSearchUrl(query: string) {
   return `https://www.google.com/search?q=${encodeURIComponent(query)}`;
 }
+// No hay una API de deep-link limpia para ferris/trenes/autobuses (a diferencia
+// de Google Flights), así que estas apuntan a una búsqueda dirigida.
+function buildFerryUrl(origin: string, destination: string, startDate: string) {
+  return buildWebSearchUrl(`ferry de ${origin} a ${destination} ${startDate}`);
+}
+function buildTrainUrl(origin: string, destination: string, startDate: string) {
+  return buildWebSearchUrl(`tren de ${origin} a ${destination} ${startDate}`);
+}
+function buildBusUrl(origin: string, destination: string, startDate: string) {
+  return buildWebSearchUrl(`autobús de ${origin} a ${destination} ${startDate}`);
+}
+function buildRoadRouteUrl(origin: string, destination: string) {
+  return `https://www.google.com/maps/dir/${encodeURIComponent(origin)}/${encodeURIComponent(destination)}`;
+}
 
 // ─── Storage ─────────────────────────────────────────────────────────────────
 
@@ -264,4 +278,4 @@ function downloadTextFile(filename: string, content: string, mime = "text/calend
   URL.revokeObjectURL(url);
 }
 
-export { uid, genTripCode, formatDate, formatDateFull, tripDuration, isValidUrl, buildFlightsUrl, buildHotelsUrl, buildCarRentalUrl, buildActivitiesUrl, buildWebSearchUrl, checkSavingsCoverage, loadShared, saveShared, flushDirtyKeys, peekShared, loadPersonal, savePersonal, formatMonth, monthsBetween, buildICS, downloadTextFile };
+export { uid, genTripCode, formatDate, formatDateFull, tripDuration, isValidUrl, buildFlightsUrl, buildHotelsUrl, buildCarRentalUrl, buildActivitiesUrl, buildWebSearchUrl, buildFerryUrl, buildTrainUrl, buildBusUrl, buildRoadRouteUrl, checkSavingsCoverage, loadShared, saveShared, flushDirtyKeys, peekShared, loadPersonal, savePersonal, formatMonth, monthsBetween, buildICS, downloadTextFile };

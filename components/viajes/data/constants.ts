@@ -130,3 +130,12 @@ export const DEST_TYPE_FILTERS = [
   { value: "naturaleza", label: "Naturaleza", emoji: "🌿" },
   { value: "aventura",   label: "Aventura",   emoji: "🧗" },
 ];
+
+export const TRANSPORT_FILTERS: { value: import("../types").TransportMode | "todos"; label: string; emoji: string }[] = [
+  { value: "todos",   label: "Cualquier transporte", emoji: "🧭" },
+  { value: "avion",   label: "Avión",    emoji: "✈️" },
+  { value: "barco",   label: "Barco",    emoji: "⛴️" },
+  { value: "tren",    label: "Tren",     emoji: "🚆" },
+  { value: "coche",   label: "Coche",    emoji: "🚗" },
+  { value: "autobus", label: "Autobús",  emoji: "🚌" },
+];

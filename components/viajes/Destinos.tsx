@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { MapPin, X, Globe, Heart, RefreshCw, Plane, Pencil, Bed, Car, Compass, Wifi, ShieldCheck } from "lucide-react";
+import { MapPin, X, Globe, Heart, RefreshCw, Plane, Pencil, Bed, Car, Compass, Wifi, ShieldCheck, Ship, Train, Bus } from "lucide-react";
 import { C, F, inputStyle } from "./theme";
 import { Perf, Card, SectionLabel, EmptyState, SkeletonCards } from "./ui";
-import { uid, loadShared, saveShared, loadPersonal, savePersonal, peekShared, monthsBetween, tripDuration, buildFlightsUrl, buildHotelsUrl, buildCarRentalUrl, buildActivitiesUrl, buildWebSearchUrl, checkSavingsCoverage } from "./utils";
-import { CURRENCIES, DEST_TIPS, DEST_TYPE_FILTERS } from "./data/constants";
+import { uid, loadShared, saveShared, loadPersonal, savePersonal, peekShared, monthsBetween, tripDuration, buildFlightsUrl, buildHotelsUrl, buildCarRentalUrl, buildActivitiesUrl, buildWebSearchUrl, buildFerryUrl, buildTrainUrl, buildBusUrl, buildRoadRouteUrl, checkSavingsCoverage } from "./utils";
+import { CURRENCIES, DEST_TIPS, DEST_TYPE_FILTERS, TRANSPORT_FILTERS } from "./data/constants";
 import { DESTINATIONS, DESTINATION_ALTERNATIVES } from "./data/destinations";
-import type { ItineraryDay, MapPlace, SavingsConfig, DestinationTemplate, Trip, Session } from "./types";
+import type { ItineraryDay, MapPlace, SavingsConfig, DestinationTemplate, Trip, Session, TransportMode } from "./types";
 import { AiQuickButton } from "./AiQuickButton";
 import { type Season, SEASON_LABELS, seasonOfDate, inferDestinationSeasons, SEASON_PRICE_INDEX } from "./seasons";
 import { minReasonableDays, costForDuration, adaptItinerary } from "./travelFit";
@@ -23,6 +23,13 @@ export const TYPE_GRADIENTS: Record<string, string> = {
   cultura:    "linear-gradient(135deg, #B8893F 0%, #7a540f 100%)",
   naturaleza: "linear-gradient(135deg, #2A7A4B 0%, #0f4f28 100%)",
   aventura:   "linear-gradient(135deg, #D4614A 0%, #8f2b18 100%)",
+};
+
+export const TRANSPORT_ICONS: Record<TransportMode, typeof Plane> = {
+  avion: Plane, barco: Ship, tren: Train, coche: Car, autobus: Bus,
+};
+export const TRANSPORT_LABELS: Record<TransportMode, string> = {
+  avion: "Avión", barco: "Barco", tren: "Tren", coche: "Coche", autobus: "Autobús",
 };
 
 export function DestCard({ dest, budget, onChoose, onOpen, isFavorite, onToggleFavorite }: {
@@ -65,9 +72,19 @@ export function DestCard({ dest, budget, onChoose, onOpen, isFavorite, onToggleF
 
       {/* Body */}
       <div style={{ padding: "12px 14px", flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
-        <span style={{ fontFamily: F.mono, fontSize: 9, padding: "2px 8px", borderRadius: 999, background: `${typeColor}18`, color: typeColor, border: `1px solid ${typeColor}33`, alignSelf: "flex-start", letterSpacing: 0.5 }}>
-          {dest.type.toUpperCase()}
-        </span>
+        <div className="flex items-center gap-1 flex-wrap">
+          <span style={{ fontFamily: F.mono, fontSize: 9, padding: "2px 8px", borderRadius: 999, background: `${typeColor}18`, color: typeColor, border: `1px solid ${typeColor}33`, letterSpacing: 0.5 }}>
+            {dest.type.toUpperCase()}
+          </span>
+          {dest.transport.map(m => {
+            const Icon = TRANSPORT_ICONS[m];
+            return (
+              <span key={m} title={TRANSPORT_LABELS[m]} style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 20, height: 20, borderRadius: 999, background: C.paperDark, color: C.inkSoft }}>
+                <Icon size={11} />
+              </span>
+            );
+          })}
+        </div>
         <div style={{ fontSize: 12, color: C.inkSoft, lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
           {dest.description}
         </div>
@@ -84,11 +101,16 @@ export function DestCard({ dest, budget, onChoose, onOpen, isFavorite, onToggleF
   );
 }
 
-function FlightSearchWidget({ code, trip, destination }: { code: string; trip: Trip; destination: string }) {
+const TRANSPORT_SEARCH_LABELS: Record<TransportMode, string> = {
+  avion: "VUELOS", barco: "FERRIS", tren: "TRENES", coche: "RUTA EN COCHE", autobus: "AUTOBUSES",
+};
+
+function TransportSearchWidget({ code, trip, dest }: { code: string; trip: Trip; dest: DestinationTemplate }) {
   const [origin, setOrigin] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState("");
+  const [mode, setMode] = useState<TransportMode>(dest.transport[0]);
 
   useEffect(() => {
     loadShared<string>(`origen:${code}`, "").then(o => {
@@ -97,6 +119,10 @@ function FlightSearchWidget({ code, trip, destination }: { code: string; trip: T
       if (!o) setEditing(true);
     });
   }, [code]);
+
+  useEffect(() => {
+    if (!dest.transport.includes(mode)) setMode(dest.transport[0]);
+  }, [dest, mode]);
 
   function save() {
     const v = draft.trim();
@@ -109,11 +135,41 @@ function FlightSearchWidget({ code, trip, destination }: { code: string; trip: T
   if (!loaded) return null;
   const hasDates = !!(trip.startDate && trip.endDate);
 
+  function urlFor(m: TransportMode): string | null {
+    if (!origin) return null;
+    if (m === "coche") return buildRoadRouteUrl(origin, dest.name);
+    if (!hasDates) return null;
+    if (m === "avion") return buildFlightsUrl(origin, dest.country, trip.startDate!, trip.endDate!);
+    if (m === "barco") return buildFerryUrl(origin, dest.name, trip.startDate!);
+    if (m === "tren") return buildTrainUrl(origin, dest.name, trip.startDate!);
+    return buildBusUrl(origin, dest.name, trip.startDate!);
+  }
+
+  const showModeTabs = dest.transport.length > 1;
+  const url = urlFor(mode);
+  const needsDates = mode !== "coche" && !hasDates;
+
   return (
     <div style={{ background: "#F0F7FF", borderRadius: 10, padding: "12px 14px", border: "1px solid #C8DEFF" }}>
-      <div style={{ fontFamily: F.mono, fontSize: 10, color: C.sky, fontWeight: 700, marginBottom: 8, letterSpacing: 1 }}>✈️ VUELOS</div>
-      {!hasDates ? (
-        <p style={{ fontSize: 12, color: C.inkSoft, margin: 0 }}>Fija las fechas del viaje para poder buscar vuelos.</p>
+      <div style={{ fontFamily: F.mono, fontSize: 10, color: C.sky, fontWeight: 700, marginBottom: 8, letterSpacing: 1 }}>🧭 CÓMO LLEGAR</div>
+      {showModeTabs && (
+        <div className="flex flex-wrap gap-1" style={{ marginBottom: 10 }}>
+          {dest.transport.map(m => {
+            const Icon = TRANSPORT_ICONS[m];
+            return (
+              <button key={m} onClick={() => setMode(m)} style={{
+                display: "flex", alignItems: "center", gap: 5, padding: "5px 10px", borderRadius: 999,
+                background: mode === m ? C.sky : "#fff", color: mode === m ? "#fff" : C.sky,
+                border: `1px solid ${C.sky}55`, fontFamily: F.mono, fontSize: 10, fontWeight: 700,
+              }}>
+                <Icon size={11} /> {TRANSPORT_LABELS[m]}
+              </button>
+            );
+          })}
+        </div>
+      )}
+      {needsDates ? (
+        <p style={{ fontSize: 12, color: C.inkSoft, margin: 0 }}>Fija las fechas del viaje para poder buscar {TRANSPORT_SEARCH_LABELS[mode].toLowerCase()}.</p>
       ) : editing ? (
         <div className="flex gap-2">
           <input
@@ -127,7 +183,7 @@ function FlightSearchWidget({ code, trip, destination }: { code: string; trip: T
       ) : (
         <div className="flex items-center gap-2">
           <a
-            href={buildFlightsUrl(origin!, destination, trip.startDate!, trip.endDate!)}
+            href={url ?? undefined}
             target="_blank" rel="noopener noreferrer"
             style={{
               display: "flex", alignItems: "center", justifyContent: "center", gap: 8, flex: 1,
@@ -135,7 +191,8 @@ function FlightSearchWidget({ code, trip, destination }: { code: string; trip: T
               fontFamily: F.mono, fontSize: 12, fontWeight: 700, textDecoration: "none",
             }}
           >
-            <Plane size={14} /> BUSCAR VUELOS DESDE {origin!.toUpperCase()}
+            {(() => { const Icon = TRANSPORT_ICONS[mode]; return <Icon size={14} />; })()}
+            BUSCAR {TRANSPORT_SEARCH_LABELS[mode]} DESDE {origin!.toUpperCase()}
           </a>
           <button
             onClick={() => { setDraft(origin ?? ""); setEditing(true); }}
@@ -227,7 +284,7 @@ export function DestModal({ dest, budget, code, trip, onChoose, onClose, alterna
           <p style={{ fontSize: 14, color: C.inkSoft, lineHeight: 1.7 }}>{dest.description}</p>
 
           <div style={{ background: `${TYPE_COLORS[dest.type] ?? C.teal}15`, borderRadius: 8, padding: "10px 14px", fontFamily: F.mono, fontSize: 11, color: C.inkSoft }}>
-            ✈️ Vuelo · 🏨 Alojamiento · 🍽️ Comida · 🎭 Actividades — <strong style={{ color: C.ink }}>TODO INCLUIDO</strong>
+            {dest.transport.map(m => TRANSPORT_LABELS[m]).join("/")} · 🏨 Alojamiento · 🍽️ Comida · 🎭 Actividades — <strong style={{ color: C.ink }}>TODO INCLUIDO</strong>
           </div>
 
           {!withinBudget && alternatives && alternatives.length > 0 && (
@@ -307,7 +364,7 @@ export function DestModal({ dest, budget, code, trip, onChoose, onClose, alterna
             </div>
           </div>
 
-          <FlightSearchWidget code={code} trip={trip} destination={dest.country} />
+          <TransportSearchWidget code={code} trip={trip} dest={dest} />
           <QuickLinksGrid destination={dest.country} trip={trip} />
 
           {/* Tips per destination */}
@@ -357,7 +414,7 @@ export function DestModal({ dest, budget, code, trip, onChoose, onClose, alterna
             color: "#fff", borderRadius: 10, padding: "14px 16px",
             fontFamily: F.mono, fontSize: 13, fontWeight: 700, letterSpacing: 0.5,
           }}>
-            {withinBudget ? `✈ ELEGIR ${dest.name.toUpperCase()}` : "ELEGIR IGUALMENTE →"}
+            {withinBudget ? `→ ELEGIR ${dest.name.toUpperCase()}` : "ELEGIR IGUALMENTE →"}
           </button>
         </div>
       </div>
@@ -395,6 +452,7 @@ export function Destinos({ code, startDate, trip, session, onSelect }: { code: s
   const [loading, setLoading] = useState(() => cachedSavings === undefined);
   const [filter, setFilter] = useState("todos");
   const [seasonFilter, setSeasonFilter] = useState<Season | "todas">("todas");
+  const [transportFilter, setTransportFilter] = useState<TransportMode | "todos">("todos");
   const [search, setSearch] = useState("");
   const [preview, setPreview] = useState<DestinationTemplate | null>(null);
   const [chosen, setChosen] = useState<DestinationTemplate | null>(null);
@@ -467,10 +525,11 @@ export function Destinos({ code, startDate, trip, session, onSelect }: { code: s
       (filter === "todos" || d.type === filter || (filter === "favoritos" && favorites.has(d.id))) &&
       (filter !== "favoritos" || favorites.has(d.id)) &&
       (seasonFilter === "todas" || inferDestinationSeasons(d).includes(seasonFilter)) &&
+      (transportFilter === "todos" || d.transport.includes(transportFilter)) &&
       (tripDays === null || tripDays >= minReasonableDays(d)) &&
       (!q || d.name.toLowerCase().includes(q) || d.country.toLowerCase().includes(q) || d.highlights.some(h => h.toLowerCase().includes(q)))
     );
-  }, [seasonAdjusted, filter, seasonFilter, search, favorites, tripDays]);
+  }, [seasonAdjusted, filter, seasonFilter, transportFilter, search, favorites, tripDays]);
 
   const withinBudget = useMemo(() =>
     visibleDests.filter(d => budgetPerPerson === 0 || d.costPerPerson <= budgetPerPerson),
@@ -490,10 +549,11 @@ export function Destinos({ code, startDate, trip, session, onSelect }: { code: s
       (filter === "todos" || d.type === filter || (filter === "favoritos" && favorites.has(d.id))) &&
       (filter !== "favoritos" || favorites.has(d.id)) &&
       (seasonFilter === "todas" || inferDestinationSeasons(d).includes(seasonFilter)) &&
+      (transportFilter === "todos" || d.transport.includes(transportFilter)) &&
       (!q || d.name.toLowerCase().includes(q) || d.country.toLowerCase().includes(q) || d.highlights.some(h => h.toLowerCase().includes(q))) &&
       costForDuration(d, tripDays) * seasonMultiplier <= budgetPerPerson
     ).length;
-  }, [filter, seasonFilter, search, favorites, tripDays, budgetPerPerson, seasonMultiplier]);
+  }, [filter, seasonFilter, transportFilter, search, favorites, tripDays, budgetPerPerson, seasonMultiplier]);
 
   if (loading) return <SkeletonCards />;
 
@@ -650,6 +710,21 @@ export function Destinos({ code, startDate, trip, session, onSelect }: { code: s
         ))}
       </div>
 
+      {/* Transport filter pills */}
+      <div className="flex flex-wrap gap-2">
+        {TRANSPORT_FILTERS.map(t => (
+          <button key={t.value} onClick={() => setTransportFilter(t.value)} style={{
+            padding: "6px 12px", borderRadius: 999, fontSize: 11, fontFamily: F.mono,
+            background: transportFilter === t.value ? C.navy : C.paperDark,
+            color: transportFilter === t.value ? C.paper : C.inkSoft,
+            border: `1px solid ${transportFilter === t.value ? C.navy : C.line}`,
+            transition: "all 0.15s", fontWeight: transportFilter === t.value ? 700 : 400,
+          }}>
+            {t.emoji} {t.label}
+          </button>
+        ))}
+      </div>
+
       {/* Within budget */}
       {withinBudget.length > 0 && (
         <div className="flex flex-col gap-3">
@@ -680,7 +755,7 @@ export function Destinos({ code, startDate, trip, session, onSelect }: { code: s
 
       {visibleDests.length === 0 && filter === "favoritos" && <EmptyState icon={<Heart size={28} color={C.line} />} text="Aún no tienes favoritos. Pulsa el corazón en cualquier destino." />}
       {visibleDests.length === 0 && filter !== "favoritos" && tripDays !== null && (
-        <EmptyState icon={<Globe size={28} color={C.line} />} text={`Ningún destino encaja con un viaje de ${tripDays} días con ese filtro. Prueba a quitar el filtro de tipo/temporada o ampliar las fechas.`} />
+        <EmptyState icon={<Globe size={28} color={C.line} />} text={`Ningún destino encaja con un viaje de ${tripDays} días con ese filtro. Prueba a quitar el filtro de tipo/temporada/transporte o ampliar las fechas.`} />
       )}
       {visibleDests.length === 0 && filter !== "favoritos" && tripDays === null && <EmptyState icon={<Globe size={28} color={C.line} />} text="Sin destinos con ese filtro." />}
 

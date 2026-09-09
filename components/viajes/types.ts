@@ -54,10 +54,14 @@ export interface DiaryEntry {
   id: string; date: string; text: string;
   author: string; mood: string; addedAt: number;
 }
+export type TransportMode = "avion" | "barco" | "tren" | "coche" | "autobus";
 export interface DestinationTemplate {
   id: string; name: string; country: string; flag: string;
   costPerPerson: number; durationDays: number;
   type: "playa" | "ciudad" | "cultura" | "naturaleza" | "aventura";
+  // Modes of transport realistically viable from España for this destination —
+  // most destinations are avión-only; nearby/land-connected ones list more.
+  transport: TransportMode[];
   description: string; highlights: string[];
   itinerary: { date: string; title: string; items: { time: string; text: string }[] }[];
   mapPlaces: { name: string; lat: number; lon: number; note: string }[];
