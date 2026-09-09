@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Lock, Sparkles } from "lucide-react";
 import { C, F } from "./theme";
-import { isPremium, unlockPremiumDemo } from "./premium";
+import { isPremium, startPremiumCheckout } from "./premium";
 import type { Trip } from "./types";
 
 export function PremiumGate({ code, trip, onUnlock, feature, children, darkMode }: {
@@ -11,13 +11,18 @@ export function PremiumGate({ code, trip, onUnlock, feature, children, darkMode 
   feature: string; children: React.ReactNode; darkMode?: boolean;
 }) {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   if (isPremium(trip)) return <>{children}</>;
 
   async function unlock() {
     setLoading(true);
-    const next = await unlockPremiumDemo(code, trip);
-    onUnlock(next);
-    setLoading(false);
+    setError(null);
+    try {
+      await startPremiumCheckout(code); // redirects to Stripe; premium is granted by the webhook, not here
+    } catch {
+      setError("No se pudo iniciar el pago. Inténtalo de nuevo.");
+      setLoading(false);
+    }
   }
 
   return (
