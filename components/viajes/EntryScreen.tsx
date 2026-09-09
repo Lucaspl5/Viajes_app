@@ -140,7 +140,7 @@ export function EntryScreen({ onEnter, externalError, prefillCode }: { onEnter: 
                   <Field label="Código del viaje" hint="Pídelo al organizador">
                     <input value={code} onChange={e => setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, ""))}
                       onKeyDown={e => e.key === "Enter" && handleJoin()}
-                      placeholder="Ej. ABC-234" maxLength={7}
+                      placeholder="Ej. ABCD-2345" maxLength={9}
                       style={{ ...inputStyle, fontFamily: F.mono, letterSpacing: 2 }} />
                   </Field>
                 ) : (
