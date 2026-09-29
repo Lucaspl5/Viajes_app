@@ -1,5 +1,4 @@
 import { getRedis } from "@/lib/redis";
-import type { Trip } from "@/components/viajes/types";
 
 // Bitácora de Viaje has no database — trips already live in Redis as
 // `trip:<CODE>` JSON blobs (see lib/redis.ts / components/viajes/utils.ts).
@@ -41,16 +40,4 @@ export async function getPaymentByIntentId(paymentIntentId: string): Promise<{
   const value = await redis.get(`pagokit:payment:${paymentIntentId}`);
   if (!value) return null;
   return typeof value === "string" ? JSON.parse(value) : (value as any);
-}
-
-export async function setTripPremium(tripCode: string, premium: boolean): Promise<boolean> {
-  const redis = await getRedis();
-  if (!redis) return false;
-  const key = `trip:${tripCode}`;
-  const raw = await redis.get(key);
-  if (!raw) return false;
-  const trip = (typeof raw === "string" ? JSON.parse(raw) : raw) as Trip;
-  trip.premium = premium;
-  await redis.set(key, JSON.stringify(trip));
-  return true;
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRedis, isValidStoreKey, checkRateLimit, clientIp } from "@/lib/redis";
+import { withPremium, stripPremium } from "@/lib/payments/premium";
 
 const MAX_BODY_BYTES = 4_000_000; // generous room for a photo album, still bounded
 const READ_LIMIT = { count: 120, windowSeconds: 60 };
@@ -18,7 +19,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const value = await redis.get(key);
-    return NextResponse.json(value ?? null);
+    return NextResponse.json(await withPremium(key, value ?? null));
   } catch {
     return NextResponse.json(null, { status: 500 });
   }
@@ -44,7 +45,7 @@ export async function POST(req: NextRequest) {
   if (!redis) return NextResponse.json({ ok: false, reason: "no_kv" }, { status: 503 });
 
   try {
-    await redis.set(key, value);
+    await redis.set(key, stripPremium(key, value));
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ ok: false }, { status: 500 });

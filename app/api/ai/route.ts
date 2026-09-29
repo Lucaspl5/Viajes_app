@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRedis, checkRateLimit, clientIp } from "@/lib/redis";
+import { getPremium } from "@/lib/payments/premium";
 
 export const runtime = "edge";
 
@@ -24,9 +25,10 @@ async function lookupTrip(code: unknown): Promise<{ premium: boolean } | "no_kv"
   try {
     const redis = await getRedis();
     if (!redis) return "no_kv";
-    const trip = await redis.get<{ premium?: boolean }>(`trip:${code}`);
+    const trip = await redis.get(`trip:${code}`);
     if (!trip) return null;
-    return { premium: !!trip.premium };
+    // Premium lives in the server-only premium:<CODE> key, not in the trip blob.
+    return { premium: (await getPremium(code)) !== null };
   } catch {
     return "no_kv"; // Redis unreachable — fail open rather than break the feature
   }

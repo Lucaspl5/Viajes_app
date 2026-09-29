@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getStripe } from "@/lib/payments/stripe";
-import { markEventProcessedOnce, recordPayment, setTripPremium, getPaymentByIntentId } from "@/lib/payments/store";
+import { markEventProcessedOnce, recordPayment, getPaymentByIntentId } from "@/lib/payments/store";
+import { grantPremium, revokePremium } from "@/lib/payments/premium";
 
 export const runtime = "nodejs"; // Rule 5
 
@@ -74,7 +75,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     currency: session.currency ?? "eur",
   });
 
-  const granted = await setTripPremium(tripCode, true);
+  const granted = await grantPremium(tripCode, "stripe", paymentIntentId);
   if (!granted) {
     // Trip was deleted/expired between checkout start and webhook delivery.
     // Payment succeeded but there's nothing to unlock — logged for manual follow-up.
@@ -98,5 +99,5 @@ async function handleChargeRefunded(charge: Stripe.Charge) {
     amount: payment.amount,
     currency: payment.currency,
   });
-  await setTripPremium(payment.tripCode, false);
+  await revokePremium(payment.tripCode);
 }
